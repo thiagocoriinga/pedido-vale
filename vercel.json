@@ -15,12 +15,20 @@
       "destination": "/admin.html"
     },
     {
-      "source": "/admin/:store",
-      "destination": "/admin.html?store=:store"
+      "source": "/admin/:store*",
+      "destination": "/admin.html"
     },
     {
-      "source": "/:store",
-      "destination": "/index-sj.html?store=:store"
+      "source": "/superadmin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/assets/:match*",
+      "destination": "/assets/:match*"
+    },
+    {
+      "source": "/((?!api|admin|login|cadastro|superadmin|assets|css|js|favicon.ico|_next|manifest.json|.*\\..*).*)",
+      "destination": "/index-sj.html"
     }
   ]
 }
