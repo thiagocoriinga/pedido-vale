@@ -572,128 +572,136 @@
         </div>
       </div>
 
-      <form id="form-product" onsubmit="saveProductForm(event)" class="p-5 overflow-y-auto flex-1 space-y-5 text-xs no-scrollbar">
+      <form id="form-product" onsubmit="saveProductForm(event)" novalidate class="flex flex-col flex-1 overflow-hidden">
         
-        <!-- BLOCO 1: FOTOS (IMAGEM 3 REFERÊNCIA) -->
-        <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
-          <span class="font-bold text-xs text-stone-200 block">Fotos do Produto:</span>
-          
-          <div class="flex items-center gap-3">
-            <label class="cursor-pointer flex flex-col items-center justify-center w-24 h-24 rounded-2xl border-2 border-dashed border-brand-orange/40 hover:border-brand-orange bg-white/5 hover:bg-brand-orange/10 transition-all text-center p-2 relative overflow-hidden group">
-              <input type="file" id="prod-image-file" accept="image/*" onchange="handleProductImageUpload(event)" class="hidden" />
-              <div id="image-upload-placeholder" class="space-y-1">
-                <span class="text-xl block text-brand-orange">+</span>
-                <span class="text-[10px] text-stone-300 font-bold block">Upload Foto</span>
+        <div class="p-5 overflow-y-auto flex-1 space-y-5 text-xs no-scrollbar">
+          <!-- BLOCO 1: FOTOS (IMAGEM 3 REFERÊNCIA) -->
+          <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
+            <span class="font-bold text-xs text-stone-200 block">Fotos do Produto:</span>
+            
+            <div class="flex items-center gap-3">
+              <label class="cursor-pointer flex flex-col items-center justify-center w-24 h-24 rounded-2xl border-2 border-dashed border-brand-orange/40 hover:border-brand-orange bg-white/5 hover:bg-brand-orange/10 transition-all text-center p-2 relative overflow-hidden group">
+                <input type="file" id="prod-image-file" accept="image/*" onchange="handleProductImageUpload(event)" class="hidden" />
+                <div id="image-upload-placeholder" class="space-y-1">
+                  <span class="text-xl block text-brand-orange">+</span>
+                  <span class="text-[10px] text-stone-300 font-bold block">Upload Foto</span>
+                </div>
+                <img id="prod-image-preview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl" />
+                <span id="badge-principal-photo" class="hidden absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-brand-orange text-white text-[8px] font-bold">Principal</span>
+              </label>
+
+              <div class="flex-1 space-y-1.5">
+                <span class="text-xs text-stone-300 font-semibold block">Ou insira a URL da imagem:</span>
+                <input 
+                  type="url" 
+                  id="prod-image-url" 
+                  placeholder="https://exemplo.com/lanche.jpg" 
+                  oninput="handleProductImageUrl(this.value)"
+                  class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+                />
+                <span class="text-[10px] text-stone-500 block">Dica: Fotos reais aumentam as vendas em até 40%.</span>
               </div>
-              <img id="prod-image-preview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl" />
-              <span id="badge-principal-photo" class="hidden absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-brand-orange text-white text-[8px] font-bold">Principal</span>
-            </label>
-
-            <div class="flex-1 space-y-1.5">
-              <span class="text-xs text-stone-300 font-semibold block">Ou insira a URL da imagem:</span>
-              <input 
-                type="url" 
-                id="prod-image-url" 
-                placeholder="https://exemplo.com/lanche.jpg" 
-                oninput="handleProductImageUrl(this.value)"
-                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-              />
-              <span class="text-[10px] text-stone-500 block">Dica: Use fotos reais e iluminadas do seu produto.</span>
             </div>
+          </div>
+
+          <!-- BLOCO 2: INFORMAÇÕES PRINCIPAIS -->
+          <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
+            <span class="font-bold text-xs text-stone-200 block">Informações Principais:</span>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1">Nome do produto *</label>
+              <input type="text" id="prod-name" placeholder="Ex: X-Bacon Artesanal" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-orange transition-all" />
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1">Descrição</label>
+              <textarea id="prod-desc" rows="2.5" placeholder="Ingredientes, tamanho, acompanhamentos..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1">Categoria *</label>
+              <select id="prod-category" class="w-full bg-[#18120E] border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-brand-orange"></select>
+            </div>
+          </div>
+
+          <!-- BLOCO 3: PREÇOS -->
+          <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
+            <span class="font-bold text-xs text-stone-200 block">Preços:</span>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-stone-300 font-semibold mb-1">Preço Normal (R$) *</label>
+                <input type="number" step="0.5" id="prod-price" placeholder="30.00" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange transition-all" />
+              </div>
+              <div>
+                <label class="block text-stone-300 font-semibold mb-1">Preço Promocional (R$)</label>
+                <input type="number" step="0.5" id="prod-promo-price" placeholder="25.00" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold text-emerald-400 focus:outline-none focus:border-brand-orange" />
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOCO 4: VISIBILIDADE E DESTAQUES -->
+          <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
+            <span class="font-bold text-xs text-stone-200 block">Visibilidade e Destaques:</span>
+
+            <div class="flex items-center justify-between py-1 border-b border-white/5">
+              <div>
+                <span class="text-stone-200 font-medium block">Disponível</span>
+                <span class="text-[10px] text-stone-500">Visível no cardápio público</span>
+              </div>
+              <input type="checkbox" id="prod-available-switch" checked class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
+            </div>
+
+            <div class="flex items-center justify-between py-1 border-b border-white/5">
+              <div>
+                <span class="text-stone-200 font-medium block">Destaque ⭐</span>
+                <span class="text-[10px] text-stone-500">Aparece na seção de destaques no topo</span>
+              </div>
+              <input type="checkbox" id="prod-featured-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
+            </div>
+
+            <div class="flex items-center justify-between py-1 border-b border-white/5">
+              <div>
+                <span class="text-stone-200 font-medium block">Novidade ✨</span>
+                <span class="text-[10px] text-stone-500">Badge de "Novo" no produto</span>
+              </div>
+              <input type="checkbox" id="prod-new-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
+            </div>
+
+            <div class="flex items-center justify-between py-1">
+              <div>
+                <span class="text-stone-200 font-medium block">Popular 🔥</span>
+                <span class="text-[10px] text-stone-500">Badge de "Popular" no produto</span>
+              </div>
+              <input type="checkbox" id="prod-popular-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
+            </div>
+          </div>
+
+          <!-- BLOCO 5: GRUPOS DE OPCIONAIS -->
+          <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-bold text-xs text-stone-200 block">Grupos de Opcionais</span>
+                <span class="text-[10px] text-stone-500">Extras e personalizações que o cliente escolhe ao comprar</span>
+              </div>
+              <button type="button" onclick="addProductExtraRow()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-stone-200 font-semibold text-xs flex items-center gap-1 transition-colors">
+                <span>+ Vincular Grupo</span>
+              </button>
+            </div>
+
+            <div id="product-extras-container" class="space-y-2"></div>
           </div>
         </div>
 
-        <!-- BLOCO 2: INFORMAÇÕES (IMAGEM 3 REFERÊNCIA) -->
-        <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
-          <span class="font-bold text-xs text-stone-200 block">Informações Principais:</span>
-
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1">Nome do produto *</label>
-            <input type="text" id="prod-name" placeholder="Ex: X-Bacon Artesanal" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1">Descrição</label>
-            <textarea id="prod-desc" rows="2.5" placeholder="Ingredientes, tamanho, acompanhamentos..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1">Categoria *</label>
-            <select id="prod-category" class="w-full bg-[#18120E] border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-brand-orange" required></select>
-          </div>
+        <!-- RODAPÉ FIXO COM BOTÃO SALVAR (SEMPRE VISÍVEL) -->
+        <div class="p-4 bg-black/60 border-t border-brand-darkBorder flex items-center justify-end gap-3">
+          <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="px-8 py-2.5 bg-brand-orange hover:bg-brand-orangeHover text-white font-bold rounded-xl shadow-orange-glow active:scale-95 transition-all text-xs flex items-center gap-2">
+            <span>💾 Salvar Produto</span>
+          </button>
         </div>
-
-        <!-- BLOCO 3: PREÇOS (IMAGEM 4 REFERÊNCIA) -->
-        <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
-          <span class="font-bold text-xs text-stone-200 block">Preços:</span>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1">Preço Normal (R$) *</label>
-              <input type="number" step="0.5" id="prod-price" placeholder="30.00" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" required />
-            </div>
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1">Preço Promocional (R$)</label>
-              <input type="number" step="0.5" id="prod-promo-price" placeholder="25.00" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold text-emerald-400 focus:outline-none focus:border-brand-orange" />
-            </div>
-          </div>
-        </div>
-
-        <!-- BLOCO 4: VISIBILIDADE E DESTAQUES (IMAGEM 4 REFERÊNCIA) -->
-        <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
-          <span class="font-bold text-xs text-stone-200 block">Visibilidade e Destaques:</span>
-
-          <div class="flex items-center justify-between py-1 border-b border-white/5">
-            <div>
-              <span class="text-stone-200 font-medium block">Disponível</span>
-              <span class="text-[10px] text-stone-500">Visível no cardápio público</span>
-            </div>
-            <input type="checkbox" id="prod-available-switch" checked class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
-          </div>
-
-          <div class="flex items-center justify-between py-1 border-b border-white/5">
-            <div>
-              <span class="text-stone-200 font-medium block">Destaque ⭐</span>
-              <span class="text-[10px] text-stone-500">Aparece na seção de destaques no topo</span>
-            </div>
-            <input type="checkbox" id="prod-featured-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
-          </div>
-
-          <div class="flex items-center justify-between py-1 border-b border-white/5">
-            <div>
-              <span class="text-stone-200 font-medium block">Novidade ✨</span>
-              <span class="text-[10px] text-stone-500">Badge de "Novo" no produto</span>
-            </div>
-            <input type="checkbox" id="prod-new-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
-          </div>
-
-          <div class="flex items-center justify-between py-1">
-            <div>
-              <span class="text-stone-200 font-medium block">Popular 🔥</span>
-              <span class="text-[10px] text-stone-500">Badge de "Popular" no produto</span>
-            </div>
-            <input type="checkbox" id="prod-popular-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
-          </div>
-        </div>
-
-        <!-- BLOCO 5: GRUPOS DE OPCIONAIS (IMAGEM 5 REFERÊNCIA) -->
-        <div class="bg-black/40 border border-white/5 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="font-bold text-xs text-stone-200 block">Grupos de Opcionais</span>
-              <span class="text-[10px] text-stone-500">Extras e personalizações que o cliente escolhe ao comprar</span>
-            </div>
-            <button type="button" onclick="addProductExtraRow()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-stone-200 font-semibold text-xs flex items-center gap-1 transition-colors">
-              <span>+ Vincular Grupo</span>
-            </button>
-          </div>
-
-          <div id="product-extras-container" class="space-y-2"></div>
-        </div>
-
-        <button type="submit" class="w-full bg-brand-orange hover:bg-brand-orangeHover text-white font-bold py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
-          Salvar Produto
-        </button>
 
       </form>
     </div>
