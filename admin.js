@@ -889,14 +889,104 @@ function populateSettingsInputs() {
 
   // Dados Gerais
   const storeNameEl = document.getElementById('store-name-input');
+  const storeTaglineEl = document.getElementById('store-tagline-input');
   const storeZapEl = document.getElementById('store-whatsapp-input');
   const storeAddrEl = document.getElementById('store-address-input');
   const storeHoursEl = document.getElementById('store-hours-input');
+  const logoPreview = document.getElementById('store-logo-preview');
+  const logoPlaceholder = document.getElementById('store-logo-placeholder');
+  const btnRemoveLogo = document.getElementById('btn-remove-logo');
 
   if (storeNameEl) storeNameEl.value = STORE_DATA.name || '';
+  if (storeTaglineEl) storeTaglineEl.value = STORE_DATA.tagline || '';
   if (storeZapEl) storeZapEl.value = STORE_DATA.whatsapp || '';
   if (storeAddrEl) storeAddrEl.value = STORE_DATA.address || '';
   if (storeHoursEl) storeHoursEl.value = STORE_DATA.hours || '';
+
+  if (STORE_DATA.logo) {
+    if (logoPreview) {
+      logoPreview.src = STORE_DATA.logo;
+      logoPreview.classList.remove('hidden');
+    }
+    if (logoPlaceholder) logoPlaceholder.classList.add('hidden');
+    if (btnRemoveLogo) btnRemoveLogo.classList.remove('hidden');
+  } else {
+    if (logoPreview) {
+      logoPreview.src = '';
+      logoPreview.classList.add('hidden');
+    }
+    if (logoPlaceholder) logoPlaceholder.classList.remove('hidden');
+    if (btnRemoveLogo) btnRemoveLogo.classList.add('hidden');
+  }
+}
+
+function handleStoreLogoUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX_SIZE = 350;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_SIZE) {
+          height = Math.round((height * MAX_SIZE) / width);
+          width = MAX_SIZE;
+        }
+      } else {
+        if (height > MAX_SIZE) {
+          width = Math.round((width * MAX_SIZE) / height);
+          height = MAX_SIZE;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      STORE_DATA.logo = compressedDataUrl;
+
+      const preview = document.getElementById('store-logo-preview');
+      const placeholder = document.getElementById('store-logo-placeholder');
+      const btnRemove = document.getElementById('btn-remove-logo');
+
+      if (preview) {
+        preview.src = compressedDataUrl;
+        preview.classList.remove('hidden');
+      }
+      if (placeholder) placeholder.classList.add('hidden');
+      if (btnRemove) btnRemove.classList.remove('hidden');
+
+      showToast("🖼️ Logomarca carregada com sucesso!");
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeStoreLogo() {
+  STORE_DATA.logo = "";
+  const preview = document.getElementById('store-logo-preview');
+  const placeholder = document.getElementById('store-logo-placeholder');
+  const btnRemove = document.getElementById('btn-remove-logo');
+  const fileInput = document.getElementById('store-logo-file-input');
+
+  if (preview) {
+    preview.src = "";
+    preview.classList.add('hidden');
+  }
+  if (placeholder) placeholder.classList.remove('hidden');
+  if (btnRemove) btnRemove.classList.add('hidden');
+  if (fileInput) fileInput.value = "";
+
+  showToast("🗑️ Logomarca removida.");
 }
 
 function saveDeliverySettingsForm(e) {
@@ -926,6 +1016,8 @@ function savePaymentSettingsForm(e) {
 function saveStoreGeneralSettingsForm(e) {
   e.preventDefault();
   STORE_DATA.name = document.getElementById('store-name-input').value.trim();
+  const taglineEl = document.getElementById('store-tagline-input');
+  if (taglineEl) STORE_DATA.tagline = taglineEl.value.trim();
   STORE_DATA.whatsapp = document.getElementById('store-whatsapp-input').value.trim();
   STORE_DATA.address = document.getElementById('store-address-input').value.trim();
   STORE_DATA.hours = document.getElementById('store-hours-input').value.trim();
@@ -949,7 +1041,7 @@ function saveStoreGeneralSettingsForm(e) {
   } catch (err) {}
 
   renderStoreTopbar();
-  showToast("⚙️ Dados do restaurante atualizados com sucesso!");
+  showToast("⚙️ Dados e Logomarca do restaurante atualizados!");
 }
 
 function logoutStoreAdmin() {

@@ -292,25 +292,25 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
       
       <!-- LOGO & BRAND INFO -->
-      <a href="#" class="flex items-center gap-2.5 sm:gap-3.5 group">
+      <div onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="flex items-center gap-2.5 sm:gap-3.5 group cursor-pointer select-none">
         <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/15 bg-black/50 shadow-md flex items-center justify-center p-0.5 group-hover:scale-105 transition-transform flex-shrink-0">
-          <img id="header-store-logo" src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo do Restaurante" class="w-full h-full object-cover rounded-xl" onerror="this.src='assets/e8392808a1c7659c_favicon.png'" />
+          <img id="header-store-logo" src="assets/e8392808a1c7659c_favicon.png" alt="Logo do Restaurante" class="w-full h-full object-cover rounded-xl" onerror="this.src='assets/e8392808a1c7659c_favicon.png'" />
         </div>
         <div>
           <div class="flex items-center gap-2">
             <h1 id="header-store-name" class="text-lg sm:text-2xl font-anton text-white tracking-wider leading-none">
-              SÃO JOSÉ <span class="text-brand-orange">BURGUER</span>
+              <span class="text-white">CARDÁPIO</span> <span class="text-brand-orange">DIGITAL</span>
             </h1>
           </div>
           <div class="mt-1 flex items-center gap-2">
-            <button onclick="openStoreInfoModal()" id="header-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm" title="Ver Horários, PIX e Endereço">
+            <button onclick="openStoreInfoModal(); event.stopPropagation();" id="header-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm" title="Ver Horários, PIX e Endereço">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span id="header-status-text">Aberto Hoje</span>
             </button>
             <span id="header-store-city" class="text-[11px] text-stone-400 font-poppins font-medium hidden md:inline">• Atendimento Online</span>
           </div>
         </div>
-      </a>
+      </div>
 
       <!-- SEARCH BAR (DESKTOP) -->
       <div class="hidden md:flex flex-1 max-w-sm mx-4 relative items-center">
@@ -664,26 +664,27 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
         
-        <!-- Coluna 1: Sobre -->
+        <!-- Coluna 1: Sobre a Loja -->
         <div class="md:col-span-2 space-y-3">
           <div class="flex items-center gap-3">
-            <img src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo" class="w-10 h-10 rounded-xl object-cover border border-white/10" />
+            <div class="w-11 h-11 rounded-2xl bg-black/60 border border-white/15 overflow-hidden flex items-center justify-center p-0.5 shrink-0 shadow-inner">
+              <img id="footer-store-logo" src="assets/e8392808a1c7659c_favicon.png" alt="Logo" class="w-full h-full object-cover rounded-xl" />
+            </div>
             <div>
-              <h4 class="text-xl font-anton text-white tracking-wider">SÃO JOSÉ BURGUER</h4>
-              <p class="text-[11px] text-amber-400 font-semibold">Os melhores hambúrgueres artesanais</p>
+              <h4 id="footer-store-name" class="text-xl font-anton text-white tracking-wider">PEDIDOVALE</h4>
+              <p id="footer-store-tagline" class="text-[11px] text-amber-400 font-semibold">Cardápio Digital & Pedidos Online</p>
             </div>
           </div>
-          <p class="text-xs leading-relaxed max-w-md text-stone-400">
-            A verdadeira experiência de hambúrguer artesanal grelhado no fogo, preparado com ingredientes nobres, queijos especiais e molhos exclusivos.
+          <p id="footer-store-desc" class="text-xs leading-relaxed max-w-md text-stone-400">
+            Faça seu pedido online de forma rápida, prática e segura. Produtos selecionados e preparados com máxima qualidade e carinho.
           </p>
           <div class="text-xs text-stone-400 space-y-0.5 pt-1">
-            <p>📍 <strong>Avenida Mariano Lisboa, 1370</strong> - Bairro Engenho</p>
-            <p>Pedreiras - MA, CEP 65725-000</p>
+            <p>📍 <strong id="footer-store-address" class="text-white">Atendimento Online & Delivery</strong></p>
           </div>
           <div class="flex items-center gap-3 pt-2">
-            <a href="https://wa.me/5599991040222" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 flex items-center gap-2 transition-colors text-xs font-bold">
+            <a id="footer-whatsapp-link" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 flex items-center gap-2 transition-colors text-xs font-bold">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"></path></svg>
-              <span>WhatsApp: (99) 99104-0222</span>
+              <span id="footer-whatsapp-text">Falar no WhatsApp</span>
             </a>
           </div>
         </div>
@@ -692,11 +693,11 @@
         <div class="space-y-2.5">
           <h5 class="text-sm font-anton text-white tracking-wider">HORÁRIO DE ATENDIMENTO</h5>
           <ul class="text-xs space-y-1.5 text-stone-400">
-            <li class="flex items-center justify-between"><span>Todos os dias:</span> <span class="text-amber-400 font-semibold">19:30 às 23:30</span></li>
-            <li class="flex items-center justify-between"><span>Pedido Mínimo:</span> <span class="text-white font-semibold">R$ 6,00</span></li>
+            <li class="flex items-center justify-between"><span>Funcionamento:</span> <span id="footer-store-hours" class="text-amber-400 font-semibold">18:00 às 23:30</span></li>
+            <li class="flex items-center justify-between"><span>Pedido Mínimo:</span> <span id="footer-store-minorder" class="text-white font-semibold">R$ 0,00</span></li>
             <li class="flex items-center gap-1.5 text-emerald-400 font-semibold mt-2">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Delivery & Retirada no Balcão
+              Delivery & Retirada
             </li>
           </ul>
         </div>
@@ -707,7 +708,7 @@
           <div class="space-y-2 text-xs text-stone-300">
             <div class="flex items-center gap-2">
               <span class="text-emerald-400 font-bold">💠 PIX:</span>
-              <span class="text-stone-400">Pagamento instantâneo</span>
+              <span class="text-stone-400">Pagamento direto no pedido</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-blue-400 font-bold">💳 Cartão:</span>
@@ -715,14 +716,8 @@
             </div>
             <div class="flex items-center gap-2">
               <span class="text-amber-400 font-bold">💵 Dinheiro:</span>
-              <span class="text-stone-400">Pagamento na entrega</span>
+              <span class="text-stone-400">Pagamento com troco</span>
             </div>
-          </div>
-          <div class="pt-2">
-            <a href="https://www.google.com/maps/@-4.5761055,-44.5947994,3a,75y,239.9h,91.83t/data=!3m7!1e1!3m5!1sg-nh5LwAU1_k4DA_T65XbA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-1.8349260767850524%26panoid%3Dg-nh5LwAU1_k4DA_T65XbA%26yaw%3D239.90248477383724!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDgyNS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="text-brand-orange hover:underline text-xs flex items-center gap-1 font-semibold">
-              <span>📍 Abrir rota no Google Maps</span>
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
           </div>
         </div>
 
@@ -730,14 +725,8 @@
 
       <!-- Linha Inferior -->
       <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-        <p>© 2026 São José Burguer • Avenida Mariano Lisboa, 1370 - Engenho, Pedreiras - MA.</p>
-        <div class="flex items-center gap-3">
-          <p class="flex items-center gap-1">Feito com paixão por hambúrgueres artesanais 🔥</p>
-          <span>•</span>
-          <a href="admin.html" class="text-stone-400 hover:text-brand-orange transition-colors flex items-center gap-1 font-semibold" title="Painel do Administrador">
-            <span>Painel Admin 🔐</span>
-          </a>
-        </div>
+        <p id="footer-copyright">© 2026 PedidoVale. Todos os direitos reservados.</p>
+        <p class="flex items-center gap-1">Plataforma Oficial PedidoVale ⚡</p>
       </div>
     </div>
   </footer>
@@ -1503,6 +1492,10 @@
       STORE_DATA.store.whatsapp = storeZap;
       STORE_DATA.store.address = storeAddr;
       STORE_DATA.store.pixKey = storePix;
+      STORE_DATA.store.logo = (storeConfig && storeConfig.logo) ? storeConfig.logo : "";
+      STORE_DATA.store.tagline = (storeConfig && storeConfig.tagline) ? storeConfig.tagline : "Cardápio Digital & Pedidos Online";
+      STORE_DATA.store.hours = (storeConfig && storeConfig.hours) ? storeConfig.hours : "18:00 às 23:30";
+      STORE_DATA.store.minOrder = (storeConfig && storeConfig.minOrder) ? storeConfig.minOrder : 0;
 
       // Atualizar Título da Página e Header
       document.title = `${storeName} • Cardápio Digital & Pedidos`;
@@ -1515,6 +1508,35 @@
 
       const addrDisplay = document.getElementById('store-address-display');
       if (addrDisplay) addrDisplay.innerText = storeAddr;
+
+      // Logomarca Dinâmica no Header e Footer
+      const headerLogoEl = document.getElementById('header-store-logo');
+      const footerLogoEl = document.getElementById('footer-store-logo');
+      if (STORE_DATA.store.logo) {
+        if (headerLogoEl) headerLogoEl.src = STORE_DATA.store.logo;
+        if (footerLogoEl) footerLogoEl.src = STORE_DATA.store.logo;
+      }
+
+      // Rodapé Dinâmico
+      const footNameEl = document.getElementById('footer-store-name');
+      const footTaglineEl = document.getElementById('footer-store-tagline');
+      const footDescEl = document.getElementById('footer-store-desc');
+      const footAddrEl = document.getElementById('footer-store-address');
+      const footHoursEl = document.getElementById('footer-store-hours');
+      const footMinOrderEl = document.getElementById('footer-store-minorder');
+      const footZapLink = document.getElementById('footer-whatsapp-link');
+      const footZapText = document.getElementById('footer-whatsapp-text');
+      const footCopyEl = document.getElementById('footer-copyright');
+
+      if (footNameEl) footNameEl.innerText = storeName.toUpperCase();
+      if (footTaglineEl) footTaglineEl.innerText = STORE_DATA.store.tagline;
+      if (footDescEl && STORE_DATA.store.tagline) footDescEl.innerText = `${STORE_DATA.store.tagline}. Peça online com rapidez, qualidade e segurança.`;
+      if (footAddrEl) footAddrEl.innerText = storeAddr;
+      if (footHoursEl) footHoursEl.innerText = STORE_DATA.store.hours;
+      if (footMinOrderEl) footMinOrderEl.innerText = `R$ ${(parseFloat(STORE_DATA.store.minOrder) || 0).toFixed(2).replace('.', ',')}`;
+      if (footZapLink) footZapLink.href = `https://wa.me/${storeZap.replace(/\D/g, '')}`;
+      if (footZapText) footZapText.innerText = `WhatsApp (${storeZap.slice(-11, -8) || '00'}) ${storeZap.slice(-8)}`;
+      if (footCopyEl) footCopyEl.innerText = `© ${new Date().getFullYear()} ${storeName}. Todos os direitos reservados. Plataforma PedidoVale`;
 
       // 1. Garantir lista de Categorias (Categorias do banco da loja ou padrão)
       let categoriesList = (storeCats && storeCats.length > 0) ? storeCats : [

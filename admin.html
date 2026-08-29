@@ -524,10 +524,39 @@
             <p class="text-xs text-brand-textMuted">Atualize os dados principais de atendimento</p>
           </div>
 
-          <form onsubmit="saveStoreGeneralSettingsForm(event)" class="space-y-4 text-xs">
+          <form onsubmit="saveStoreGeneralSettingsForm(event)" class="space-y-5 text-xs">
+            
+            <!-- Upload da Logomarca -->
+            <div class="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+              <label class="block text-stone-300 font-bold">Logomarca do Estabelecimento:</label>
+              <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl bg-black/60 border border-white/20 overflow-hidden flex items-center justify-center relative shrink-0 shadow-inner">
+                  <img id="store-logo-preview" src="" alt="Logo" class="w-full h-full object-cover hidden" />
+                  <span id="store-logo-placeholder" class="text-2xl">🏪</span>
+                </div>
+                <div class="flex-1 space-y-1.5">
+                  <input type="file" id="store-logo-file-input" accept="image/*" onchange="handleStoreLogoUpload(event)" class="hidden" />
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="document.getElementById('store-logo-file-input').click()" class="px-3 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold transition-all shadow-sm">
+                      📁 Escolher Logo
+                    </button>
+                    <button type="button" onclick="removeStoreLogo()" id="btn-remove-logo" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-stone-300 text-xs font-semibold transition-all hidden">
+                      Remover
+                    </button>
+                  </div>
+                  <p class="text-[11px] text-stone-400">Recomendado: imagem quadrada (PNG ou JPG). Ficará visível no cabeçalho e rodapé do seu cardápio.</p>
+                </div>
+              </div>
+            </div>
+
             <div>
               <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete:</label>
-              <input type="text" id="store-name-input" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+              <input type="text" id="store-name-input" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-bold focus:outline-none focus:border-brand-orange" required />
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Slogan / Descrição do Estabelecimento:</label>
+              <input type="text" id="store-tagline-input" placeholder="Ex: Os melhores hambúrgueres artesanais e porções crocantes da região." class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -537,7 +566,7 @@
               </div>
               <div>
                 <label class="block text-stone-300 font-semibold mb-1.5">Endereço / Cidade:</label>
-                <input type="text" id="store-address-input" placeholder="Ex: Av. Principal, 100 - Centro" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+                <input type="text" id="store-address-input" placeholder="Ex: Av. Principal, 100 - Centro, Pedreiras - MA" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
               </div>
             </div>
 
