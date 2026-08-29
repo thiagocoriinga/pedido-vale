@@ -1,7 +1,7 @@
 /**
  * =========================================================================
- * RESTAURANT OWNER OS • MOTOR DE GESTÃO DE CARDÁPIO COM FOTOS
- * Layout limpo, alta legibilidade e pronto para qualquer novo restaurante
+ * GERENCIADOR DE CARDÁPIO COMPLETO • PEDIDOVALE
+ * Acordeão de Categorias, Produtos com Fotos, Opcionais e Visualização em Tempo Real
  * =========================================================================
  */
 
@@ -10,7 +10,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const CURRENT_STORE_SLUG = urlParams.get('store') || sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'demo';
 const getStoreKey = (key) => `STORE_${CURRENT_STORE_SLUG}_${key}`;
 
-// Estado Padrão Limpo da Loja
+// Estado da Loja
 let STORE_DATA = {
   name: "Meu Estabelecimento",
   slug: CURRENT_STORE_SLUG,
@@ -31,21 +31,22 @@ let STORE_DATA = {
   trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 };
 
-// Categorias Iniciais Limpas
+// Categorias Iniciais
 let CATEGORIES = [
-  { id: "cat-principais", name: "Pratos Principais", icon: "🍽️" },
-  { id: "cat-bebidas", name: "Bebidas", icon: "🥤" },
-  { id: "cat-porcoes", name: "Porções & Acompanhamentos", icon: "🍟" },
-  { id: "cat-sobremesas", name: "Sobremesas", icon: "🍰" }
+  { id: "cat-combos", name: "COMBO", icon: "🔥", desc: "Combos especiais com hambúrguer, batata e refrigerante", visible: true },
+  { id: "cat-burgers", name: "Hambúrgueres Artesanais", icon: "🍔", desc: "Smash burgers e artesanais preparados na hora", visible: true },
+  { id: "cat-bebidas", name: "Bebidas & Refrigerantes", icon: "🥤", desc: "Sucos, refrigerantes em lata e águas", visible: true }
 ];
 
-// Produtos (Começa vazio por padrão se for nova loja)
+// Produtos Iniciais (Começa com exemplo editável ou vazio)
 let PRODUCTS = [];
 
-// Pedidos (Começa vazio para novas lojas)
+// Pedidos em Andamento
 let ORDERS = [];
 
-// Variável temporária de imagem do produto em edição
+// Variáveis de controle de edição
+let currentEditingProductId = null;
+let currentEditingCategoryId = null;
 let currentUploadedProductImage = "";
 
 // -------------------------------------------------------------------------
@@ -56,15 +57,14 @@ function initStoreAdmin() {
   renderStoreTopbar();
   renderTrialInfo();
   renderCategorySelects();
-  renderProductsList();
-  renderCategoriesList();
+  renderCategoryAccordionList();
   renderOrdersKanban();
   populateSettingsInputs();
 }
 
 function loadStoreData() {
   try {
-    // 1. Tentar ler do Super Admin Tenants se existir
+    // 1. Tentar sincronizar do Super Admin Tenants
     const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
     const savedTenants = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
     if (savedTenants) {
@@ -80,7 +80,7 @@ function loadStoreData() {
       }
     }
 
-    // 2. Sobrescrever com dados salvos da loja específica
+    // 2. Carregar dados específicos da loja
     const savedConfig = localStorage.getItem(getStoreKey('CONFIG'));
     if (savedConfig) STORE_DATA = { ...STORE_DATA, ...JSON.parse(savedConfig) };
 
@@ -112,7 +112,7 @@ function saveOrders() {
 }
 
 // -------------------------------------------------------------------------
-// TOPBAR & TRIAL BANNER
+// TOPBAR & HEADER
 // -------------------------------------------------------------------------
 function renderStoreTopbar() {
   const nameEl = document.getElementById('topbar-store-name');
@@ -124,8 +124,8 @@ function renderStoreTopbar() {
 
   const menuUrl = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
 
-  if (nameEl) nameEl.innerText = (STORE_DATA.name || "MEU RESTAURANTE").toUpperCase();
-  if (dashNameEl) dashNameEl.innerText = (STORE_DATA.name || "MEU RESTAURANTE").toUpperCase();
+  if (nameEl) nameEl.innerText = (STORE_DATA.name || "MEU ESTABELECIMENTO").toUpperCase();
+  if (dashNameEl) dashNameEl.innerText = (STORE_DATA.name || "MEU ESTABELECIMENTO").toUpperCase();
   if (slugEl) slugEl.innerText = `pedidovale.com.br/${STORE_DATA.slug}`;
   if (shareLinkInput) shareLinkInput.innerText = menuUrl;
   if (viewMenuBtn) viewMenuBtn.href = menuUrl;
@@ -179,125 +179,303 @@ function copyStoreMenuLink() {
 
 function shareOnWhatsApp() {
   const url = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
-  const text = encodeURIComponent(`Olá! Faça seu pedido direto no nosso cardápio online: ${url}`);
+  const text = encodeURIComponent(`Olá! Acesse o nosso cardápio digital e faça seu pedido online: ${url}`);
   window.open(`https://wa.me/?text=${text}`, '_blank');
 }
 
 // -------------------------------------------------------------------------
-// GESTÃO DE PRODUTOS COM UPLOAD DE FOTOS
+// GERENCIADOR DE CARDÁPIO EM ACORDEÃO (IMAGEM 1 & 2 DE REFERÊNCIA)
 // -------------------------------------------------------------------------
 function renderCategorySelects() {
-  const filterSelect = document.getElementById('product-category-filter');
   const modalSelect = document.getElementById('prod-category');
-
-  if (filterSelect) {
-    filterSelect.innerHTML = `<option value="all">Todas as Categorias (${CATEGORIES.length})</option>` + 
-      CATEGORIES.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
-  }
-
   if (modalSelect) {
-    modalSelect.innerHTML = CATEGORIES.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+    modalSelect.innerHTML = CATEGORIES.map(c => `<option value="${c.id}">${c.icon || '📁'} ${c.name}</option>`).join('');
   }
 }
 
-function renderProductsList() {
-  const container = document.getElementById('products-list-container');
+function renderCategoryAccordionList() {
+  const container = document.getElementById('category-accordion-container');
   if (!container) return;
 
-  const search = (document.getElementById('product-search-input')?.value || '').toLowerCase();
-  const catFilter = document.getElementById('product-category-filter')?.value || 'all';
-  const statusFilter = document.getElementById('product-status-filter')?.value || 'all';
+  const search = (document.getElementById('menu-quick-search')?.value || '').toLowerCase();
 
-  const filtered = PRODUCTS.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(search) || (p.description && p.description.toLowerCase().includes(search));
-    const matchesCat = catFilter === 'all' || p.category_id === catFilter;
-    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
-    return matchesSearch && matchesCat && matchesStatus;
-  });
-
-  if (filtered.length === 0) {
+  if (CATEGORIES.length === 0) {
     container.innerHTML = `
-      <div class="col-span-full p-12 text-center bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-white/5 mx-auto flex items-center justify-center text-2xl">
-          🍔
-        </div>
-        <p class="font-medium text-stone-300">Nenhum produto cadastrado nesta seção.</p>
-        <button onclick="openCreateProductModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange text-white font-bold text-xs shadow-orange-glow active:scale-95 transition-all inline-flex items-center gap-1.5">
-          <span>+</span>
-          <span>Cadastrar Primeiro Produto</span>
+      <div class="p-12 text-center bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs space-y-3">
+        <div class="w-12 h-12 rounded-2xl bg-white/5 mx-auto flex items-center justify-center text-2xl">📁</div>
+        <h3 class="font-bold text-sm text-stone-200">Cardápio vazio</h3>
+        <p>Comece criando categorias para organizar seus produtos.</p>
+        <button onclick="openCreateCategoryModal()" class="px-5 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs shadow-orange-glow active:scale-95 transition-all">
+          + Criar primeira categoria
         </button>
       </div>
     `;
     return;
   }
 
-  container.innerHTML = filtered.map(p => {
-    const cat = CATEGORIES.find(c => c.id === p.category_id);
-    const catName = cat ? `${cat.icon} ${cat.name}` : 'Geral';
-    const isPaused = p.status === 'paused';
+  container.innerHTML = CATEGORIES.map(cat => {
+    const prods = PRODUCTS.filter(p => p.category_id === cat.id);
+    const filteredProds = search 
+      ? prods.filter(p => p.name.toLowerCase().includes(search) || (p.description && p.description.toLowerCase().includes(search)))
+      : prods;
 
-    // Tags
-    let badgesHtml = '';
-    if (p.featured) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold">⭐ Destaque</span> ';
-    if (p.popular) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange text-[10px] font-bold">🔥 Popular</span> ';
-    if (p.is_new) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">✨ Novo</span> ';
-
-    // Imagem
-    const imageHtml = p.image 
-      ? `<img src="${p.image}" alt="${p.name}" class="w-20 h-20 rounded-2xl object-cover border border-white/10 shrink-0 bg-black/40" />`
-      : `<div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl shrink-0">🍽️</div>`;
+    const isVisible = cat.visible !== false;
 
     return `
-      <div class="bg-[#120D0A]/95 border ${isPaused ? 'border-white/5 opacity-70' : 'border-brand-darkBorder hover:border-brand-orange/40'} rounded-3xl p-5 shadow-card-dark flex flex-col justify-between space-y-4 transition-all">
+      <!-- CARD DE CATEGORIA / ACORDEÃO -->
+      <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl overflow-hidden shadow-card-dark transition-all">
         
-        <div class="flex items-start gap-3.5">
-          ${imageHtml}
+        <!-- CABEÇALHO DA CATEGORIA (REFERÊNCIA IMAGEM 1) -->
+        <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-black/40 border-b border-brand-darkBorder/60">
           
-          <div class="flex-1 space-y-1">
-            <span class="text-[11px] font-semibold text-brand-orange block">${catName}</span>
-            <h3 class="font-bold text-base text-white leading-snug">${p.name}</h3>
-            
-            <p class="text-xs text-brand-textMuted line-clamp-2 leading-relaxed">
-              ${p.description || 'Sem descrição.'}
-            </p>
-
-            ${badgesHtml ? `<div class="pt-1 flex flex-wrap gap-1">${badgesHtml}</div>` : ''}
-          </div>
-        </div>
-
-        ${p.extras && p.extras.length > 0 ? `
-          <div class="flex flex-wrap gap-1 bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span class="text-[10px] text-brand-textMuted w-full block font-semibold uppercase">Opcionais:</span>
-            ${p.extras.map(e => `<span class="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-stone-300">+ ${e.name} (${formatCurrency(e.price)})</span>`).join('')}
-          </div>
-        ` : ''}
-
-        <div class="pt-3 border-t border-brand-darkBorder/60 flex items-center justify-between">
-          <div class="flex items-baseline gap-2">
-            <span class="font-bold text-lg text-amber-400">
-              ${formatCurrency(p.promo_price || p.price)}
-            </span>
-            ${p.promo_price ? `<span class="text-xs text-stone-500 line-through">${formatCurrency(p.price)}</span>` : ''}
+          <div class="flex items-center gap-3">
+            <span class="text-xl">${cat.icon || '📁'}</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-sm sm:text-base text-white tracking-wide">${cat.name.toUpperCase()}</h3>
+                <span class="px-2 py-0.5 rounded-full bg-white/10 text-stone-300 text-[10px] font-bold">
+                  ${prods.length} ${prods.length === 1 ? 'item' : 'itens'}
+                </span>
+              </div>
+              ${cat.desc ? `<p class="text-xs text-brand-textMuted mt-0.5 line-clamp-1">${cat.desc}</p>` : ''}
+            </div>
           </div>
 
-          <div class="flex items-center gap-1.5">
-            <button onclick="toggleProductStatus('${p.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs transition-colors" title="${isPaused ? 'Ativar no Cardápio' : 'Pausar (Esgotado)'}">
-              ${isPaused ? '▶️ Ativar' : '⏸️ Pausar'}
-            </button>
-            <button onclick="openEditProductModal('${p.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs transition-colors" title="Editar Produto">
+          <!-- AÇÕES DA CATEGORIA -->
+          <div class="flex items-center gap-2 self-end sm:self-center">
+            <!-- Switch Visibilidade -->
+            <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-stone-400 font-medium mr-2" title="Visível no cardápio público">
+              <input type="checkbox" onchange="toggleCategoryVisibility('${cat.id}')" ${isVisible ? 'checked' : ''} class="w-4 h-4 rounded accent-brand-orange cursor-pointer" />
+              <span class="${isVisible ? 'text-emerald-400 font-bold' : 'text-stone-500'}">${isVisible ? 'Visível' : 'Oculta'}</span>
+            </label>
+
+            <button onclick="openEditCategoryModal('${cat.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-stone-300 hover:text-white border border-white/10 text-xs transition-colors" title="Editar Categoria">
               ✏️
             </button>
-            <button onclick="deleteProduct('${p.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors" title="Excluir Produto">
+            <button onclick="deleteCategory('${cat.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors" title="Excluir Categoria">
               🗑️
             </button>
           </div>
         </div>
+
+        <!-- CONTEÚDO / LISTA DE PRODUTOS DENTRO DA CATEGORIA -->
+        <div class="p-4 sm:p-5 space-y-3">
+          
+          ${filteredProds.length === 0 ? `
+            <div class="p-6 text-center text-brand-textMuted text-xs font-medium">
+              Nenhum produto nesta categoria.
+            </div>
+          ` : `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${filteredProds.map(prod => renderProductCard(prod)).join('')}
+            </div>
+          `}
+
+          <!-- BOTÃO ADICIONAR PRODUTO NA CATEGORIA (REFERÊNCIA IMAGEM 1) -->
+          <button onclick="openCreateProductModal('${cat.id}')" class="w-full py-3 rounded-2xl bg-emerald-600/15 hover:bg-emerald-600/25 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-all mt-2">
+            <span>+</span>
+            <span>Adicionar produto</span>
+          </button>
+        </div>
+
       </div>
     `;
   }).join('');
 }
 
-// Upload & Preview de Imagem
+function renderProductCard(p) {
+  const isPaused = p.status === 'paused';
+
+  // Badges
+  let badgesHtml = '';
+  if (p.featured) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[9px] font-bold">⭐ Destaque</span> ';
+  if (p.popular) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange text-[9px] font-bold">🔥 Popular</span> ';
+  if (p.is_new) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">✨ Novo</span> ';
+
+  // Imagem
+  const imageHtml = p.image 
+    ? `<img src="${p.image}" alt="${p.name}" class="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-black/40" />`
+    : `<div class="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl shrink-0">🍽️</div>`;
+
+  return `
+    <div class="bg-black/50 border ${isPaused ? 'border-white/5 opacity-60' : 'border-white/10 hover:border-brand-orange/40'} rounded-2xl p-3.5 flex items-start justify-between gap-3 transition-all">
+      <div class="flex items-start gap-3 flex-1">
+        ${imageHtml}
+        <div class="space-y-0.5 flex-1">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <h4 class="font-bold text-xs text-white leading-tight">${p.name}</h4>
+            ${badgesHtml}
+          </div>
+          <p class="text-[11px] text-brand-textMuted line-clamp-1">${p.description || 'Sem descrição.'}</p>
+          <div class="flex items-baseline gap-1.5 pt-0.5">
+            <span class="font-bold text-xs text-amber-400">${formatCurrency(p.promo_price || p.price)}</span>
+            ${p.promo_price ? `<span class="text-[10px] text-stone-500 line-through">${formatCurrency(p.price)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1 shrink-0">
+        <button onclick="toggleProductStatus('${p.id}')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-[11px] text-stone-300" title="${isPaused ? 'Ativar' : 'Pausar'}">
+          ${isPaused ? '▶️' : '⏸️'}
+        </button>
+        <button onclick="openEditProductModal('${p.id}')" class="p-1.5 rounded-lg bg-brand-orange/20 hover:bg-brand-orange text-brand-orange hover:text-white text-[11px] font-bold" title="Editar">
+          ✏️
+        </button>
+        <button onclick="deleteProduct('${p.id}')" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-[11px]" title="Excluir">
+          🗑️
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------------------
+// MODAL CATEGORIA (IMAGEM 2 REFERÊNCIA)
+// -------------------------------------------------------------------------
+function openCreateCategoryModal() {
+  currentEditingCategoryId = null;
+  document.getElementById('modal-category-title').innerText = "Nova Categoria";
+  document.getElementById('form-category').reset();
+  document.getElementById('cat-visible-switch').checked = true;
+  document.getElementById('category-modal').classList.remove('hidden');
+}
+
+function openEditCategoryModal(id) {
+  const cat = CATEGORIES.find(c => c.id === id);
+  if (!cat) return;
+
+  currentEditingCategoryId = id;
+  document.getElementById('modal-category-title').innerText = "Editar Categoria";
+  document.getElementById('cat-name').value = cat.name || '';
+  document.getElementById('cat-icon').value = cat.icon || '';
+  document.getElementById('cat-desc').value = cat.desc || '';
+  document.getElementById('cat-visible-switch').checked = cat.visible !== false;
+  document.getElementById('category-modal').classList.remove('hidden');
+}
+
+function closeCategoryModal() {
+  document.getElementById('category-modal').classList.add('hidden');
+}
+
+function saveCategoryForm(e) {
+  e.preventDefault();
+
+  const name = document.getElementById('cat-name').value.trim();
+  const icon = document.getElementById('cat-icon').value.trim() || '📁';
+  const desc = document.getElementById('cat-desc').value.trim();
+  const visible = document.getElementById('cat-visible-switch').checked;
+
+  if (currentEditingCategoryId) {
+    const idx = CATEGORIES.findIndex(c => c.id === currentEditingCategoryId);
+    if (idx !== -1) {
+      CATEGORIES[idx] = { ...CATEGORIES[idx], name, icon, desc, visible };
+      showToast(`✅ Categoria "${name}" atualizada!`);
+    }
+  } else {
+    const newCat = {
+      id: `cat-${Date.now()}`,
+      name,
+      icon,
+      desc,
+      visible
+    };
+    CATEGORIES.push(newCat);
+    showToast(`📂 Categoria "${name}" criada com sucesso!`);
+  }
+
+  saveCategories();
+  renderCategorySelects();
+  renderCategoryAccordionList();
+  closeCategoryModal();
+}
+
+function toggleCategoryVisibility(id) {
+  const cat = CATEGORIES.find(c => c.id === id);
+  if (!cat) return;
+
+  cat.visible = cat.visible === false ? true : false;
+  saveCategories();
+  renderCategoryAccordionList();
+  showToast(cat.visible ? `🟢 Categoria "${cat.name}" visível no cardápio.` : `⏸️ Categoria "${cat.name}" oculta.`);
+}
+
+function deleteCategory(id) {
+  const cat = CATEGORIES.find(c => c.id === id);
+  if (!cat) return;
+
+  if (confirm(`Deseja excluir a categoria "${cat.name}"?`)) {
+    CATEGORIES = CATEGORIES.filter(c => c.id !== id);
+    saveCategories();
+    renderCategorySelects();
+    renderCategoryAccordionList();
+    showToast("🗑️ Categoria removida.");
+  }
+}
+
+// -------------------------------------------------------------------------
+// MODAL / TELA PRODUTO (IMAGENS 3, 4 & 5 REFERÊNCIA)
+// -------------------------------------------------------------------------
+function openCreateProductModal(defaultCategoryId = '') {
+  currentEditingProductId = null;
+  currentUploadedProductImage = '';
+  showImagePreview('');
+
+  document.getElementById('modal-product-title').innerText = "Novo Produto";
+  document.getElementById('form-product').reset();
+  document.getElementById('product-extras-container').innerHTML = '';
+  document.getElementById('prod-available-switch').checked = true;
+  document.getElementById('btn-delete-current-product').classList.add('hidden');
+
+  if (defaultCategoryId) {
+    document.getElementById('prod-category').value = defaultCategoryId;
+  }
+
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function openEditProductModal(id) {
+  const prod = PRODUCTS.find(p => p.id === id);
+  if (!prod) return;
+
+  currentEditingProductId = id;
+  currentUploadedProductImage = prod.image || '';
+  showImagePreview(currentUploadedProductImage);
+
+  document.getElementById('modal-product-title').innerText = `Editar: ${prod.name}`;
+  document.getElementById('prod-name').value = prod.name || '';
+  document.getElementById('prod-desc').value = prod.description || '';
+  document.getElementById('prod-category').value = prod.category_id || (CATEGORIES[0]?.id || '');
+  document.getElementById('prod-price').value = prod.price || '';
+  document.getElementById('prod-promo-price').value = prod.promo_price || '';
+  document.getElementById('prod-image-url').value = prod.image && prod.image.startsWith('http') ? prod.image : '';
+
+  document.getElementById('prod-available-switch').checked = prod.status !== 'paused';
+  document.getElementById('prod-featured-switch').checked = !!prod.featured;
+  document.getElementById('prod-new-switch').checked = !!prod.is_new;
+  document.getElementById('prod-popular-switch').checked = !!prod.popular;
+
+  // Carregar Extras
+  const extrasContainer = document.getElementById('product-extras-container');
+  extrasContainer.innerHTML = '';
+  if (prod.extras && prod.extras.length > 0) {
+    prod.extras.forEach(extra => addProductExtraRow(extra.name, extra.price));
+  }
+
+  document.getElementById('btn-delete-current-product').classList.remove('hidden');
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function closeProductModal() {
+  document.getElementById('product-modal').classList.add('hidden');
+}
+
+function deleteCurrentEditingProduct() {
+  if (currentEditingProductId) {
+    deleteProduct(currentEditingProductId);
+    closeProductModal();
+  }
+}
+
 function handleProductImageUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -321,67 +499,21 @@ function handleProductImageUrl(url) {
 function showImagePreview(src) {
   const imgEl = document.getElementById('prod-image-preview');
   const placeholder = document.getElementById('image-upload-placeholder');
+  const badgeEl = document.getElementById('badge-principal-photo');
+
   if (imgEl && placeholder) {
     if (src) {
       imgEl.src = src;
       imgEl.classList.remove('hidden');
       placeholder.classList.add('hidden');
+      if (badgeEl) badgeEl.classList.remove('hidden');
     } else {
       imgEl.src = '';
       imgEl.classList.add('hidden');
       placeholder.classList.remove('hidden');
+      if (badgeEl) badgeEl.classList.add('hidden');
     }
   }
-}
-
-// Modal Produto
-let currentEditingProductId = null;
-
-function openCreateProductModal() {
-  currentEditingProductId = null;
-  currentUploadedProductImage = '';
-  showImagePreview('');
-  
-  document.getElementById('modal-product-title').innerText = "Novo Produto";
-  document.getElementById('form-product').reset();
-  document.getElementById('product-extras-container').innerHTML = '';
-  document.getElementById('prod-available-switch').checked = true;
-  document.getElementById('product-modal').classList.remove('hidden');
-}
-
-function openEditProductModal(id) {
-  const prod = PRODUCTS.find(p => p.id === id);
-  if (!prod) return;
-
-  currentEditingProductId = id;
-  currentUploadedProductImage = prod.image || '';
-  showImagePreview(currentUploadedProductImage);
-
-  document.getElementById('modal-product-title').innerText = `Editar: ${prod.name}`;
-  document.getElementById('prod-name').value = prod.name || '';
-  document.getElementById('prod-category').value = prod.category_id || (CATEGORIES[0]?.id || '');
-  document.getElementById('prod-price').value = prod.price || '';
-  document.getElementById('prod-promo-price').value = prod.promo_price || '';
-  document.getElementById('prod-desc').value = prod.description || '';
-  document.getElementById('prod-image-url').value = prod.image && prod.image.startsWith('http') ? prod.image : '';
-
-  document.getElementById('prod-available-switch').checked = prod.status !== 'paused';
-  document.getElementById('prod-featured-switch').checked = !!prod.featured;
-  document.getElementById('prod-new-switch').checked = !!prod.is_new;
-  document.getElementById('prod-popular-switch').checked = !!prod.popular;
-
-  // Carregar Extras
-  const extrasContainer = document.getElementById('product-extras-container');
-  extrasContainer.innerHTML = '';
-  if (prod.extras && prod.extras.length > 0) {
-    prod.extras.forEach(extra => addProductExtraRow(extra.name, extra.price));
-  }
-
-  document.getElementById('product-modal').classList.remove('hidden');
-}
-
-function closeProductModal() {
-  document.getElementById('product-modal').classList.add('hidden');
 }
 
 function addProductExtraRow(name = '', price = '') {
@@ -389,7 +521,7 @@ function addProductExtraRow(name = '', price = '') {
   const div = document.createElement('div');
   div.className = "flex items-center gap-2 extra-row";
   div.innerHTML = `
-    <input type="text" placeholder="Nome do Opcional (ex: Bacon Extra)" value="${name}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white extra-name" required />
+    <input type="text" placeholder="Nome do Opcional (ex: Bacon Extra, Queijo Dobrado)" value="${name}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white extra-name" required />
     <input type="number" step="0.5" placeholder="Preço (R$)" value="${price}" class="w-24 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold extra-price" required />
     <button type="button" onclick="this.parentElement.remove()" class="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">✕</button>
   `;
@@ -438,7 +570,7 @@ function saveProductForm(e) {
         popular,
         extras
       };
-      showToast(`✅ Produto "${name}" atualizado com sucesso!`);
+      showToast(`✅ Produto "${name}" atualizado!`);
     }
   } else {
     const newProd = {
@@ -456,12 +588,12 @@ function saveProductForm(e) {
       extras
     };
     PRODUCTS.push(newProd);
-    showToast(`🚀 Novo produto "${name}" adicionado ao cardápio!`);
+    showToast(`🚀 Produto "${name}" adicionado ao cardápio!`);
   }
 
   saveProducts();
   closeProductModal();
-  renderProductsList();
+  renderCategoryAccordionList();
   renderStoreTopbar();
 }
 
@@ -471,7 +603,7 @@ function toggleProductStatus(id) {
 
   prod.status = prod.status === 'paused' ? 'active' : 'paused';
   saveProducts();
-  renderProductsList();
+  renderCategoryAccordionList();
   showToast(prod.status === 'paused' ? `⏸️ "${prod.name}" pausado no cardápio.` : `🟢 "${prod.name}" ativado.`);
 }
 
@@ -482,76 +614,73 @@ function deleteProduct(id) {
   if (confirm(`Excluir permanentemente "${prod.name}"?`)) {
     PRODUCTS = PRODUCTS.filter(p => p.id !== id);
     saveProducts();
-    renderProductsList();
+    renderCategoryAccordionList();
     renderStoreTopbar();
     showToast("🗑️ Produto excluído.");
   }
 }
 
-// -------------------------------------------------------------------------
-// GESTÃO DE CATEGORIAS
-// -------------------------------------------------------------------------
-function renderCategoriesList() {
-  const container = document.getElementById('categories-list-container');
-  if (!container) return;
+// Carregar Cardápio Exemplo
+function importSampleMenu() {
+  if (confirm("Carregar produtos de demonstração para testar seu cardápio?")) {
+    PRODUCTS = [
+      {
+        id: "prod-sample-1",
+        name: "Combo Burguer Monster + Batata + Refri",
+        category_id: "cat-combos",
+        price: 44.90,
+        promo_price: 39.90,
+        description: "1x Smash Monster duplo com cheddar e bacon, 1x batata frita crocante individual e 1x Coca-Cola lata.",
+        status: "active",
+        featured: true,
+        is_new: false,
+        popular: true,
+        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80",
+        extras: [{ name: "Maionese Especial Extra", price: 4.00 }]
+      },
+      {
+        id: "prod-sample-2",
+        name: "X-Bacon Especial Artesanal",
+        category_id: "cat-burgers",
+        price: 32.00,
+        promo_price: null,
+        description: "Pão brioche, 2x smash burger 90g, muito queijo cheddar derretido e tiras crocantes de bacon.",
+        status: "active",
+        featured: false,
+        is_new: true,
+        popular: true,
+        image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80",
+        extras: [{ name: "Queijo Dobrado", price: 5.00 }]
+      },
+      {
+        id: "prod-sample-3",
+        name: "Coca-Cola Original 350ml",
+        category_id: "cat-bebidas",
+        price: 6.50,
+        promo_price: null,
+        description: "Lata 350ml gelada.",
+        status: "active",
+        featured: false,
+        is_new: false,
+        popular: false,
+        image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&q=80",
+        extras: []
+      }
+    ];
 
-  container.innerHTML = CATEGORIES.map(c => {
-    const totalItems = PRODUCTS.filter(p => p.category_id === c.id).length;
-
-    return `
-      <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl">${c.icon || '📁'}</span>
-          <div>
-            <h4 class="font-bold text-base text-white">${c.name}</h4>
-            <span class="text-xs text-brand-textMuted">${totalItems} ${totalItems === 1 ? 'produto cadastrado' : 'produtos cadastrados'}</span>
-          </div>
-        </div>
-        <button onclick="deleteCategory('${c.id}')" class="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors" title="Excluir Categoria">
-          🗑️
-        </button>
-      </div>
-    `;
-  }).join('');
-}
-
-function openCreateCategoryModal() {
-  document.getElementById('form-category').reset();
-  document.getElementById('category-modal').classList.remove('hidden');
-}
-
-function closeCategoryModal() {
-  document.getElementById('category-modal').classList.add('hidden');
-}
-
-function saveCategoryForm(e) {
-  e.preventDefault();
-  const name = document.getElementById('cat-name').value.trim();
-  const icon = document.getElementById('cat-icon').value.trim() || '🍽️';
-
-  const newCat = {
-    id: `cat-${Date.now()}`,
-    name,
-    icon
-  };
-  CATEGORIES.push(newCat);
-  saveCategories();
-  renderCategorySelects();
-  renderCategoriesList();
-  renderProductsList();
-  closeCategoryModal();
-  showToast(`📂 Categoria "${name}" criada com sucesso!`);
-}
-
-function deleteCategory(id) {
-  if (confirm("Excluir esta categoria?")) {
-    CATEGORIES = CATEGORIES.filter(c => c.id !== id);
-    saveCategories();
-    renderCategorySelects();
-    renderCategoriesList();
-    renderProductsList();
-    showToast("Categoria removida.");
+    saveProducts();
+    renderCategoryAccordionList();
+    renderStoreTopbar();
+    showToast("📥 Cardápio de exemplo importado!");
   }
+}
+
+function openOptionalsModal() {
+  showToast("⚙️ Opcionais vinculados diretamente em cada produto.");
+}
+
+function openFlavorsModal() {
+  showToast("🍨 Sabores configuráveis no modal de edição do produto.");
 }
 
 // -------------------------------------------------------------------------
@@ -723,24 +852,6 @@ function switchStoreTab(tabName) {
     targetBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-orange-glow');
     targetBtn.classList.remove('text-brand-textMuted');
   }
-}
-
-function openQrCodeModal() {
-  const url = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
-  
-  const win = window.open("", "_blank", "width=400,height=500");
-  win.document.write(`
-    <html style="background:#080504;color:white;text-align:center;font-family:sans-serif;padding:30px;">
-      <h2 style="color:#FF5E1E;">QR CODE DO SEU CARDÁPIO</h2>
-      <p style="font-size:12px;color:#aaa;">Imprima ou coloque nas mesas para os clientes lerem:</p>
-      <div style="background:white;padding:15px;display:inline-block;border-radius:20px;margin:20px 0;">
-        <img src="${qrUrl}" alt="QR Code" style="display:block;" />
-      </div>
-      <br />
-      <button onclick="window.print()" style="background:#FF5E1E;color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:bold;">Imprimir QR Code</button>
-    </html>
-  `);
 }
 
 function openSubscriptionModal() {
