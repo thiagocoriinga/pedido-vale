@@ -1,140 +1,49 @@
 /**
  * =========================================================================
  * RESTAURANT OWNER OS • MOTOR DE GESTÃO DE CARDÁPIO COM FOTOS
- * Baseado nas referências da plataforma KiCardápio com o visual São José
+ * Layout limpo, alta legibilidade e pronto para qualquer novo restaurante
  * =========================================================================
  */
 
-// Chaves de armazenamento
+// Chaves de armazenamento dinâmicas por loja
+const urlParams = new URLSearchParams(window.location.search);
+const CURRENT_STORE_SLUG = urlParams.get('store') || sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'demo';
 const getStoreKey = (key) => `STORE_${CURRENT_STORE_SLUG}_${key}`;
 
-// Loja Atual
-const urlParams = new URLSearchParams(window.location.search);
-const CURRENT_STORE_SLUG = urlParams.get('store') || sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'sao-jose';
-
-// Estado da Loja
+// Estado Padrão Limpo da Loja
 let STORE_DATA = {
-  name: "São José Burguer",
+  name: "Meu Estabelecimento",
   slug: CURRENT_STORE_SLUG,
   isOpen: true,
-  whatsapp: "5599991040222",
-  address: "Rua Principal, 1500 - Centro",
-  hours: "Terça a Domingo das 18h30 às 23h45",
-  deliveryFee: 6.00,
-  deliveryTime: "35 - 50 min",
-  minOrder: 20.00,
+  whatsapp: "",
+  address: "",
+  hours: "Segunda a Domingo das 18h às 23h30",
+  deliveryFee: 5.00,
+  deliveryTime: "30 - 45 min",
+  minOrder: 0.00,
   allowPickup: true,
-  pixKey: "99991040222",
+  pixKey: "",
   pixType: "phone",
-  pixName: "Thiago Siqueira / São José Burguer",
+  pixName: "",
   acceptPix: true,
   acceptCard: true,
   acceptCash: true,
   trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 };
 
-// Categorias
+// Categorias Iniciais Limpas
 let CATEGORIES = [
-  { id: "cat-burgers", name: "Hambúrgueres Artesanais", icon: "🍔" },
-  { id: "cat-combos", name: "Combos Especiais", icon: "🔥" },
-  { id: "cat-porcoes", name: "Porções & Batatas", icon: "🍟" },
-  { id: "cat-bebidas", name: "Bebidas & Refrigerantes", icon: "🥤" },
-  { id: "cat-sobremesas", name: "Sobremesas & Shakes", icon: "🍰" }
+  { id: "cat-principais", name: "Pratos Principais", icon: "🍽️" },
+  { id: "cat-bebidas", name: "Bebidas", icon: "🥤" },
+  { id: "cat-porcoes", name: "Porções & Acompanhamentos", icon: "🍟" },
+  { id: "cat-sobremesas", name: "Sobremesas", icon: "🍰" }
 ];
 
-// Produtos com Imagens
-let PRODUCTS = [
-  {
-    id: "prod-001",
-    name: "São José Bacon Monster",
-    image: "",
-    category_id: "cat-burgers",
-    price: 38.90,
-    promo_price: 34.90,
-    description: "Pão brioche selado na manteiga, 2x smash de 90g, muito bacon crocante, queijo cheddar derretido e molho da casa.",
-    status: "active",
-    featured: true,
-    is_new: false,
-    popular: true,
-    extras: [
-      { name: "Bacon Extra", price: 6.00 },
-      { name: "Queijo Cheddar Dobrado", price: 5.00 },
-      { name: "Carne Extra 90g", price: 8.00 }
-    ]
-  },
-  {
-    id: "prod-002",
-    name: "Clássico Cheeseburger Duplo",
-    image: "",
-    category_id: "cat-burgers",
-    price: 29.90,
-    promo_price: null,
-    description: "Pão artesanal tostado, 2x carnes smash suculentas, queijo prato duplo derretido e maionese verde artesanal.",
-    status: "active",
-    featured: false,
-    is_new: true,
-    popular: false,
-    extras: [
-      { name: "Molho Especial à Parte", price: 4.00 }
-    ]
-  },
-  {
-    id: "prod-003",
-    name: "Batata Rústica com Cheddar & Bacon",
-    image: "",
-    category_id: "cat-porcoes",
-    price: 24.50,
-    promo_price: null,
-    description: "350g de batatas rústicas douradas e crocantes, cobertas com blend de queijo cheddar cremoso e farofa de bacon.",
-    status: "active",
-    featured: true,
-    is_new: false,
-    popular: true,
-    extras: []
-  },
-  {
-    id: "prod-004",
-    name: "Coca-Cola Original 350ml Lata",
-    image: "",
-    category_id: "cat-bebidas",
-    price: 6.50,
-    promo_price: null,
-    description: "Lata 350ml bem gelada.",
-    status: "active",
-    featured: false,
-    is_new: false,
-    popular: false,
-    extras: []
-  }
-];
+// Produtos (Começa vazio por padrão se for nova loja)
+let PRODUCTS = [];
 
-// Pedidos em Andamento
-let ORDERS = [
-  {
-    id: "PED-1042",
-    customer_name: "Marcos Vinicius",
-    customer_phone: "5599988112233",
-    items: "1x São José Bacon Monster + 1x Coca-Cola Lata",
-    total: 45.40,
-    payment_method: "PIX",
-    delivery_type: "Delivery",
-    address: "Rua das Flores, 120 - Apto 302",
-    status: "new",
-    time: "Há 4 minutos"
-  },
-  {
-    id: "PED-1041",
-    customer_name: "Camila Ribeiro",
-    customer_phone: "5599977445566",
-    items: "2x Clássico Cheeseburger + 1x Batata Rústica",
-    total: 84.30,
-    payment_method: "Cartão na Entrega",
-    delivery_type: "Delivery",
-    address: "Av. Brasil, 450",
-    status: "prep",
-    time: "Há 18 minutos"
-  }
-];
+// Pedidos (Começa vazio para novas lojas)
+let ORDERS = [];
 
 // Variável temporária de imagem do produto em edição
 let currentUploadedProductImage = "";
@@ -155,6 +64,23 @@ function initStoreAdmin() {
 
 function loadStoreData() {
   try {
+    // 1. Tentar ler do Super Admin Tenants se existir
+    const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
+    const savedTenants = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
+    if (savedTenants) {
+      const tenants = JSON.parse(savedTenants);
+      const foundTenant = tenants.find(t => t.slug === CURRENT_STORE_SLUG);
+      if (foundTenant) {
+        STORE_DATA.name = foundTenant.name || STORE_DATA.name;
+        STORE_DATA.whatsapp = foundTenant.owner_phone || STORE_DATA.whatsapp;
+        STORE_DATA.address = foundTenant.city || STORE_DATA.address;
+        STORE_DATA.pixName = foundTenant.owner_name || STORE_DATA.pixName;
+        STORE_DATA.pixKey = foundTenant.owner_phone || STORE_DATA.pixKey;
+        if (foundTenant.trial_ends_at) STORE_DATA.trialEndsAt = foundTenant.trial_ends_at;
+      }
+    }
+
+    // 2. Sobrescrever com dados salvos da loja específica
     const savedConfig = localStorage.getItem(getStoreKey('CONFIG'));
     if (savedConfig) STORE_DATA = { ...STORE_DATA, ...JSON.parse(savedConfig) };
 
@@ -198,12 +124,12 @@ function renderStoreTopbar() {
 
   const menuUrl = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
 
-  if (nameEl) nameEl.innerText = STORE_DATA.name.toUpperCase();
-  if (dashNameEl) dashNameEl.innerText = STORE_DATA.name.toUpperCase();
+  if (nameEl) nameEl.innerText = (STORE_DATA.name || "MEU RESTAURANTE").toUpperCase();
+  if (dashNameEl) dashNameEl.innerText = (STORE_DATA.name || "MEU RESTAURANTE").toUpperCase();
   if (slugEl) slugEl.innerText = `pedidovale.com.br/${STORE_DATA.slug}`;
   if (shareLinkInput) shareLinkInput.innerText = menuUrl;
   if (viewMenuBtn) viewMenuBtn.href = menuUrl;
-  if (prodsCountEl) prodsCountEl.innerText = `${PRODUCTS.length} Produtos cadastrados`;
+  if (prodsCountEl) prodsCountEl.innerText = `${PRODUCTS.length} ${PRODUCTS.length === 1 ? 'Produto cadastrado' : 'Produtos cadastrados'}`;
 
   updateSwitchOrdersButton();
 }
@@ -258,7 +184,7 @@ function shareOnWhatsApp() {
 }
 
 // -------------------------------------------------------------------------
-// GESTÃO DE PRODUTOS COM UPLOAD DE IMAGENS
+// GESTÃO DE PRODUTOS COM UPLOAD DE FOTOS
 // -------------------------------------------------------------------------
 function renderCategorySelects() {
   const filterSelect = document.getElementById('product-category-filter');
@@ -291,8 +217,15 @@ function renderProductsList() {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div class="col-span-full p-10 text-center bg-[#120D0A]/90 border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs font-poppins">
-        Nenhum produto encontrado. Clique em "+ Novo Produto" para cadastrar itens com fotos!
+      <div class="col-span-full p-12 text-center bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs space-y-3">
+        <div class="w-12 h-12 rounded-2xl bg-white/5 mx-auto flex items-center justify-center text-2xl">
+          🍔
+        </div>
+        <p class="font-medium text-stone-300">Nenhum produto cadastrado nesta seção.</p>
+        <button onclick="openCreateProductModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange text-white font-bold text-xs shadow-orange-glow active:scale-95 transition-all inline-flex items-center gap-1.5">
+          <span>+</span>
+          <span>Cadastrar Primeiro Produto</span>
+        </button>
       </div>
     `;
     return;
@@ -305,14 +238,14 @@ function renderProductsList() {
 
     // Tags
     let badgesHtml = '';
-    if (p.featured) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[9px] font-bold">⭐ Destaque</span> ';
-    if (p.popular) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange text-[9px] font-bold">🔥 Popular</span> ';
-    if (p.is_new) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">✨ Novo</span> ';
+    if (p.featured) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold">⭐ Destaque</span> ';
+    if (p.popular) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange text-[10px] font-bold">🔥 Popular</span> ';
+    if (p.is_new) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">✨ Novo</span> ';
 
     // Imagem
     const imageHtml = p.image 
-      ? `<img src="${p.image}" alt="${p.name}" class="w-20 h-20 rounded-2xl object-cover border border-white/10 shrink-0" />`
-      : `<div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl shrink-0">🍔</div>`;
+      ? `<img src="${p.image}" alt="${p.name}" class="w-20 h-20 rounded-2xl object-cover border border-white/10 shrink-0 bg-black/40" />`
+      : `<div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl shrink-0">🍽️</div>`;
 
     return `
       <div class="bg-[#120D0A]/95 border ${isPaused ? 'border-white/5 opacity-70' : 'border-brand-darkBorder hover:border-brand-orange/40'} rounded-3xl p-5 shadow-card-dark flex flex-col justify-between space-y-4 transition-all">
@@ -321,10 +254,10 @@ function renderProductsList() {
           ${imageHtml}
           
           <div class="flex-1 space-y-1">
-            <span class="text-[10px] font-semibold text-brand-orange uppercase tracking-wider block">${catName}</span>
-            <h3 class="font-anton text-base text-white tracking-wide leading-tight">${p.name}</h3>
+            <span class="text-[11px] font-semibold text-brand-orange block">${catName}</span>
+            <h3 class="font-bold text-base text-white leading-snug">${p.name}</h3>
             
-            <p class="text-xs text-brand-textMuted line-clamp-2 leading-relaxed font-poppins">
+            <p class="text-xs text-brand-textMuted line-clamp-2 leading-relaxed">
               ${p.description || 'Sem descrição.'}
             </p>
 
@@ -334,22 +267,22 @@ function renderProductsList() {
 
         ${p.extras && p.extras.length > 0 ? `
           <div class="flex flex-wrap gap-1 bg-black/40 p-2.5 rounded-xl border border-white/5">
-            <span class="text-[9px] text-brand-textMuted w-full block font-semibold uppercase">Opcionais:</span>
-            ${p.extras.map(e => `<span class="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-stone-300 font-poppins">+ ${e.name} (${formatCurrency(e.price)})</span>`).join('')}
+            <span class="text-[10px] text-brand-textMuted w-full block font-semibold uppercase">Opcionais:</span>
+            ${p.extras.map(e => `<span class="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-stone-300">+ ${e.name} (${formatCurrency(e.price)})</span>`).join('')}
           </div>
         ` : ''}
 
         <div class="pt-3 border-t border-brand-darkBorder/60 flex items-center justify-between">
           <div class="flex items-baseline gap-2">
-            <span class="font-anton text-lg text-amber-400 tracking-wide">
+            <span class="font-bold text-lg text-amber-400">
               ${formatCurrency(p.promo_price || p.price)}
             </span>
-            ${p.promo_price ? `<span class="text-xs text-stone-500 line-through font-poppins">${formatCurrency(p.price)}</span>` : ''}
+            ${p.promo_price ? `<span class="text-xs text-stone-500 line-through">${formatCurrency(p.price)}</span>` : ''}
           </div>
 
           <div class="flex items-center gap-1.5">
             <button onclick="toggleProductStatus('${p.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs transition-colors" title="${isPaused ? 'Ativar no Cardápio' : 'Pausar (Esgotado)'}">
-              ${isPaused ? '▶️' : '⏸️'}
+              ${isPaused ? '▶️ Ativar' : '⏸️ Pausar'}
             </button>
             <button onclick="openEditProductModal('${p.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs transition-colors" title="Editar Produto">
               ✏️
@@ -409,7 +342,7 @@ function openCreateProductModal() {
   currentUploadedProductImage = '';
   showImagePreview('');
   
-  document.getElementById('modal-product-title').innerText = "NOVO PRODUTO";
+  document.getElementById('modal-product-title').innerText = "Novo Produto";
   document.getElementById('form-product').reset();
   document.getElementById('product-extras-container').innerHTML = '';
   document.getElementById('prod-available-switch').checked = true;
@@ -424,7 +357,7 @@ function openEditProductModal(id) {
   currentUploadedProductImage = prod.image || '';
   showImagePreview(currentUploadedProductImage);
 
-  document.getElementById('modal-product-title').innerText = `EDITAR: ${prod.name.toUpperCase()}`;
+  document.getElementById('modal-product-title').innerText = `Editar: ${prod.name}`;
   document.getElementById('prod-name').value = prod.name || '';
   document.getElementById('prod-category').value = prod.category_id || (CATEGORIES[0]?.id || '');
   document.getElementById('prod-price').value = prod.price || '';
@@ -570,8 +503,8 @@ function renderCategoriesList() {
         <div class="flex items-center gap-3">
           <span class="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl">${c.icon || '📁'}</span>
           <div>
-            <h4 class="font-anton text-base text-white tracking-wide">${c.name}</h4>
-            <span class="text-[11px] text-brand-textMuted">${totalItems} ${totalItems === 1 ? 'produto cadastrado' : 'produtos cadastrados'}</span>
+            <h4 class="font-bold text-base text-white">${c.name}</h4>
+            <span class="text-xs text-brand-textMuted">${totalItems} ${totalItems === 1 ? 'produto cadastrado' : 'produtos cadastrados'}</span>
           </div>
         </div>
         <button onclick="deleteCategory('${c.id}')" class="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors" title="Excluir Categoria">
@@ -641,27 +574,27 @@ function renderOrdersKanban() {
   document.getElementById('count-delivery-orders').innerText = deliveryOrders.length;
   if (badgeCount) badgeCount.innerText = newOrders.length;
 
-  colNew.innerHTML = newOrders.map(o => renderOrderCard(o, 'prep', 'Aceitar & Preparar ➔')).join('') || '<div class="text-[11px] text-stone-500 p-4 text-center">Nenhum pedido novo.</div>';
-  colPrep.innerHTML = prepOrders.map(o => renderOrderCard(o, 'delivery', 'Despachar Entrega 🛵')).join('') || '<div class="text-[11px] text-stone-500 p-4 text-center">Nenhum pedido na cozinha.</div>';
-  colDelivery.innerHTML = deliveryOrders.map(o => renderOrderCard(o, 'done', 'Finalizar Pedido ✅')).join('') || '<div class="text-[11px] text-stone-500 p-4 text-center">Nenhum pedido a caminho.</div>';
+  colNew.innerHTML = newOrders.map(o => renderOrderCard(o, 'prep', 'Aceitar & Preparar ➔')).join('') || '<div class="text-xs text-stone-500 p-6 text-center">Nenhum pedido novo no momento.</div>';
+  colPrep.innerHTML = prepOrders.map(o => renderOrderCard(o, 'delivery', 'Despachar Entrega 🛵')).join('') || '<div class="text-xs text-stone-500 p-6 text-center">Nenhum pedido na cozinha.</div>';
+  colDelivery.innerHTML = deliveryOrders.map(o => renderOrderCard(o, 'done', 'Finalizar Pedido ✅')).join('') || '<div class="text-xs text-stone-500 p-6 text-center">Nenhum pedido em rota.</div>';
 }
 
 function renderOrderCard(o, nextStatus, nextLabel) {
   return `
     <div class="bg-black/60 border border-white/10 rounded-2xl p-4 space-y-3 shadow-lg">
       <div class="flex items-center justify-between pb-2 border-b border-white/5">
-        <span class="font-anton text-sm text-brand-orange">${o.id}</span>
+        <span class="font-bold text-sm text-brand-orange">${o.id}</span>
         <span class="text-[10px] text-stone-400 font-medium">${o.time}</span>
       </div>
 
       <div>
         <div class="font-bold text-white text-xs">${o.customer_name}</div>
-        <div class="text-[11px] text-stone-300 font-poppins">${o.items}</div>
-        <div class="text-[10px] text-stone-400 mt-1">📍 ${o.address}</div>
+        <div class="text-xs text-stone-300">${o.items}</div>
+        <div class="text-[11px] text-stone-400 mt-1">📍 ${o.address}</div>
       </div>
 
       <div class="flex items-center justify-between pt-1 text-xs">
-        <span class="font-anton text-amber-400">${formatCurrency(o.total)}</span>
+        <span class="font-bold text-amber-400">${formatCurrency(o.total)}</span>
         <span class="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-stone-300">${o.payment_method}</span>
       </div>
 
@@ -669,7 +602,7 @@ function renderOrderCard(o, nextStatus, nextLabel) {
         <a href="https://wa.me/${cleanPhone(o.customer_phone)}" target="_blank" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs" title="Conversar no WhatsApp">
           💬
         </a>
-        <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-anton text-xs tracking-wider transition-all">
+        <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all">
           ${nextLabel}
         </button>
       </div>
@@ -710,8 +643,8 @@ function populateSettingsInputs() {
   const minOrderEl = document.getElementById('setting-min-order');
   const pickupEl = document.getElementById('setting-allow-pickup');
 
-  if (feeEl) feeEl.value = STORE_DATA.deliveryFee || 6.00;
-  if (timeEl) timeEl.value = STORE_DATA.deliveryTime || '35 - 50 min';
+  if (feeEl) feeEl.value = STORE_DATA.deliveryFee || 5.00;
+  if (timeEl) timeEl.value = STORE_DATA.deliveryTime || '30 - 45 min';
   if (minOrderEl) minOrderEl.value = STORE_DATA.minOrder || 0;
   if (pickupEl) pickupEl.value = String(STORE_DATA.allowPickup);
 
@@ -811,7 +744,7 @@ function openQrCodeModal() {
 }
 
 function openSubscriptionModal() {
-  const msg = encodeURIComponent(`Olá! Gostaria de assinar a plataforma PedidoVale para o meu restaurante (${STORE_DATA.name} - ${STORE_DATA.slug}).`);
+  const msg = encodeURIComponent(`Olá! Gostaria de assinar o plano oficial do PedidoVale para o meu restaurante (${STORE_DATA.name} - ${STORE_DATA.slug}).`);
   window.open(`https://wa.me/5599991040222?text=${msg}`, '_blank');
 }
 
