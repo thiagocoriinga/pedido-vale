@@ -1,7 +1,7 @@
 /**
  * =========================================================================
- * RESTAURANT OWNER OS • MOTOR DE GESTÃO DE CARDÁPIO & PRODUTOS
- * Gerenciamento 100% focado em agilidade, sem imagens pesadas, alta conversão
+ * RESTAURANT OWNER OS • MOTOR DE GESTÃO DE CARDÁPIO COM FOTOS
+ * Baseado nas referências da plataforma KiCardápio com o visual São José
  * =========================================================================
  */
 
@@ -10,12 +10,12 @@ const getStoreKey = (key) => `STORE_${CURRENT_STORE_SLUG}_${key}`;
 
 // Loja Atual
 const urlParams = new URLSearchParams(window.location.search);
-const CURRENT_STORE_SLUG = urlParams.get('store') || 'sao-jose';
+const CURRENT_STORE_SLUG = urlParams.get('store') || sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'sao-jose';
 
 // Estado da Loja
 let STORE_DATA = {
   name: "São José Burguer",
-  slug: "sao-jose",
+  slug: CURRENT_STORE_SLUG,
   isOpen: true,
   whatsapp: "5599991040222",
   address: "Rua Principal, 1500 - Centro",
@@ -29,10 +29,11 @@ let STORE_DATA = {
   pixName: "Thiago Siqueira / São José Burguer",
   acceptPix: true,
   acceptCard: true,
-  acceptCash: true
+  acceptCash: true,
+  trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 };
 
-// Categorias Padrão
+// Categorias
 let CATEGORIES = [
   { id: "cat-burgers", name: "Hambúrgueres Artesanais", icon: "🍔" },
   { id: "cat-combos", name: "Combos Especiais", icon: "🔥" },
@@ -41,16 +42,20 @@ let CATEGORIES = [
   { id: "cat-sobremesas", name: "Sobremesas & Shakes", icon: "🍰" }
 ];
 
-// Produtos Padrão
+// Produtos com Imagens
 let PRODUCTS = [
   {
     id: "prod-001",
     name: "São José Bacon Monster",
+    image: "",
     category_id: "cat-burgers",
     price: 38.90,
+    promo_price: 34.90,
     description: "Pão brioche selado na manteiga, 2x smash de 90g, muito bacon crocante, queijo cheddar derretido e molho da casa.",
     status: "active",
-    badge: "Mais Pedido",
+    featured: true,
+    is_new: false,
+    popular: true,
     extras: [
       { name: "Bacon Extra", price: 6.00 },
       { name: "Queijo Cheddar Dobrado", price: 5.00 },
@@ -60,11 +65,15 @@ let PRODUCTS = [
   {
     id: "prod-002",
     name: "Clássico Cheeseburger Duplo",
+    image: "",
     category_id: "cat-burgers",
     price: 29.90,
+    promo_price: null,
     description: "Pão artesanal tostado, 2x carnes smash suculentas, queijo prato duplo derretido e maionese verde artesanal.",
     status: "active",
-    badge: "",
+    featured: false,
+    is_new: true,
+    popular: false,
     extras: [
       { name: "Molho Especial à Parte", price: 4.00 }
     ]
@@ -72,21 +81,29 @@ let PRODUCTS = [
   {
     id: "prod-003",
     name: "Batata Rústica com Cheddar & Bacon",
+    image: "",
     category_id: "cat-porcoes",
     price: 24.50,
+    promo_price: null,
     description: "350g de batatas rústicas douradas e crocantes, cobertas com blend de queijo cheddar cremoso e farofa de bacon.",
     status: "active",
-    badge: "🔥 Mais Pedido",
+    featured: true,
+    is_new: false,
+    popular: true,
     extras: []
   },
   {
     id: "prod-004",
     name: "Coca-Cola Original 350ml Lata",
+    image: "",
     category_id: "cat-bebidas",
     price: 6.50,
+    promo_price: null,
     description: "Lata 350ml bem gelada.",
     status: "active",
-    badge: "",
+    featured: false,
+    is_new: false,
+    popular: false,
     extras: []
   }
 ];
@@ -119,12 +136,16 @@ let ORDERS = [
   }
 ];
 
+// Variável temporária de imagem do produto em edição
+let currentUploadedProductImage = "";
+
 // -------------------------------------------------------------------------
 // INICIALIZAÇÃO DO PAINEL DO RESTAURANTE
 // -------------------------------------------------------------------------
 function initStoreAdmin() {
   loadStoreData();
   renderStoreTopbar();
+  renderTrialInfo();
   renderCategorySelects();
   renderProductsList();
   renderCategoriesList();
@@ -165,33 +186,58 @@ function saveOrders() {
 }
 
 // -------------------------------------------------------------------------
-// TOPBAR & STATUS DA LOJA (ABERTO / FECHADO)
+// TOPBAR & TRIAL BANNER
 // -------------------------------------------------------------------------
 function renderStoreTopbar() {
   const nameEl = document.getElementById('topbar-store-name');
+  const dashNameEl = document.getElementById('dash-store-name');
   const slugEl = document.getElementById('topbar-store-slug');
-  const statusBtn = document.getElementById('store-status-btn');
-  const statusText = document.getElementById('store-status-text');
+  const shareLinkInput = document.getElementById('share-link-input');
+  const viewMenuBtn = document.getElementById('topbar-view-menu-btn');
+  const prodsCountEl = document.getElementById('dash-products-count');
+
+  const menuUrl = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
 
   if (nameEl) nameEl.innerText = STORE_DATA.name.toUpperCase();
+  if (dashNameEl) dashNameEl.innerText = STORE_DATA.name.toUpperCase();
   if (slugEl) slugEl.innerText = `pedidovale.com.br/${STORE_DATA.slug}`;
+  if (shareLinkInput) shareLinkInput.innerText = menuUrl;
+  if (viewMenuBtn) viewMenuBtn.href = menuUrl;
+  if (prodsCountEl) prodsCountEl.innerText = `${PRODUCTS.length} Produtos cadastrados`;
 
-  if (statusBtn && statusText) {
-    if (STORE_DATA.isOpen) {
-      statusBtn.className = "px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1.5 transition-all";
-      statusText.innerText = "LOJA ABERTA";
-    } else {
-      statusBtn.className = "px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-[10px] font-bold flex items-center gap-1.5 transition-all";
-      statusText.innerText = "LOJA FECHADA";
-    }
+  updateSwitchOrdersButton();
+}
+
+function renderTrialInfo() {
+  const trialDaysEl = document.getElementById('trial-days-left');
+  if (!trialDaysEl) return;
+
+  if (STORE_DATA.trialEndsAt) {
+    const end = new Date(STORE_DATA.trialEndsAt);
+    const now = new Date();
+    const diffDays = Math.max(0, Math.ceil((end - now) / (1000 * 60 * 60 * 24)));
+    trialDaysEl.innerText = `${diffDays} ${diffDays === 1 ? 'dia restante' : 'dias restantes'}`;
+  }
+}
+
+function updateSwitchOrdersButton() {
+  const btn = document.getElementById('switch-orders-btn');
+  if (!btn) return;
+
+  if (STORE_DATA.isOpen) {
+    btn.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white shadow-lg";
+    btn.innerText = "Sim";
+  } else {
+    btn.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-rose-500 text-white shadow-lg";
+    btn.innerText = "Não";
   }
 }
 
 function toggleStoreOpenStatus() {
   STORE_DATA.isOpen = !STORE_DATA.isOpen;
   saveStoreConfig();
-  renderStoreTopbar();
-  showToast(STORE_DATA.isOpen ? "🟢 Loja aberta para novos pedidos!" : "🔴 Loja marcada como fechada.");
+  updateSwitchOrdersButton();
+  showToast(STORE_DATA.isOpen ? "🟢 Loja aberta para receber pedidos!" : "🔴 Loja pausada (não aceita pedidos).");
 }
 
 function copyStoreMenuLink() {
@@ -205,8 +251,14 @@ function copyStoreMenuLink() {
   }
 }
 
+function shareOnWhatsApp() {
+  const url = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
+  const text = encodeURIComponent(`Olá! Faça seu pedido direto no nosso cardápio online: ${url}`);
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
 // -------------------------------------------------------------------------
-// GESTÃO DE PRODUTOS
+// GESTÃO DE PRODUTOS COM UPLOAD DE IMAGENS
 // -------------------------------------------------------------------------
 function renderCategorySelects() {
   const filterSelect = document.getElementById('product-category-filter');
@@ -240,7 +292,7 @@ function renderProductsList() {
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="col-span-full p-10 text-center bg-[#120D0A]/90 border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs font-poppins">
-        Nenhum produto encontrado. Clique no botão acima para cadastrar seu primeiro item!
+        Nenhum produto encontrado. Clique em "+ Novo Produto" para cadastrar itens com fotos!
       </div>
     `;
     return;
@@ -248,34 +300,51 @@ function renderProductsList() {
 
   container.innerHTML = filtered.map(p => {
     const cat = CATEGORIES.find(c => c.id === p.category_id);
-    const catName = cat ? `${cat.icon} ${cat.name}` : 'Sem Categoria';
+    const catName = cat ? `${cat.icon} ${cat.name}` : 'Geral';
     const isPaused = p.status === 'paused';
+
+    // Tags
+    let badgesHtml = '';
+    if (p.featured) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[9px] font-bold">⭐ Destaque</span> ';
+    if (p.popular) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange text-[9px] font-bold">🔥 Popular</span> ';
+    if (p.is_new) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">✨ Novo</span> ';
+
+    // Imagem
+    const imageHtml = p.image 
+      ? `<img src="${p.image}" alt="${p.name}" class="w-20 h-20 rounded-2xl object-cover border border-white/10 shrink-0" />`
+      : `<div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl shrink-0">🍔</div>`;
 
     return `
       <div class="bg-[#120D0A]/95 border ${isPaused ? 'border-white/5 opacity-70' : 'border-brand-darkBorder hover:border-brand-orange/40'} rounded-3xl p-5 shadow-card-dark flex flex-col justify-between space-y-4 transition-all">
-        <div class="space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <span class="text-[10px] font-semibold text-brand-orange uppercase tracking-wider block">${catName}</span>
-              <h3 class="font-anton text-base text-white tracking-wide leading-tight">${p.name}</h3>
-            </div>
-            ${p.badge ? `<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 border border-brand-orange/30 text-brand-orange text-[9px] font-bold shrink-0">${p.badge}</span>` : ''}
+        
+        <div class="flex items-start gap-3.5">
+          ${imageHtml}
+          
+          <div class="flex-1 space-y-1">
+            <span class="text-[10px] font-semibold text-brand-orange uppercase tracking-wider block">${catName}</span>
+            <h3 class="font-anton text-base text-white tracking-wide leading-tight">${p.name}</h3>
+            
+            <p class="text-xs text-brand-textMuted line-clamp-2 leading-relaxed font-poppins">
+              ${p.description || 'Sem descrição.'}
+            </p>
+
+            ${badgesHtml ? `<div class="pt-1 flex flex-wrap gap-1">${badgesHtml}</div>` : ''}
           </div>
-
-          <p class="text-xs text-brand-textMuted line-clamp-2 leading-relaxed font-poppins">
-            ${p.description || 'Sem descrição cadastrada.'}
-          </p>
-
-          ${p.extras && p.extras.length > 0 ? `
-            <div class="flex flex-wrap gap-1.5 pt-1">
-              ${p.extras.map(e => `<span class="px-2 py-0.5 rounded-lg bg-black/40 border border-white/5 text-[10px] text-stone-300 font-poppins">+ ${e.name} (${formatCurrency(e.price)})</span>`).join('')}
-            </div>
-          ` : ''}
         </div>
 
+        ${p.extras && p.extras.length > 0 ? `
+          <div class="flex flex-wrap gap-1 bg-black/40 p-2.5 rounded-xl border border-white/5">
+            <span class="text-[9px] text-brand-textMuted w-full block font-semibold uppercase">Opcionais:</span>
+            ${p.extras.map(e => `<span class="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-stone-300 font-poppins">+ ${e.name} (${formatCurrency(e.price)})</span>`).join('')}
+          </div>
+        ` : ''}
+
         <div class="pt-3 border-t border-brand-darkBorder/60 flex items-center justify-between">
-          <div class="font-anton text-lg text-amber-400 tracking-wide">
-            ${formatCurrency(p.price)}
+          <div class="flex items-baseline gap-2">
+            <span class="font-anton text-lg text-amber-400 tracking-wide">
+              ${formatCurrency(p.promo_price || p.price)}
+            </span>
+            ${p.promo_price ? `<span class="text-xs text-stone-500 line-through font-poppins">${formatCurrency(p.price)}</span>` : ''}
           </div>
 
           <div class="flex items-center gap-1.5">
@@ -295,14 +364,55 @@ function renderProductsList() {
   }).join('');
 }
 
+// Upload & Preview de Imagem
+function handleProductImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    currentUploadedProductImage = event.target.result;
+    showImagePreview(currentUploadedProductImage);
+    document.getElementById('prod-image-url').value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleProductImageUrl(url) {
+  if (url) {
+    currentUploadedProductImage = url.trim();
+    showImagePreview(currentUploadedProductImage);
+  }
+}
+
+function showImagePreview(src) {
+  const imgEl = document.getElementById('prod-image-preview');
+  const placeholder = document.getElementById('image-upload-placeholder');
+  if (imgEl && placeholder) {
+    if (src) {
+      imgEl.src = src;
+      imgEl.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      imgEl.src = '';
+      imgEl.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+  }
+}
+
 // Modal Produto
 let currentEditingProductId = null;
 
 function openCreateProductModal() {
   currentEditingProductId = null;
-  document.getElementById('modal-product-title').innerText = "CADASTRAR PRODUTO";
+  currentUploadedProductImage = '';
+  showImagePreview('');
+  
+  document.getElementById('modal-product-title').innerText = "NOVO PRODUTO";
   document.getElementById('form-product').reset();
   document.getElementById('product-extras-container').innerHTML = '';
+  document.getElementById('prod-available-switch').checked = true;
   document.getElementById('product-modal').classList.remove('hidden');
 }
 
@@ -311,13 +421,21 @@ function openEditProductModal(id) {
   if (!prod) return;
 
   currentEditingProductId = id;
+  currentUploadedProductImage = prod.image || '';
+  showImagePreview(currentUploadedProductImage);
+
   document.getElementById('modal-product-title').innerText = `EDITAR: ${prod.name.toUpperCase()}`;
   document.getElementById('prod-name').value = prod.name || '';
   document.getElementById('prod-category').value = prod.category_id || (CATEGORIES[0]?.id || '');
   document.getElementById('prod-price').value = prod.price || '';
+  document.getElementById('prod-promo-price').value = prod.promo_price || '';
   document.getElementById('prod-desc').value = prod.description || '';
-  document.getElementById('prod-status').value = prod.status || 'active';
-  document.getElementById('prod-badge').value = prod.badge || '';
+  document.getElementById('prod-image-url').value = prod.image && prod.image.startsWith('http') ? prod.image : '';
+
+  document.getElementById('prod-available-switch').checked = prod.status !== 'paused';
+  document.getElementById('prod-featured-switch').checked = !!prod.featured;
+  document.getElementById('prod-new-switch').checked = !!prod.is_new;
+  document.getElementById('prod-popular-switch').checked = !!prod.popular;
 
   // Carregar Extras
   const extrasContainer = document.getElementById('product-extras-container');
@@ -338,8 +456,8 @@ function addProductExtraRow(name = '', price = '') {
   const div = document.createElement('div');
   div.className = "flex items-center gap-2 extra-row";
   div.innerHTML = `
-    <input type="text" placeholder="Nome do Adicional (ex: Bacon)" value="${name}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white extra-name" required />
-    <input type="number" step="0.5" placeholder="Preço (ex: 5.00)" value="${price}" class="w-24 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold extra-price" required />
+    <input type="text" placeholder="Nome do Opcional (ex: Bacon Extra)" value="${name}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white extra-name" required />
+    <input type="number" step="0.5" placeholder="Preço (R$)" value="${price}" class="w-24 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold extra-price" required />
     <button type="button" onclick="this.parentElement.remove()" class="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">✕</button>
   `;
   container.appendChild(div);
@@ -351,11 +469,17 @@ function saveProductForm(e) {
   const name = document.getElementById('prod-name').value.trim();
   const category_id = document.getElementById('prod-category').value;
   const price = parseFloat(document.getElementById('prod-price').value) || 0;
+  const promo_price_val = document.getElementById('prod-promo-price').value;
+  const promo_price = promo_price_val ? parseFloat(promo_price_val) : null;
   const description = document.getElementById('prod-desc').value.trim();
-  const status = document.getElementById('prod-status').value;
-  const badge = document.getElementById('prod-badge').value;
+  
+  const isAvailable = document.getElementById('prod-available-switch').checked;
+  const status = isAvailable ? 'active' : 'paused';
+  const featured = document.getElementById('prod-featured-switch').checked;
+  const is_new = document.getElementById('prod-new-switch').checked;
+  const popular = document.getElementById('prod-popular-switch').checked;
 
-  // Extrair adicionais
+  // Extrair opcionais
   const extraRows = document.querySelectorAll('#product-extras-container .extra-row');
   const extras = [];
   extraRows.forEach(row => {
@@ -367,13 +491,36 @@ function saveProductForm(e) {
   if (currentEditingProductId) {
     const idx = PRODUCTS.findIndex(p => p.id === currentEditingProductId);
     if (idx !== -1) {
-      PRODUCTS[idx] = { ...PRODUCTS[idx], name, category_id, price, description, status, badge, extras };
-      showToast(`✅ Produto "${name}" atualizado!`);
+      PRODUCTS[idx] = {
+        ...PRODUCTS[idx],
+        name,
+        category_id,
+        price,
+        promo_price,
+        description,
+        image: currentUploadedProductImage || PRODUCTS[idx].image || '',
+        status,
+        featured,
+        is_new,
+        popular,
+        extras
+      };
+      showToast(`✅ Produto "${name}" atualizado com sucesso!`);
     }
   } else {
     const newProd = {
       id: `prod-${Date.now()}`,
-      name, category_id, price, description, status, badge, extras
+      name,
+      category_id,
+      price,
+      promo_price,
+      description,
+      image: currentUploadedProductImage,
+      status,
+      featured,
+      is_new,
+      popular,
+      extras
     };
     PRODUCTS.push(newProd);
     showToast(`🚀 Novo produto "${name}" adicionado ao cardápio!`);
@@ -382,6 +529,7 @@ function saveProductForm(e) {
   saveProducts();
   closeProductModal();
   renderProductsList();
+  renderStoreTopbar();
 }
 
 function toggleProductStatus(id) {
@@ -391,17 +539,18 @@ function toggleProductStatus(id) {
   prod.status = prod.status === 'paused' ? 'active' : 'paused';
   saveProducts();
   renderProductsList();
-  showToast(prod.status === 'paused' ? `⏸️ Produto "${prod.name}" pausado (esgotado).` : `🟢 Produto "${prod.name}" ativo no cardápio.`);
+  showToast(prod.status === 'paused' ? `⏸️ "${prod.name}" pausado no cardápio.` : `🟢 "${prod.name}" ativado.`);
 }
 
 function deleteProduct(id) {
   const prod = PRODUCTS.find(p => p.id === id);
   if (!prod) return;
 
-  if (confirm(`Deseja realmente excluir "${prod.name}" do cardápio?`)) {
+  if (confirm(`Excluir permanentemente "${prod.name}"?`)) {
     PRODUCTS = PRODUCTS.filter(p => p.id !== id);
     saveProducts();
     renderProductsList();
+    renderStoreTopbar();
     showToast("🗑️ Produto excluído.");
   }
 }
@@ -462,7 +611,7 @@ function saveCategoryForm(e) {
 }
 
 function deleteCategory(id) {
-  if (confirm("Excluir esta categoria? Os produtos vinculados a ela não serão apagados.")) {
+  if (confirm("Excluir esta categoria?")) {
     CATEGORIES = CATEGORIES.filter(c => c.id !== id);
     saveCategories();
     renderCategorySelects();
@@ -641,6 +790,29 @@ function switchStoreTab(tabName) {
     targetBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-orange-glow');
     targetBtn.classList.remove('text-brand-textMuted');
   }
+}
+
+function openQrCodeModal() {
+  const url = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+  
+  const win = window.open("", "_blank", "width=400,height=500");
+  win.document.write(`
+    <html style="background:#080504;color:white;text-align:center;font-family:sans-serif;padding:30px;">
+      <h2 style="color:#FF5E1E;">QR CODE DO SEU CARDÁPIO</h2>
+      <p style="font-size:12px;color:#aaa;">Imprima ou coloque nas mesas para os clientes lerem:</p>
+      <div style="background:white;padding:15px;display:inline-block;border-radius:20px;margin:20px 0;">
+        <img src="${qrUrl}" alt="QR Code" style="display:block;" />
+      </div>
+      <br />
+      <button onclick="window.print()" style="background:#FF5E1E;color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:bold;">Imprimir QR Code</button>
+    </html>
+  `);
+}
+
+function openSubscriptionModal() {
+  const msg = encodeURIComponent(`Olá! Gostaria de assinar a plataforma PedidoVale para o meu restaurante (${STORE_DATA.name} - ${STORE_DATA.slug}).`);
+  window.open(`https://wa.me/5599991040222?text=${msg}`, '_blank');
 }
 
 // -------------------------------------------------------------------------

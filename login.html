@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080504">
+  <title>Login do Restaurante • PedidoVale</title>
+  <meta name="description" content="Acesse o painel do seu restaurante para gerenciar cardápio, produtos e pedidos.">
+
+  <!-- Google Fonts: Anton & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FBF5ED',
+              orange: '#FF5E1E',
+              orangeHover: '#E54A0D',
+              amber: '#FF9E1B',
+              dark: '#080504',
+              darkSurface: '#120D0A',
+              darkCard: '#18120E',
+              darkBorder: '#29211C',
+              textMuted: '#8C827A',
+            }
+          },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          boxShadow: {
+            'card-dark': '0 20px 40px -15px rgba(0, 0, 0, 0.8)',
+            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #080504;
+      color: #F3EBE1;
+    }
+    h1, h2, h3, h4, .font-anton {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+    .stars {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+      background-size: 200px 200px;
+    }
+    .grid-bg-dark {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden stars">
+
+  <!-- AURA BACKGROUND GLOW -->
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="grid-bg-dark absolute inset-0"></div>
+    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/15 blur-[150px] rounded-full"></div>
+    <div class="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-amber-600/15 blur-[140px] rounded-full"></div>
+  </div>
+
+  <div class="w-full max-w-md relative z-10 space-y-6">
+
+    <!-- HEADER BRAND -->
+    <div class="text-center space-y-2">
+      <div class="w-16 h-16 rounded-2xl mx-auto bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-3xl shadow-orange-glow border border-white/20">
+        🍔
+      </div>
+      <h1 class="text-3xl font-anton text-white tracking-wider">
+        ACESSO DO RESTAURANTE
+      </h1>
+      <p class="text-xs text-brand-textMuted">
+        Gerencie seu cardápio, produtos e pedidos em tempo real
+      </p>
+    </div>
+
+    <!-- CARD FORMULÁRIO -->
+    <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark backdrop-blur-2xl space-y-6">
+      
+      <form onsubmit="handleRestaurantLogin(event)" class="space-y-4 text-xs font-poppins">
+        
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Link (Slug) ou WhatsApp da Loja *</label>
+          <input 
+            type="text" 
+            id="login-identifier" 
+            placeholder="ex: sao-jose ou seu WhatsApp" 
+            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors" 
+            required 
+            autofocus
+          />
+        </div>
+
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Senha de Acesso *</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            placeholder="Digite sua senha" 
+            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors" 
+            required 
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4"
+        >
+          <span>ENTRAR NO MEU PAINEL</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+
+      </form>
+
+      <div class="text-center pt-2 border-t border-brand-darkBorder/60 text-xs text-brand-textMuted">
+        Ainda não tem cardápio digital? 
+        <a href="cadastro.html" class="text-brand-orange font-bold hover:underline ml-1">Criar Loja Grátis ➔</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function handleRestaurantLogin(e) {
+      e.preventDefault();
+
+      const identifier = document.getElementById('login-identifier').value.trim().toLowerCase().replace(/\D/g, '') || document.getElementById('login-identifier').value.trim().toLowerCase();
+      const rawInput = document.getElementById('login-identifier').value.trim().toLowerCase();
+      const password = document.getElementById('login-password').value;
+
+      const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
+      let tenants = [];
+      try {
+        const saved = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
+        if (saved) tenants = JSON.parse(saved);
+      } catch (err) {}
+
+      // Se for a loja padrão "sao-jose"
+      if (rawInput === 'sao-jose' || rawInput === '5599991040222' || rawInput === '99991040222') {
+        sessionStorage.setItem('CURRENT_LOGGED_STORE', 'sao-jose');
+        window.location.href = 'admin.html?store=sao-jose';
+        return;
+      }
+
+      // Procurar nos tenants
+      const found = tenants.find(t => 
+        t.slug === rawInput || 
+        t.owner_phone.replace(/\D/g, '') === identifier || 
+        t.owner_phone === rawInput
+      );
+
+      if (found) {
+        if (!found.password || found.password === password) {
+          sessionStorage.setItem('CURRENT_LOGGED_STORE', found.slug);
+          window.location.href = `admin.html?store=${found.slug}`;
+        } else {
+          alert('Senha incorreta!');
+        }
+      } else {
+        // Redirecionar direto para o slug digitado
+        sessionStorage.setItem('CURRENT_LOGGED_STORE', rawInput);
+        window.location.href = `admin.html?store=${rawInput}`;
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080504">
+  <title>Cadastre seu Restaurante • 7 Dias Grátis | PedidoVale</title>
+  <meta name="description" content="Crie seu cardápio digital e sistema de pedidos online em menos de 2 minutos. Teste grátis por 7 dias!">
+
+  <!-- Google Fonts: Anton & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FBF5ED',
+              orange: '#FF5E1E',
+              orangeHover: '#E54A0D',
+              amber: '#FF9E1B',
+              dark: '#080504',
+              darkSurface: '#120D0A',
+              darkCard: '#18120E',
+              darkBorder: '#29211C',
+              textMuted: '#8C827A',
+            }
+          },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          boxShadow: {
+            'card-dark': '0 20px 40px -15px rgba(0, 0, 0, 0.8)',
+            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #080504;
+      color: #F3EBE1;
+    }
+    h1, h2, h3, h4, .font-anton {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+    .stars {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+      background-size: 200px 200px;
+    }
+    .grid-bg-dark {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden stars py-10">
+
+  <!-- AURA BACKGROUND GLOW -->
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="grid-bg-dark absolute inset-0"></div>
+    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/15 blur-[150px] rounded-full"></div>
+    <div class="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-amber-600/15 blur-[140px] rounded-full"></div>
+  </div>
+
+  <div class="w-full max-w-xl relative z-10 space-y-6">
+
+    <!-- HEADER BRAND -->
+    <div class="text-center space-y-3">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
+        <span>⏳</span>
+        <span>TESTE GRÁTIS POR 7 DIAS • SEM CARTÃO</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-anton text-white tracking-wider">
+        CRIE SEU CARDÁPIO DIGITAL EM 2 MINUTOS
+      </h1>
+      <p class="text-xs sm:text-sm text-brand-textMuted max-w-md mx-auto">
+        Comece a receber pedidos organizados diretamente no WhatsApp do seu restaurante com taxa zero por pedido!
+      </p>
+    </div>
+
+    <!-- CARD FORMULÁRIO -->
+    <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark backdrop-blur-2xl space-y-6">
+      
+      <form onsubmit="handleRestaurantRegister(event)" class="space-y-4 text-xs font-poppins">
+        
+        <!-- NOME DO RESTAURANTE -->
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
+          <input 
+            type="text" 
+            id="reg-store-name" 
+            placeholder="Ex: São José Burguer" 
+            oninput="autoGenerateSlug(this.value)"
+            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors" 
+            required 
+          />
+        </div>
+
+        <!-- LINK PERSONALIZADO (SLUG) & SEGMENTO -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Seu Link no PedidoVale *</label>
+            <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus-within:border-brand-orange transition-colors">
+              <span class="text-stone-500 text-xs font-mono mr-1">/</span>
+              <input 
+                type="text" 
+                id="reg-store-slug" 
+                placeholder="sao-jose" 
+                class="w-full bg-transparent text-sm text-amber-400 font-bold font-mono focus:outline-none" 
+                required 
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Segmento Principal *</label>
+            <select id="reg-store-segment" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3.5 text-sm text-white focus:outline-none focus:border-brand-orange">
+              <option value="Hamburgueria">Hamburgueria 🍔</option>
+              <option value="Pizzaria">Pizzaria 🍕</option>
+              <option value="Açaí">Açaí & Sorvetes 🍧</option>
+              <option value="Sushi">Sushi & Japonês 🍣</option>
+              <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
+              <option value="Doceria">Doceria & Bolos 🍰</option>
+              <option value="Petiscaria">Petiscaria & Bar 🍺</option>
+              <option value="Outro">Outro Delivery 🍽️</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- RESPONSÁVEL & WHATSAPP -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Seu Nome Completo *</label>
+            <input 
+              type="text" 
+              id="reg-owner-name" 
+              placeholder="Ex: Thiago Siqueira" 
+              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+              required 
+            />
+          </div>
+
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD (para receber pedidos) *</label>
+            <input 
+              type="text" 
+              id="reg-owner-phone" 
+              placeholder="Ex: 5599991040222" 
+              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white font-mono placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+              required 
+            />
+          </div>
+        </div>
+
+        <!-- CIDADE & SENHA -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Cidade / Estado *</label>
+            <input 
+              type="text" 
+              id="reg-city" 
+              placeholder="Ex: Pedreiras - MA" 
+              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+              required 
+            />
+          </div>
+
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Crie uma Senha de Acesso *</label>
+            <input 
+              type="password" 
+              id="reg-password" 
+              placeholder="Mínimo 6 dígitos" 
+              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+              required 
+            />
+          </div>
+        </div>
+
+        <!-- BENEFÍCIOS -->
+        <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-1.5 text-[11px] text-stone-300">
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span>7 Dias de Acesso Completo e Ilimitado</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span>Cadastro ilimitado de produtos com fotos</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span>Pedidos direto no WhatsApp com taxa 0%</span>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4"
+        >
+          <span>CRIAR MEU CARDÁPIO GRÁTIS</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+
+      </form>
+
+      <div class="text-center pt-2 border-t border-brand-darkBorder/60 text-xs text-brand-textMuted">
+        Já tem uma conta cadastrada? 
+        <a href="login.html" class="text-brand-orange font-bold hover:underline ml-1">Fazer Login ➔</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function autoGenerateSlug(name) {
+      const slugInput = document.getElementById('reg-store-slug');
+      if (slugInput) {
+        slugInput.value = name.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
+    }
+
+    function handleRestaurantRegister(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('reg-store-name').value.trim();
+      const slug = document.getElementById('reg-store-slug').value.trim().toLowerCase();
+      const segment = document.getElementById('reg-store-segment').value;
+      const owner_name = document.getElementById('reg-owner-name').value.trim();
+      const owner_phone = document.getElementById('reg-owner-phone').value.trim();
+      const city = document.getElementById('reg-city').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      if (!slug) {
+        alert('Por favor informe o link (slug) do restaurante.');
+        return;
+      }
+
+      // 1. Criar novo registro no Super Admin (Tenants)
+      const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
+      let tenants = [];
+      try {
+        const saved = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
+        if (saved) tenants = JSON.parse(saved);
+      } catch (err) {}
+
+      // Verificar se o slug já existe
+      if (tenants.some(t => t.slug === slug)) {
+        alert('Este link (slug) já está em uso por outro restaurante. Por favor escolha outro!');
+        return;
+      }
+
+      const trialEnds = new Date();
+      trialEnds.setDate(trialEnds.getDate() + 7);
+
+      const newTenant = {
+        id: `tenant-${Date.now()}`,
+        slug: slug,
+        name: name,
+        segment: segment,
+        owner_name: owner_name,
+        owner_phone: owner_phone,
+        city: city,
+        password: password,
+        plan: "pro",
+        monthly_fee: 119.00,
+        status: "trial",
+        due_day: trialEnds.getDate(),
+        trial_ends_at: trialEnds.toISOString(),
+        created_at: new Date().toISOString(),
+        notes: "Cadastro feito pelo formulário oficial de Onboarding (7 Dias Grátis)"
+      };
+
+      tenants.push(newTenant);
+      localStorage.setItem(SUPERADMIN_TENANTS_KEY, JSON.stringify(tenants));
+
+      // 2. Inicializar os dados da loja
+      const storeConfig = {
+        name: name,
+        slug: slug,
+        segment: segment,
+        isOpen: true,
+        whatsapp: owner_phone,
+        address: city,
+        hours: "Segunda a Domingo das 18h às 23h30",
+        deliveryFee: 5.00,
+        deliveryTime: "30 - 45 min",
+        minOrder: 15.00,
+        allowPickup: true,
+        pixKey: owner_phone,
+        pixType: "phone",
+        pixName: owner_name,
+        acceptPix: true,
+        acceptCard: true,
+        acceptCash: true,
+        trialEndsAt: trialEnds.toISOString()
+      };
+      localStorage.setItem(`STORE_${slug}_CONFIG`, JSON.stringify(storeConfig));
+
+      // 3. Salvar sessão do lojista
+      sessionStorage.setItem('CURRENT_LOGGED_STORE', slug);
+
+      // Redirecionar direto para o Dashboard de gestão do restaurante
+      window.location.href = `admin.html?store=${slug}`;
+    }
+  </script>
+
+</body>
+</html>

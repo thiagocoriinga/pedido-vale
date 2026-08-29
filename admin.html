@@ -6,16 +6,13 @@
   <meta name="theme-color" content="#080504">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Gestão do Restaurante • Cardápio & Produtos | PedidoVale</title>
-  <meta name="description" content="Painel de controle do comerciante: cadastro de produtos, categorias, preços, taxas de entrega e pedidos em tempo real.">
+  <title>Dashboard do Restaurante • Gestão de Cardápio | PedidoVale</title>
+  <meta name="description" content="Painel de controle do restaurante: produtos com fotos, categorias, taxas de entrega e pedidos em tempo real.">
 
   <!-- Google Fonts: Anton & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
-
-  <!-- Supabase JS Client CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -40,8 +37,6 @@
               cardDark: '#1E1713',
               textMuted: '#8C827A',
               textDark: '#2B211B',
-              surface: '#FFFFFF',
-              border: '#EFE6DB',
             }
           },
           fontFamily: {
@@ -49,8 +44,7 @@
             poppins: ['Poppins', 'sans-serif'],
           },
           boxShadow: {
-            'card-dark': '0 10px 30px -10px rgba(0, 0, 0, 0.7)',
-            'electric': '0 0 35px rgba(249, 115, 22, 0.3), inset 0 0 20px rgba(249, 115, 22, 0.08)',
+            'card-dark': '0 15px 35px -10px rgba(0, 0, 0, 0.7)',
             'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
           }
         }
@@ -61,22 +55,14 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.3s ease, color 0.3s ease;
       background-color: #080504;
       color: #F3EBE1;
     }
-
     h1, h2, h3, h4, .font-anton, .title-anton {
       font-family: 'Anton', sans-serif;
       letter-spacing: 0.035em;
       text-transform: uppercase;
     }
-
-    .font-poppins, p, span, input, textarea, button, label {
-      font-family: 'Poppins', sans-serif;
-    }
-
     .stars {
       background-image:
         radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
@@ -86,29 +72,13 @@
         radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
       background-size: 200px 200px;
     }
-
     .grid-bg-dark {
       background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
       background-size: 32px 32px;
     }
-
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    @media screen and (max-width: 768px) {
-      input, select, textarea {
-        font-size: 16px !important;
-        line-height: 1.4 !important;
-        transform: translateZ(0);
-        touch-action: manipulation;
-      }
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 
@@ -121,7 +91,7 @@
     <div class="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[140px] rounded-full"></div>
   </div>
 
-  <!-- TOP BAR DO RESTAURANTE -->
+  <!-- HEADER DO RESTAURANTE -->
   <header class="sticky top-0 z-40 bg-[#0E0A08]/95 backdrop-blur-2xl border-b border-brand-darkBorder px-4 sm:px-8 py-3.5 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-xl shadow-orange-glow border border-white/20 shrink-0">
@@ -130,10 +100,9 @@
       <div>
         <div class="flex items-center gap-2">
           <h1 id="topbar-store-name" class="font-anton text-base sm:text-lg text-white tracking-wider leading-none">SÃO JOSÉ BURGUER</h1>
-          <button id="store-status-btn" onclick="toggleStoreOpenStatus()" class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1.5 transition-all">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="store-status-text">LOJA ABERTA</span>
-          </button>
+          <span id="plan-badge" class="px-2 py-0.5 rounded-full bg-brand-orange/20 border border-brand-orange/40 text-brand-orange font-anton text-[9px] uppercase">
+            PEDIDOVALE PRO
+          </span>
         </div>
         <span class="text-[10px] text-brand-textMuted font-mono" id="topbar-store-slug">pedidovale.com.br/sao-jose</span>
       </div>
@@ -141,17 +110,16 @@
 
     <!-- AÇÕES RÁPIDAS TOPBAR -->
     <div class="flex items-center gap-2 sm:gap-3">
-      <a href="index-sj.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-brand-orange/15 hover:bg-brand-orange text-brand-orange hover:text-white border border-brand-orange/30 font-anton text-xs tracking-wider flex items-center gap-1.5 transition-all">
+      <a href="index-sj.html" id="topbar-view-menu-btn" target="_blank" class="px-3.5 py-2 rounded-xl bg-brand-orange/15 hover:bg-brand-orange text-brand-orange hover:text-white border border-brand-orange/30 font-anton text-xs tracking-wider flex items-center gap-1.5 transition-all">
         <span>🌐</span>
         <span class="hidden sm:inline">VER CARDÁPIO ONLINE</span>
       </a>
-      <button onclick="copyStoreMenuLink()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-colors" title="Copiar Link do Cardápio">
-        <span>🔗</span>
-        <span class="hidden md:inline">Copiar Link</span>
+      <button onclick="switchStoreTab('settings')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-colors">
+        <span>⚙️</span>
+        <span class="hidden md:inline">Minha Conta</span>
       </button>
-      <a href="index.html" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-colors" title="Voltar ao Super Admin Master">
-        <span>👑</span>
-        <span class="hidden lg:inline">Super Admin</span>
+      <a href="login.html" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Sair da Conta">
+        <span>🚪</span>
       </a>
     </div>
   </header>
@@ -159,9 +127,13 @@
   <!-- NAVEGAÇÃO DE ABAS DO RESTAURANTE -->
   <div class="bg-[#120D0A]/90 border-b border-brand-darkBorder px-4 sm:px-8 py-2 sticky top-[65px] z-30 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
-      <button onclick="switchStoreTab('products')" id="tab-btn-products" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider bg-brand-orange text-white shadow-orange-glow transition-all shrink-0 flex items-center gap-2">
+      <button onclick="switchStoreTab('dashboard')" id="tab-btn-dashboard" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider bg-brand-orange text-white shadow-orange-glow transition-all shrink-0 flex items-center gap-2">
+        <span>📊</span>
+        <span>PAINEL PRINCIPAL</span>
+      </button>
+      <button onclick="switchStoreTab('products')" id="tab-btn-products" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>🍔</span>
-        <span>PRODUTOS & CARDÁPIO</span>
+        <span>CARDÁPIO & PRODUTOS</span>
       </button>
       <button onclick="switchStoreTab('categories')" id="tab-btn-categories" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>📂</span>
@@ -181,8 +153,8 @@
         <span>PAGAMENTO & PIX</span>
       </button>
       <button onclick="switchStoreTab('settings')" id="tab-btn-settings" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
-        <span>⚙️</span>
-        <span>DADOS DA LOJA</span>
+        <span>👤</span>
+        <span>CONTA & FATURAMENTO</span>
       </button>
     </div>
   </div>
@@ -191,23 +163,157 @@
   <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full relative z-10 space-y-6">
 
     <!-- ========================================================================= -->
-    <!-- ABA 1: PRODUTOS & CARDÁPIO -->
+    <!-- BANNER PERÍODO DE TESTE (7 DIAS GRÁTIS) -->
     <!-- ========================================================================= -->
-    <div id="store-view-products" class="store-tab-pane space-y-6">
+    <div id="trial-banner" class="bg-[#18120E] border border-amber-500/30 rounded-3xl p-5 shadow-card-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-start sm:items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl shrink-0">
+          ⏳
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-anton text-sm text-white tracking-wide">PERÍODO DE TESTE</span>
+            <span id="trial-days-left" class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold text-[10px]">7 dias restantes</span>
+          </div>
+          <p class="text-xs text-brand-textMuted mt-0.5">
+            Você está testando o PedidoVale gratuitamente. Assine para não perder o acesso ao seu painel e cardápio.
+          </p>
+        </div>
+      </div>
+      <button onclick="openSubscriptionModal()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all shrink-0">
+        ASSINAR AGORA
+      </button>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 0: PAINEL PRINCIPAL (DASHBOARD) -->
+    <!-- ========================================================================= -->
+    <div id="store-view-dashboard" class="store-tab-pane space-y-6">
+      
+      <!-- 3 CARDS RÁPIDOS (REFERÊNCIA) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button onclick="switchStoreTab('orders')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark text-left space-y-2 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📊</span>
+            <div>
+              <h3 class="font-anton text-sm text-white tracking-wide group-hover:text-brand-orange transition-colors">PAINEL DE ANÁLISES</h3>
+              <p class="text-[11px] text-brand-textMuted">Métricas e desempenho do seu negócio</p>
+            </div>
+          </div>
+        </button>
+
+        <button onclick="openQrCodeModal()" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark text-left space-y-2 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📱</span>
+            <div>
+              <h3 class="font-anton text-sm text-white tracking-wide group-hover:text-brand-orange transition-colors">LINK & QR CODE</h3>
+              <p class="text-[11px] text-brand-textMuted">Copie o link e gere seu QR Code de mesa</p>
+            </div>
+          </div>
+        </button>
+
+        <button onclick="switchStoreTab('products')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark text-left space-y-2 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🍔</span>
+            <div>
+              <h3 class="font-anton text-sm text-white tracking-wide group-hover:text-brand-orange transition-colors">CARDÁPIO</h3>
+              <p class="text-[11px] text-brand-textMuted">Edite categorias, produtos e fotos</p>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <!-- CARD DO ESTABELECIMENTO (REFERÊNCIA DA IMAGEM 1) -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-anton text-lg text-white tracking-wider">MEU ESTABELECIMENTO</h2>
+          <button onclick="switchStoreTab('settings')" class="text-xs text-brand-orange hover:underline font-semibold">
+            ⚙️ Ajustes da Loja
+          </button>
+        </div>
+
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-6">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brand-darkBorder">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl">
+                🏪
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 id="dash-store-name" class="font-anton text-xl text-white tracking-wide">SÃO JOSÉ BURGUER</h3>
+                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">ATIVO</span>
+                </div>
+                <div class="flex items-center gap-3 mt-1.5">
+                  <span class="text-xs text-stone-400 font-medium">Aceitar pedidos?</span>
+                  <button id="switch-orders-btn" onclick="toggleStoreOpenStatus()" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white">
+                    Sim
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span id="dash-products-count" class="px-3 py-1.5 rounded-xl bg-white/5 text-stone-300 text-xs font-semibold">
+                4 Produtos cadastrados
+              </span>
+            </div>
+          </div>
+
+          <!-- BOTÕES DE AÇÃO OPERACIONAIS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onclick="switchStoreTab('products')" class="py-4 rounded-2xl bg-brand-orange hover:bg-brand-orangeHover text-white font-anton text-sm tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center justify-center gap-2">
+              <span>🍔</span>
+              <span>EDITAR CARDÁPIO (PRODUTOS & FOTOS)</span>
+            </button>
+            <button onclick="switchStoreTab('orders')" class="py-4 rounded-2xl bg-[#1E1713] hover:bg-[#29211C] border border-white/10 text-white font-anton text-sm tracking-wider active:scale-95 transition-all flex items-center justify-center gap-2">
+              <span>📋</span>
+              <span>LISTAR PEDIDOS EM TEMPO REAL</span>
+            </button>
+          </div>
+
+          <!-- LINKS RÁPIDOS & COMPARTILHAMENTO -->
+          <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+            <span class="text-xs font-anton text-brand-orange tracking-wider block">LINK PARA COMPARTILHAR SEU CARDÁPIO:</span>
+            
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-amber-400 font-mono overflow-x-auto" id="share-link-input">
+                https://www.pedidovale.com.br/index-sj.html?store=sao-jose
+              </div>
+              <button onclick="copyStoreMenuLink()" class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                <span>📋</span>
+                <span>Copiar Link</span>
+              </button>
+              <button onclick="shareOnWhatsApp()" class="px-4 py-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                <span>📱</span>
+                <span>Enviar no Zap</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 1: CARDÁPIO & PRODUTOS (COM UPLOAD DE FOTOS) -->
+    <!-- ========================================================================= -->
+    <div id="store-view-products" class="store-tab-pane hidden space-y-6">
       
       <!-- CABEÇALHO PRODUTOS & AÇÕES -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
         <div>
           <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
             <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-            ITENS & PRODUTOS DO CARDÁPIO
+            PRODUTOS DO CARDÁPIO COM FOTOS
           </h2>
-          <p class="text-xs text-brand-textMuted mt-0.5">Cadastre, edite preços, pause itens esgotados e adicione complementos</p>
+          <p class="text-xs text-brand-textMuted mt-0.5">Cadastre itens com fotos, preços promocionais e complementos</p>
         </div>
 
         <button onclick="openCreateProductModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 self-start sm:self-auto">
           <span class="text-sm">+</span>
-          <span>CADASTRAR NOVO PRODUTO</span>
+          <span>NOVO PRODUTO</span>
         </button>
       </div>
 
@@ -217,7 +323,7 @@
           type="text" 
           id="product-search-input"
           oninput="renderProductsList()"
-          placeholder="Buscar produto por nome ou ingrediente..." 
+          placeholder="🔍 Localizar produto rapidamente..." 
           class="bg-[#120D0A] border border-brand-darkBorder rounded-2xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange"
         />
         <select id="product-category-filter" onchange="renderProductsList()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-brand-orange">
@@ -247,7 +353,7 @@
             <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
             CATEGORIAS DO CARDÁPIO
           </h2>
-          <p class="text-xs text-brand-textMuted mt-0.5">Organize as seções que os clientes verão no cardápio online</p>
+          <p class="text-xs text-brand-textMuted mt-0.5">Organize as seções do seu cardápio (Burgers, Bebidas, Sobremesas...)</p>
         </div>
 
         <button onclick="openCreateCategoryModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 self-start sm:self-auto">
@@ -262,16 +368,16 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- ABA 3: PEDIDOS AO VIVO (GESTOR DE PEDIDOS) -->
+    <!-- ABA 3: PEDIDOS AO VIVO (KANBAN) -->
     <!-- ========================================================================= -->
     <div id="store-view-orders" class="store-tab-pane hidden space-y-6">
       <div class="flex items-center justify-between bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
         <div>
           <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
             <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-            GESTOR DE PEDIDOS EM TEMPO REAL
+            GESTOR DE PEDIDOS AO VIVO
           </h2>
-          <p class="text-xs text-brand-textMuted mt-0.5">Acompanhe novos pedidos recebidos via WhatsApp / Cardápio</p>
+          <p class="text-xs text-brand-textMuted mt-0.5">Acompanhe novos pedidos recebidos em tempo real</p>
         </div>
         <button onclick="clearCompletedOrders()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold border border-white/10 transition-colors">
           Limpar Concluídos
@@ -279,7 +385,7 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Coluna: Novos Pedidos -->
+        <!-- Novos Pedidos -->
         <div class="bg-[#120D0A]/90 border border-brand-orange/30 rounded-3xl p-4 space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-brand-darkBorder">
             <h3 class="font-anton text-sm text-brand-orange tracking-wider flex items-center gap-2">
@@ -288,12 +394,10 @@
             </h3>
             <span id="count-new-orders" class="font-anton text-xs text-stone-400">0</span>
           </div>
-          <div id="orders-column-new" class="space-y-3 min-h-[250px]">
-            <!-- Injetado via JS -->
-          </div>
+          <div id="orders-column-new" class="space-y-3 min-h-[250px]"></div>
         </div>
 
-        <!-- Coluna: Em Preparo / Cozinha -->
+        <!-- Em Preparo -->
         <div class="bg-[#120D0A]/90 border border-amber-500/30 rounded-3xl p-4 space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-brand-darkBorder">
             <h3 class="font-anton text-sm text-amber-400 tracking-wider flex items-center gap-2">
@@ -302,12 +406,10 @@
             </h3>
             <span id="count-prep-orders" class="font-anton text-xs text-stone-400">0</span>
           </div>
-          <div id="orders-column-prep" class="space-y-3 min-h-[250px]">
-            <!-- Injetado via JS -->
-          </div>
+          <div id="orders-column-prep" class="space-y-3 min-h-[250px]"></div>
         </div>
 
-        <!-- Coluna: Saiu p/ Entrega / Finalizados -->
+        <!-- Entrega -->
         <div class="bg-[#120D0A]/90 border border-emerald-500/30 rounded-3xl p-4 space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-brand-darkBorder">
             <h3 class="font-anton text-sm text-emerald-400 tracking-wider flex items-center gap-2">
@@ -316,9 +418,7 @@
             </h3>
             <span id="count-delivery-orders" class="font-anton text-xs text-stone-400">0</span>
           </div>
-          <div id="orders-column-delivery" class="space-y-3 min-h-[250px]">
-            <!-- Injetado via JS -->
-          </div>
+          <div id="orders-column-delivery" class="space-y-3 min-h-[250px]"></div>
         </div>
       </div>
     </div>
@@ -377,9 +477,9 @@
         <div>
           <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
             <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-            CHAVE PIX & FORMAS DE PAGAMENTO DO RESTAURANTE
+            CHAVE PIX & PAGAMENTOS DO RESTAURANTE
           </h2>
-          <p class="text-xs text-brand-textMuted mt-0.5">Seus clientes pagarão diretamente para sua conta via Pix ou no ato da entrega</p>
+          <p class="text-xs text-brand-textMuted mt-0.5">Seus clientes pagarão diretamente para sua conta via Pix</p>
         </div>
 
         <form onsubmit="savePaymentSettingsForm(event)" class="space-y-4 text-xs font-poppins">
@@ -417,7 +517,7 @@
             </label>
             <label class="flex items-center gap-2.5 text-stone-300 cursor-pointer">
               <input type="checkbox" id="pay-accept-cash" checked class="rounded accent-brand-orange" />
-              <span>Dinheiro (com opção de solicitar troco)</span>
+              <span>Dinheiro (com opção de troco)</span>
             </label>
           </div>
 
@@ -429,126 +529,164 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- ABA 6: DADOS DA LOJA & HORÁRIOS -->
+    <!-- ABA 6: CONTA & DADOS DE FATURAMENTO (IMAGEM 4 REFERÊNCIA) -->
     <!-- ========================================================================= -->
     <div id="store-view-settings" class="store-tab-pane hidden space-y-6">
-      <div class="max-w-2xl bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-5">
-        <div>
-          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
-            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-            DADOS DO RESTAURANTE & WHATSAPP
-          </h2>
-          <p class="text-xs text-brand-textMuted mt-0.5">Informações que aparecem no cabeçalho do cardápio e onde chegam os pedidos</p>
+      <div class="max-w-2xl space-y-6">
+        
+        <!-- Perfil da Loja -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-4">
+          <div>
+            <h3 class="font-anton text-lg text-white tracking-wide">PERFIL DO RESTAURANTE</h3>
+            <p class="text-xs text-brand-textMuted">Atualize os dados principais de atendimento</p>
+          </div>
+
+          <form onsubmit="saveStoreGeneralSettingsForm(event)" class="space-y-4 text-xs font-poppins">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete:</label>
+              <input type="text" id="store-name-input" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp para Receber os Pedidos:</label>
+                <input type="text" id="store-whatsapp-input" placeholder="Ex: 5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-mono focus:outline-none focus:border-brand-orange" required />
+              </div>
+              <div>
+                <label class="block text-stone-300 font-semibold mb-1.5">Endereço / Cidade:</label>
+                <input type="text" id="store-address-input" placeholder="Ex: Av. Principal, 100 - Centro" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Horário de Atendimento:</label>
+              <input type="text" id="store-hours-input" placeholder="Ex: Terça a Domingo das 18h às 23h30" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
+              SALVAR PERFIL DA LOJA
+            </button>
+          </form>
         </div>
 
-        <form onsubmit="saveStoreGeneralSettingsForm(event)" class="space-y-4 text-xs font-poppins">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete:</label>
-            <input type="text" id="store-name-input" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp para Receber os Pedidos:</label>
-              <input type="text" id="store-whatsapp-input" placeholder="Ex: 5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-mono focus:outline-none focus:border-brand-orange" required />
-            </div>
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Endereço / Cidade:</label>
-              <input type="text" id="store-address-input" placeholder="Ex: Av. Principal, 100 - Centro" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Horário de Atendimento:</label>
-            <input type="text" id="store-hours-input" placeholder="Ex: Terça a Domingo das 18h às 23h30" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
-          </div>
-
-          <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
-            SALVAR DADOS DO RESTAURANTE
-          </button>
-        </form>
       </div>
     </div>
 
   </main>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: CADASTRAR / EDITAR PRODUTO -->
+  <!-- MODAL: NOVO / EDITAR PRODUTO COM FOTO (IMAGEM 3 DA REFERÊNCIA) -->
   <!-- ========================================================================= -->
-  <div id="product-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+  <div id="product-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-lg w-full max-h-[92vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
+      
       <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
-        <h3 id="modal-product-title" class="font-anton text-lg text-white tracking-wide">CADASTRAR PRODUTO</h3>
+        <div>
+          <h3 id="modal-product-title" class="font-anton text-lg text-white tracking-wide">NOVO PRODUTO</h3>
+          <p class="text-[11px] text-brand-textMuted">Adicione um novo item com foto ao seu cardápio</p>
+        </div>
         <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
       </div>
 
       <form id="form-product" onsubmit="saveProductForm(event)" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs no-scrollbar">
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Produto *</label>
-          <input type="text" id="prod-name" placeholder="Ex: Smash Salad Duplo" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+        
+        <!-- FOTO DO PRODUTO (UPLOAD & PREVIEW) -->
+        <div class="space-y-2">
+          <label class="block text-stone-300 font-semibold">Foto do Produto:</label>
+          
+          <div class="flex items-center gap-3">
+            <!-- Box de Upload -->
+            <label class="cursor-pointer flex flex-col items-center justify-center w-28 h-28 rounded-2xl border-2 border-dashed border-brand-orange/40 hover:border-brand-orange bg-white/5 hover:bg-brand-orange/10 transition-all text-center p-2 relative overflow-hidden group">
+              <input type="file" id="prod-image-file" accept="image/*" onchange="handleProductImageUpload(event)" class="hidden" />
+              <div id="image-upload-placeholder" class="space-y-1">
+                <span class="text-2xl block text-brand-orange">+</span>
+                <span class="text-[10px] text-stone-300 font-bold block">Upload Foto</span>
+              </div>
+              <img id="prod-image-preview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl" />
+            </label>
+
+            <div class="flex-1 space-y-1.5">
+              <span class="text-[11px] text-stone-300 font-semibold block">Ou cole a URL da imagem:</span>
+              <input 
+                type="url" 
+                id="prod-image-url" 
+                placeholder="https://exemplo.com/hamburguer.jpg" 
+                oninput="handleProductImageUrl(this.value)"
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+              />
+              <span class="text-[10px] text-stone-500 block">Formatos recomendados: JPG, PNG, WEBP.</span>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- NOME DO PRODUTO -->
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Produto *</label>
+          <input type="text" id="prod-name" placeholder="Ex: Smash Bacon Burger" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+        </div>
+
+        <!-- DESCRIÇÃO -->
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Descrição (Ingredientes, tamanho, etc.)</label>
+          <textarea id="prod-desc" rows="2.5" placeholder="Pão brioche selado, 2x smash burger 90g, queijo cheddar derretido, bacon crocante e molho especial..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3.5 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
+        </div>
+
+        <!-- CATEGORIA, PREÇO & PREÇO PROMOCIONAL -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-stone-300 font-semibold mb-1.5">Categoria *</label>
-            <select id="prod-category" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required>
-              <!-- Preenchido dinamicamente -->
-            </select>
+            <select id="prod-category" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange" required></select>
           </div>
           <div>
             <label class="block text-stone-300 font-semibold mb-1.5">Preço (R$) *</label>
-            <input type="number" step="0.5" id="prod-price" placeholder="32.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-anton text-sm text-amber-400 focus:outline-none focus:border-brand-orange" required />
+            <input type="number" step="0.5" id="prod-price" placeholder="32.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white font-anton text-sm text-amber-400 focus:outline-none focus:border-brand-orange" required />
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Preço Promocional</label>
+            <input type="number" step="0.5" id="prod-promo-price" placeholder="28.90" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white font-anton text-sm text-emerald-400 focus:outline-none focus:border-brand-orange" />
           </div>
         </div>
 
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Descrição / Ingredientes</label>
-          <textarea id="prod-desc" rows="2.5" placeholder="Ex: Pão brioche tostado na manteiga, 2x smash burger 90g, queijo cheddar derretido, alface, tomate e maionese especial..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3.5 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Disponibilidade</label>
-            <select id="prod-status" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange">
-              <option value="active">🟢 Disponível no Cardápio</option>
-              <option value="paused">⏸️ Pausado (Esgotado)</option>
-            </select>
+        <!-- SWITCHES DE DESTAQUE (REFERÊNCIA DA IMAGEM 3) -->
+        <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-stone-300 font-medium">Disponível no Cardápio</span>
+            <input type="checkbox" id="prod-available-switch" checked class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
           </div>
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Destaque</label>
-            <select id="prod-badge" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange">
-              <option value="">Nenhum</option>
-              <option value="Mais Pedido">🔥 Mais Pedido</option>
-              <option value="Novidade">✨ Novidade</option>
-              <option value="Promoção">🏷️ Promoção</option>
-            </select>
+          <div class="flex items-center justify-between">
+            <span class="text-stone-300 font-medium">Destaque ⭐</span>
+            <input type="checkbox" id="prod-featured-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-stone-300 font-medium">Novo ✨</span>
+            <input type="checkbox" id="prod-new-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-stone-300 font-medium">Popular 🔥</span>
+            <input type="checkbox" id="prod-popular-switch" class="w-5 h-5 rounded accent-brand-orange cursor-pointer" />
           </div>
         </div>
 
         <!-- ADICIONAIS / COMPLEMENTOS -->
-        <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-2">
+        <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-2.5">
           <div class="flex items-center justify-between">
-            <span class="font-anton text-xs text-brand-orange tracking-wide">ADICIONAIS / COMPLEMENTOS</span>
-            <span class="text-[10px] text-stone-400">Opcionais para o cliente turbinar</span>
+            <span class="font-anton text-xs text-brand-orange tracking-wide">OPCIONAIS & COMPLEMENTOS</span>
+            <span class="text-[10px] text-stone-400">Turbine as vendas com adicionais</span>
           </div>
-          <div id="product-extras-container" class="space-y-2">
-            <!-- Injetado dinamicamente -->
-          </div>
+          <div id="product-extras-container" class="space-y-2"></div>
           <button type="button" onclick="addProductExtraRow()" class="text-xs text-emerald-400 hover:underline font-semibold flex items-center gap-1 pt-1">
             <span>+ Adicionar Opção Extra</span>
           </button>
         </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs mt-2">
+        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs mt-2">
           SALVAR PRODUTO NO CARDÁPIO
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: CADASTRAR / EDITAR CATEGORIA -->
-  <!-- ========================================================================= -->
+  <!-- MODAL CATEGORIA -->
   <div id="category-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col font-poppins">
       <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
@@ -580,7 +718,6 @@
     <span id="admin-toast-text">Ação executada!</span>
   </div>
 
-  <!-- Script do Painel do Restaurante -->
   <script src="admin.js"></script>
 
 </body>
