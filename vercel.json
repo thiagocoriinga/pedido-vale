@@ -1,34 +1,10 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/cadastro",
-      "destination": "/cadastro.html"
-    },
-    {
-      "source": "/login",
-      "destination": "/login.html"
-    },
-    {
-      "source": "/admin",
-      "destination": "/admin.html"
-    },
-    {
-      "source": "/admin/:store*",
-      "destination": "/admin.html"
-    },
-    {
-      "source": "/superadmin",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/assets/:match*",
-      "destination": "/assets/:match*"
-    },
-    {
-      "source": "/((?!api|admin|login|cadastro|superadmin|assets|css|js|favicon.ico|_next|manifest.json|.*\\..*).*)",
-      "destination": "/index-sj.html"
-    }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/admin(.*)", "dest": "/admin.html" },
+    { "src": "/login", "dest": "/login.html" },
+    { "src": "/cadastro", "dest": "/cadastro.html" },
+    { "src": "/superadmin", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/index-sj.html" }
   ]
 }
