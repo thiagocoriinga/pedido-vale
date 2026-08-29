@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#080504">
-  <title>Super Admin • Gestão de Empresas & Mensalidades</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="../assets/e8392808a1c7659c_favicon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>PedidoVale • Super Admin Master 👑</title>
+  <meta name="description" content="Painel de Controle Central PedidoVale - Gestão de Restaurantes, Faturamento e Mensalidades.">
 
   <!-- Google Fonts: Anton & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,6 @@
 
   <!-- Supabase JS Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/supabase-client.js"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,18 +28,31 @@
           colors: {
             brand: {
               cream: '#FBF5ED',
+              creamDark: '#F2E8DA',
               orange: '#FF5E1E',
               orangeHover: '#E54A0D',
+              orangeLight: '#FFF0EA',
               amber: '#FF9E1B',
               dark: '#080504',
               darkSurface: '#120D0A',
               darkCard: '#18120E',
-              darkBorder: '#29211C'
+              darkBorder: '#29211C',
+              cardDark: '#1E1713',
+              textMuted: '#8C827A',
+              textDark: '#2B211B',
+              surface: '#FFFFFF',
+              border: '#EFE6DB',
             }
           },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
           boxShadow: {
-            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.4)',
-            'card-dark': '0 20px 40px -15px rgba(0, 0, 0, 0.7)'
+            'card-dark': '0 10px 30px -10px rgba(0, 0, 0, 0.7)',
+            'card-light': '0 10px 30px -10px rgba(140, 90, 60, 0.1)',
+            'electric': '0 0 35px rgba(249, 115, 22, 0.3), inset 0 0 20px rgba(249, 115, 22, 0.08)',
+            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
           }
         }
       }
@@ -49,59 +61,99 @@
 
   <style>
     body {
-      background-color: #080504;
-      color: #F3F4F6;
       font-family: 'Poppins', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      background-color: #080504;
+      color: #F3EBE1;
     }
-    h1, h2, h3, h4, .font-anton {
+
+    h1, h2, h3, h4, .font-anton, .title-anton {
       font-family: 'Anton', sans-serif;
       letter-spacing: 0.035em;
       text-transform: uppercase;
     }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
+
+    .price-tag, .price-anton {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.025em;
+    }
+
+    .font-poppins, p, span, input, textarea, button, label {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .stars {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+      background-size: 200px 200px;
+    }
+
     .grid-bg-dark {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
       background-size: 32px 32px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 94, 30, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 94, 30, 0.05) 1px, transparent 1px);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @media screen and (max-width: 768px) {
+      input, select, textarea {
+        font-size: 16px !important;
+        line-height: 1.4 !important;
+        transform: translateZ(0);
+        touch-action: manipulation;
+      }
+    }
+
+    .ease-spring {
+      transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="min-h-screen flex flex-col relative overflow-x-hidden stars">
 
-  <!-- AURA BACKGROUND -->
+  <!-- AURA BACKGROUND GLOW -->
   <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
     <div class="grid-bg-dark absolute inset-0"></div>
-    <div class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-orange-600/10 blur-[140px] rounded-full"></div>
-    <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[130px] rounded-full"></div>
+    <div class="absolute -top-32 right-1/4 w-[650px] h-[650px] bg-orange-600/10 blur-[150px] rounded-full"></div>
+    <div class="absolute bottom-10 left-1/4 w-[550px] h-[550px] bg-amber-600/10 blur-[140px] rounded-full"></div>
   </div>
 
   <!-- ========================================================================= -->
   <!-- 1. TELA DE LOGIN / AUTENTICAÇÃO DO SUPER ADMIN -->
   <!-- ========================================================================= -->
   <div id="superadmin-login-screen" class="fixed inset-0 z-[200] bg-[#080504] flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-[#120D0A] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+    <div class="w-full max-w-md bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark space-y-6 relative overflow-hidden backdrop-blur-2xl">
       <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-orange/20 blur-3xl rounded-full pointer-events-none"></div>
 
       <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl mx-auto bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-3xl shadow-lg border border-white/20">
+        <div class="w-16 h-16 rounded-2xl mx-auto bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-3xl shadow-orange-glow border border-white/20">
           👑
         </div>
-        <h2 class="text-2xl font-anton tracking-wider text-white">PAINEL SUPER ADMIN</h2>
-        <p class="text-xs text-stone-400">Gestão Global de Empresas & Mensalidades</p>
+        <h2 class="text-3xl font-anton tracking-wider text-white">PEDIDOVALE MASTER</h2>
+        <p class="text-xs text-brand-textMuted">Controle Global de Restaurantes & Mensalidades</p>
       </div>
 
       <form onsubmit="handleSuperAdminLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-anton text-white tracking-wide mb-1.5">SENHA MESTRE:</label>
+          <label class="block text-xs font-anton text-brand-cream tracking-wider mb-1.5">SENHA MESTRE:</label>
           <input 
             type="password" 
             id="superadmin-password-input" 
-            placeholder="Digite a senha mestre de super admin" 
-            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange transition-colors"
+            placeholder="Digite a senha mestre" 
+            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 transition-all"
             required
             autofocus
           />
@@ -109,7 +161,7 @@
 
         <button 
           type="submit" 
-          class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-110 text-white font-anton tracking-wide py-3.5 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+          class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
         >
           <span>ENTRAR NO SUPER ADMIN</span>
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
@@ -117,7 +169,7 @@
       </form>
 
       <div class="text-center">
-        <span class="text-[11px] text-stone-400">Senha padrão: <code class="text-brand-orange font-bold">admin</code></span>
+        <span class="text-[11px] text-stone-500">Senha padrão: <code class="text-brand-orange font-bold">admin</code></span>
       </div>
     </div>
   </div>
@@ -128,40 +180,48 @@
   <div id="superadmin-main-layout" class="hidden flex-1 flex flex-col md:flex-row relative z-10 min-h-screen">
     
     <!-- SIDEBAR PERSISTENTE -->
-    <aside class="w-full md:w-64 bg-[#0E0A08]/95 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/10 flex md:flex-col justify-between p-4 md:p-6 sticky top-0 z-40 md:h-screen">
+    <aside class="w-full md:w-72 bg-[#0E0A08]/95 backdrop-blur-2xl border-b md:border-b-0 md:border-r border-brand-darkBorder flex md:flex-col justify-between p-4 md:p-6 sticky top-0 z-40 md:h-screen">
       
       <!-- Brand & Navigation -->
       <div class="space-y-6 w-full flex md:block items-center justify-between">
         
         <!-- Logo & Titulo -->
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-xl shadow-md border border-white/15">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-2xl shadow-orange-glow border border-white/20 shrink-0">
             👑
           </div>
           <div>
-            <h1 class="font-anton text-base text-white tracking-wider leading-none">SUPER ADMIN</h1>
-            <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Multi-Delivery</span>
+            <h1 class="font-anton text-lg text-white tracking-wider leading-none">PEDIDOVALE</h1>
+            <div class="flex items-center gap-1.5 mt-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Super Admin OS</span>
+            </div>
           </div>
         </div>
 
         <!-- Menu Links -->
-        <nav class="hidden md:flex flex-col space-y-1.5 pt-4">
-          <button onclick="switchSuperTab('dashboard')" id="super-btn-dashboard" class="super-sidebar-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-semibold text-white bg-brand-orange transition-all">
+        <nav class="hidden md:flex flex-col space-y-2 pt-4">
+          <button onclick="switchSuperTab('dashboard')" id="super-btn-dashboard" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-white bg-brand-orange shadow-orange-glow transition-all">
             <span class="text-base">📊</span>
             <span>Visão Geral & MRR</span>
           </button>
           
-          <button onclick="switchSuperTab('tenants')" id="super-btn-tenants" class="super-sidebar-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-semibold text-stone-400 hover:text-white hover:bg-white/5 transition-all">
+          <button onclick="switchSuperTab('tenants')" id="super-btn-tenants" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-brand-textMuted hover:text-white hover:bg-white/5 transition-all">
             <span class="text-base">🏢</span>
-            <span>Empresas & Lojas</span>
+            <span>Restaurantes & Lojas</span>
           </button>
 
-          <button onclick="switchSuperTab('financial')" id="super-btn-financial" class="super-sidebar-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-semibold text-stone-400 hover:text-white hover:bg-white/5 transition-all">
+          <button onclick="switchSuperTab('financial')" id="super-btn-financial" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-brand-textMuted hover:text-white hover:bg-white/5 transition-all">
             <span class="text-base">💰</span>
             <span>Mensalidades & Pix</span>
           </button>
 
-          <button onclick="switchSuperTab('settings')" id="super-btn-settings" class="super-sidebar-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-semibold text-stone-400 hover:text-white hover:bg-white/5 transition-all">
+          <button onclick="openClientAppSimulator()" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 border border-amber-500/20 transition-all">
+            <span class="text-base">📱</span>
+            <span>Simulador App Cliente</span>
+          </button>
+
+          <button onclick="switchSuperTab('settings')" id="super-btn-settings" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-brand-textMuted hover:text-white hover:bg-white/5 transition-all">
             <span class="text-base">⚙️</span>
             <span>Configurações Master</span>
           </button>
@@ -169,17 +229,16 @@
 
       </div>
 
-      <!-- Quick Actions / Logout -->
-      <div class="hidden md:flex flex-col space-y-2 pt-6 border-t border-white/10">
-        <a href="../index.html" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-stone-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">
-          <span>🌐</span>
-          <span>Ver Cardápio Modelo</span>
+      <!-- Quick Actions / Links -->
+      <div class="hidden md:flex flex-col space-y-2 pt-6 border-t border-brand-darkBorder">
+        <a href="index-sj.html" target="_blank" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-stone-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">
+          <span class="flex items-center gap-2">
+            <span>🍔</span>
+            <span>Abrir Cardápio Cliente</span>
+          </span>
+          <span class="text-[10px] text-brand-orange font-anton">ABRIR ↗</span>
         </a>
-        <a href="../admin.html" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-stone-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">
-          <span>📋</span>
-          <span>Painel do Lojista</span>
-        </a>
-        <button onclick="handleSuperAdminLogout()" class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors">
+        <button onclick="handleSuperAdminLogout()" class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-left">
           <span>🚪</span>
           <span>Sair do Super Admin</span>
         </button>
@@ -187,10 +246,11 @@
 
       <!-- MOBILE BOTTOM NAV -->
       <div class="md:hidden flex items-center gap-2">
-        <button onclick="switchSuperTab('dashboard')" class="p-2 rounded-xl bg-white/5 text-white">📊</button>
-        <button onclick="switchSuperTab('tenants')" class="p-2 rounded-xl bg-white/5 text-white">🏢</button>
-        <button onclick="switchSuperTab('financial')" class="p-2 rounded-xl bg-white/5 text-white">💰</button>
-        <button onclick="switchSuperTab('settings')" class="p-2 rounded-xl bg-white/5 text-white">⚙️</button>
+        <button onclick="switchSuperTab('dashboard')" class="p-2.5 rounded-xl bg-white/5 text-white">📊</button>
+        <button onclick="switchSuperTab('tenants')" class="p-2.5 rounded-xl bg-white/5 text-white">🏢</button>
+        <button onclick="switchSuperTab('financial')" class="p-2.5 rounded-xl bg-white/5 text-white">💰</button>
+        <button onclick="openClientAppSimulator()" class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400">📱</button>
+        <button onclick="switchSuperTab('settings')" class="p-2.5 rounded-xl bg-white/5 text-white">⚙️</button>
       </div>
 
     </aside>
@@ -203,74 +263,108 @@
       <!-- ========================================================================= -->
       <div id="super-view-dashboard" class="super-tab-content space-y-6">
         
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-2xl sm:text-3xl font-anton text-white tracking-wider flex items-center gap-2">
-              <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-              VISÃO GERAL DA SUA PLATAFORMA
-            </h2>
-            <p class="text-xs text-stone-400 mt-1">Acompanhe faturamento recorrente (MRR), total de restaurantes e crescimento</p>
-          </div>
+        <!-- HERO BANNER -->
+        <div class="bg-gradient-to-r from-[#18120E] to-[#120D0A] border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark relative overflow-hidden">
+          <div class="absolute -top-16 -right-16 w-56 h-56 bg-brand-orange/15 blur-3xl rounded-full pointer-events-none"></div>
+          
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div class="space-y-2">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>PLATAFORMA 100% OPERACIONAL</span>
+              </div>
+              <h2 class="text-3xl sm:text-4xl font-anton text-white tracking-wider">
+                CENTRAL DE COMANDO PEDIDOVALE
+              </h2>
+              <p class="text-xs sm:text-sm text-brand-textMuted max-w-xl">
+                Monitore sua receita recorrente mensal (MRR), restaurantes ativos, novos testes gratuitos e realize cobranças automáticas no WhatsApp.
+              </p>
+            </div>
 
-          <button onclick="openCreateTenantModal()" class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-anton text-xs tracking-wide shadow-orange-glow active:scale-95 transition-all flex items-center gap-2">
-            <span>+</span>
-            <span>CADASTRAR NOVA EMPRESA</span>
-          </button>
+            <div class="flex flex-wrap items-center gap-3">
+              <button onclick="openCreateTenantModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2">
+                <span class="text-sm">+</span>
+                <span>NOVA EMPRESA</span>
+              </button>
+              <button onclick="openClientAppSimulator()" class="px-5 py-3 rounded-2xl bg-[#1E1713] hover:bg-[#29211C] border border-white/10 text-white font-anton text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2">
+                <span>📱</span>
+                <span>VER CARDÁPIO CLIENTE</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- 4 KPIS DO SUPER ADMIN -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           <!-- MRR -->
-          <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-5 shadow-card-dark space-y-2">
-            <div class="flex items-center justify-between text-stone-400 text-xs">
+          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
+            <div class="flex items-center justify-between text-brand-textMuted text-xs">
               <span>Faturamento Mensal (MRR)</span>
-              <span class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm">💰</span>
+              <span class="w-9 h-9 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">💰</span>
             </div>
-            <div id="kpi-mrr" class="text-2xl font-anton text-white tracking-wide">R$ 0,00</div>
-            <p class="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
-              <span>●</span> Receita Recorrente Estimada
-            </p>
+            <div id="kpi-mrr" class="text-3xl font-anton text-white tracking-wide">R$ 0,00</div>
+            <div class="flex items-center justify-between text-[11px] text-emerald-400 font-medium">
+              <span class="flex items-center gap-1">● Receita Recorrente</span>
+              <span class="text-stone-400 font-normal">Meta: R$ 5.000</span>
+            </div>
           </div>
 
           <!-- Lojas Ativas -->
-          <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-5 shadow-card-dark space-y-2">
-            <div class="flex items-center justify-between text-stone-400 text-xs">
+          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
+            <div class="flex items-center justify-between text-brand-textMuted text-xs">
               <span>Lojas Ativas (Assinantes)</span>
-              <span class="w-8 h-8 rounded-xl bg-brand-orange/10 text-brand-orange flex items-center justify-center text-sm">🏢</span>
+              <span class="w-9 h-9 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 text-brand-orange flex items-center justify-center text-base">🏢</span>
             </div>
-            <div id="kpi-active-stores" class="text-2xl font-anton text-white tracking-wide">0 lojas</div>
-            <p class="text-[11px] text-stone-400">Com mensalidade em dia</p>
+            <div id="kpi-active-stores" class="text-3xl font-anton text-white tracking-wide">0 lojas</div>
+            <p class="text-[11px] text-stone-400">Mensalidades em dia</p>
           </div>
 
           <!-- Em Teste Grátis (Trial) -->
-          <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-5 shadow-card-dark space-y-2">
-            <div class="flex items-center justify-between text-stone-400 text-xs">
+          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-amber-500/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
+            <div class="flex items-center justify-between text-brand-textMuted text-xs">
               <span>Em Teste Grátis (7 Dias)</span>
-              <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-sm">⏳</span>
+              <span class="w-9 h-9 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-base">⏳</span>
             </div>
-            <div id="kpi-trial-stores" class="text-2xl font-anton text-white tracking-wide">0 em teste</div>
-            <p class="text-[11px] text-amber-400">Potenciais novos clientes</p>
+            <div id="kpi-trial-stores" class="text-3xl font-anton text-white tracking-wide">0 em teste</div>
+            <p class="text-[11px] text-amber-400">Novos clientes em potencial</p>
           </div>
 
           <!-- Lojas Bloqueadas -->
-          <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-5 shadow-card-dark space-y-2">
-            <div class="flex items-center justify-between text-stone-400 text-xs">
+          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-rose-500/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
+            <div class="flex items-center justify-between text-brand-textMuted text-xs">
               <span>Lojas Bloqueadas</span>
-              <span class="w-8 h-8 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center text-sm">🔒</span>
+              <span class="w-9 h-9 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-base">🔒</span>
             </div>
-            <div id="kpi-blocked-stores" class="text-2xl font-anton text-white tracking-wide">0 bloqueadas</div>
-            <p class="text-[11px] text-red-400">Por inadimplência</p>
+            <div id="kpi-blocked-stores" class="text-3xl font-anton text-white tracking-wide">0 bloqueadas</div>
+            <p class="text-[11px] text-rose-400">Por inadimplência</p>
           </div>
 
+        </div>
+
+        <!-- LISTA RÁPIDA DE RESTAURANTES RECENTES -->
+        <div class="space-y-4 pt-2">
+          <div class="flex items-center justify-between">
+            <h3 class="font-anton text-lg text-white tracking-wide flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-orange"></span>
+              RESTAURANTES NA PLATAFORMA
+            </h3>
+            <button onclick="switchSuperTab('tenants')" class="text-xs text-brand-orange hover:underline font-semibold">
+              Ver Todos ➔
+            </button>
+          </div>
+
+          <div id="dashboard-tenants-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Injetado via Javascript -->
+          </div>
         </div>
 
       </div>
 
       <!-- ========================================================================= -->
-      <!-- TAB 2: GESTÃO DE EMPRESAS & LOJAS -->
+      <!-- TAB 2: GESTÃO DE EMPRESAS & RESTAURANTES -->
       <!-- ========================================================================= -->
-      <div id="super-view-tenants" class="super-tab-content space-y-6">
+      <div id="super-view-tenants" class="super-tab-content hidden space-y-6">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -278,10 +372,10 @@
               <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
               EMPRESAS & CLIENTES CADASTRADOS
             </h2>
-            <p class="text-xs text-stone-400 mt-1">Gerencie hamburguerias, pizzarias, adicione novas lojas e controle o status</p>
+            <p class="text-xs text-brand-textMuted mt-1">Gerencie hamburguerias, pizzarias, adicione novas lojas e controle o status</p>
           </div>
 
-          <button onclick="openCreateTenantModal()" class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-anton text-xs tracking-wide shadow-orange-glow active:scale-95 transition-all flex items-center gap-2">
+          <button onclick="openCreateTenantModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 self-start sm:self-auto">
             <span>+</span>
             <span>CADASTRAR EMPRESA</span>
           </button>
@@ -293,33 +387,34 @@
             type="text" 
             id="tenant-search-input"
             oninput="renderTenantsTable()"
-            placeholder="Buscar por nome da empresa ou dono..." 
-            class="bg-white/5 border border-white/10 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+            placeholder="Buscar por restaurante, responsável ou slug..." 
+            class="bg-[#120D0A] border border-brand-darkBorder rounded-2xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange"
           />
-          <select id="tenant-filter-segment" onchange="renderTenantsTable()" class="bg-[#1A130F] border border-white/10 rounded-2xl px-3 py-2.5 text-xs text-white">
+          <select id="tenant-filter-segment" onchange="renderTenantsTable()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white">
             <option value="all">Todos os Segmentos</option>
-            <option value="Hamburgueria">Hamburguerias</option>
-            <option value="Pizzaria">Pizzarias</option>
-            <option value="Açaí">Açaí & Sorvetes</option>
-            <option value="Sushi">Sushi & Japonês</option>
-            <option value="Marmitaria">Marmitarias & Restaurantes</option>
+            <option value="Hamburgueria">Hamburguerias 🍔</option>
+            <option value="Pizzaria">Pizzarias 🍕</option>
+            <option value="Açaí">Açaí & Sorvetes 🍧</option>
+            <option value="Sushi">Sushi & Japonês 🍣</option>
+            <option value="Marmitaria">Marmitarias & Restaurantes 🍛</option>
+            <option value="Doceria">Docerias & Bolos 🍰</option>
           </select>
-          <select id="tenant-filter-status" onchange="renderTenantsTable()" class="bg-[#1A130F] border border-white/10 rounded-2xl px-3 py-2.5 text-xs text-white">
+          <select id="tenant-filter-status" onchange="renderTenantsTable()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white">
             <option value="all">Todos os Status</option>
             <option value="active">🟢 Ativos (Pagos)</option>
-            <option value="trial">⏳ Em Teste Grátis</option>
-            <option value="blocked">🔴 Bloqueados</option>
+            <option value="trial">⏳ Em Teste Grátis (7D)</option>
+            <option value="blocked">🔴 Bloqueados (Inadimplência)</option>
           </select>
         </div>
 
         <!-- Tabela de Empresas -->
-        <div class="bg-[#120D0A] border border-white/10 rounded-3xl overflow-hidden shadow-card-dark">
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl overflow-hidden shadow-card-dark backdrop-blur-xl">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-stone-300">
-              <thead class="bg-black/40 text-stone-400 uppercase font-anton tracking-wider text-[11px] border-b border-white/10">
+              <thead class="bg-black/50 text-brand-textMuted uppercase font-anton tracking-wider text-[11px] border-b border-brand-darkBorder">
                 <tr>
                   <th class="p-4">Empresa / Slug</th>
-                  <th class="p-4">Responsável & Zap</th>
+                  <th class="p-4">Responsável & WhatsApp</th>
                   <th class="p-4">Plano & Valor</th>
                   <th class="p-4">Status</th>
                   <th class="p-4 text-right">Ações Rápidas</th>
@@ -344,14 +439,31 @@
             <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
             CONTROLE DE MENSALIDADES & COBRANÇAS
           </h2>
-          <p class="text-xs text-stone-400 mt-1">Dispare cobranças com sua chave Pix formatada direto no WhatsApp do comerciante</p>
+          <p class="text-xs text-brand-textMuted mt-1">Dispare cobranças formatadas com sua chave Pix direto no WhatsApp do comerciante</p>
+        </div>
+
+        <!-- Resumo Rápido PIX -->
+        <div class="bg-[#18120E] border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+              🔑
+            </div>
+            <div>
+              <span class="text-[11px] text-brand-textMuted uppercase font-semibold">Chave PIX Master Cadastrada:</span>
+              <div id="summary-pix-key" class="font-anton text-white text-base tracking-wide">99991040222</div>
+            </div>
+          </div>
+          <button onclick="copyMasterPixKey()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold flex items-center gap-2 transition-colors">
+            <span>📋</span>
+            <span>Copiar Chave PIX</span>
+          </button>
         </div>
 
         <!-- Tabela Financeira -->
-        <div class="bg-[#120D0A] border border-white/10 rounded-3xl overflow-hidden shadow-card-dark">
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl overflow-hidden shadow-card-dark">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-stone-300">
-              <thead class="bg-black/40 text-stone-400 uppercase font-anton tracking-wider text-[11px] border-b border-white/10">
+              <thead class="bg-black/50 text-brand-textMuted uppercase font-anton tracking-wider text-[11px] border-b border-brand-darkBorder">
                 <tr>
                   <th class="p-4">Empresa</th>
                   <th class="p-4">Dono / Contato</th>
@@ -380,32 +492,32 @@
             <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
             CONFIGURAÇÕES GLOBAIS DA PLATAFORMA
           </h2>
-          <p class="text-xs text-stone-400 mt-1">Configure o nome da sua empresa de software, chave Pix master e credenciais</p>
+          <p class="text-xs text-brand-textMuted mt-1">Configure o nome da plataforma, chave Pix master e senha do Super Admin</p>
         </div>
 
-        <div class="max-w-xl bg-[#120D0A] border border-white/10 rounded-3xl p-6 shadow-card-dark space-y-4">
+        <div class="max-w-xl bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-4">
           <form onsubmit="savePlatformSettingsForm(event)" class="space-y-4 text-xs font-poppins">
             <div>
-              <label class="block text-stone-300 font-semibold mb-1">Nome da sua Plataforma / Agência:</label>
-              <input type="text" id="setting-platform-name" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white" />
+              <label class="block text-stone-300 font-semibold mb-1.5">Nome da Plataforma / Agência:</label>
+              <input type="text" id="setting-platform-name" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
             </div>
 
             <div>
-              <label class="block text-stone-300 font-semibold mb-1">Sua Chave PIX (Para receber as mensalidades):</label>
-              <input type="text" id="setting-platform-pix" placeholder="Ex: 99991040222 ou CNPJ" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold text-amber-400" />
+              <label class="block text-stone-300 font-semibold mb-1.5">Sua Chave PIX (Para receber as mensalidades):</label>
+              <input type="text" id="setting-platform-pix" placeholder="Ex: 99991040222 ou CNPJ/E-mail" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" />
             </div>
 
             <div>
-              <label class="block text-stone-300 font-semibold mb-1">Nome do Favorecido do PIX:</label>
-              <input type="text" id="setting-platform-beneficiary" placeholder="Ex: Thiago Silva" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white" />
+              <label class="block text-stone-300 font-semibold mb-1.5">Nome do Favorecido do PIX:</label>
+              <input type="text" id="setting-platform-beneficiary" placeholder="Ex: Thiago Siqueira" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
             </div>
 
             <div>
-              <label class="block text-stone-300 font-semibold mb-1">Nova Senha Mestre do Super Admin:</label>
-              <input type="password" id="setting-platform-password" placeholder="Deixe em branco para não alterar" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white" />
+              <label class="block text-stone-300 font-semibold mb-1.5">Nova Senha Mestre do Super Admin:</label>
+              <input type="password" id="setting-platform-password" placeholder="Deixe em branco para não alterar" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
             </div>
 
-            <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-anton tracking-wide py-3 rounded-2xl shadow-md active:scale-95 transition-all text-xs">
+            <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
               SALVAR CONFIGURAÇÕES DA PLATAFORMA
             </button>
           </form>
@@ -417,92 +529,127 @@
   </div>
 
   <!-- ========================================================================= -->
+  <!-- MODAL: SIMULADOR INTERATIVO DO APP DO CLIENTE -->
+  <!-- ========================================================================= -->
+  <div id="client-simulator-modal" class="fixed inset-0 z-[250] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl w-full max-w-4xl max-h-[95vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="p-4 border-b border-brand-darkBorder flex items-center justify-between bg-black/50">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-xl bg-brand-orange/20 text-brand-orange flex items-center justify-center text-sm font-bold">
+            📱
+          </div>
+          <div>
+            <h3 class="font-anton text-sm sm:text-base text-white tracking-wide">SIMULADOR DO APP DO CLIENTE</h3>
+            <p class="text-[10px] text-brand-textMuted">Visualizando o cardápio interativo e fluxo de checkout</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="index-sj.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-stone-200 text-xs font-semibold flex items-center gap-1">
+            <span>Tela Cheia ↗</span>
+          </a>
+          <button onclick="closeClientAppSimulator()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+        </div>
+      </div>
+
+      <div class="flex-1 bg-[#080504] flex items-center justify-center p-2 sm:p-6 overflow-hidden">
+        <!-- Moldura de Smartphone -->
+        <div class="w-full max-w-sm h-[680px] bg-[#0E0A08] border-4 border-stone-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col relative">
+          <!-- Notch -->
+          <div class="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-4 bg-stone-900 rounded-full z-20"></div>
+          
+          <iframe id="simulator-iframe" src="index-sj.html" class="w-full h-full border-0 z-10 pt-4" title="Cardápio do Cliente"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
   <!-- MODAL: CADASTRAR / EDITAR EMPRESA -->
   <!-- ========================================================================= -->
-  <div id="tenant-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-[#120D0A] border border-white/10 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
-      <div class="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+  <div id="tenant-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
+      <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
         <h3 id="modal-tenant-title" class="font-anton text-lg text-white tracking-wide">CADASTRAR EMPRESA</h3>
         <button onclick="closeTenantModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
       </div>
 
-      <form id="form-tenant" onsubmit="saveTenantForm(event)" class="p-5 overflow-y-auto flex-1 space-y-3.5 text-xs no-scrollbar">
+      <form id="form-tenant" onsubmit="saveTenantForm(event)" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs no-scrollbar">
         <div>
-          <label class="block text-stone-300 font-semibold mb-1">Nome do Restaurante / Lanchonete *</label>
-          <input type="text" id="tenant-name-input" placeholder="Ex: Pizzaria Sabor Real" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white" required />
+          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
+          <input type="text" id="tenant-name-input" placeholder="Ex: São José Burguer" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">Slug / URL da Loja *</label>
-            <input type="text" id="tenant-slug-input" placeholder="ex: sabor-real" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white" required />
+            <label class="block text-stone-300 font-semibold mb-1.5">Slug / URL da Loja *</label>
+            <input type="text" id="tenant-slug-input" placeholder="ex: sao-jose" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required />
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">Segmento *</label>
-            <select id="tenant-segment-select" class="w-full bg-[#1A130F] border border-white/10 rounded-xl px-3 py-2.5 text-white">
-              <option value="Hamburgueria">Hamburgueria</option>
-              <option value="Pizzaria">Pizzaria</option>
-              <option value="Açaí">Açaí & Sorvetes</option>
-              <option value="Sushi">Sushi & Japonês</option>
-              <option value="Marmitaria">Marmitaria & Almoço</option>
-              <option value="Doceria">Doceria & Bolos</option>
+            <label class="block text-stone-300 font-semibold mb-1.5">Segmento *</label>
+            <select id="tenant-segment-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange">
+              <option value="Hamburgueria">Hamburgueria 🍔</option>
+              <option value="Pizzaria">Pizzaria 🍕</option>
+              <option value="Açaí">Açaí & Sorvetes 🍧</option>
+              <option value="Sushi">Sushi & Japonês 🍣</option>
+              <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
+              <option value="Doceria">Doceria & Bolos 🍰</option>
             </select>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">Nome do Dono / Contato *</label>
-            <input type="text" id="tenant-owner-name-input" placeholder="Ex: Carlos Santos" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white" required />
+            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Dono / Contato *</label>
+            <input type="text" id="tenant-owner-name-input" placeholder="Ex: Thiago Silva" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">WhatsApp com DDD *</label>
-            <input type="text" id="tenant-owner-phone-input" placeholder="Ex: 5599988776655" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white" required />
+            <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD *</label>
+            <input type="text" id="tenant-owner-phone-input" placeholder="Ex: 5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">Plano</label>
-            <select id="tenant-plan-select" class="w-full bg-[#1A130F] border border-white/10 rounded-xl px-3 py-2.5 text-white">
+            <label class="block text-stone-300 font-semibold mb-1.5">Plano</label>
+            <select id="tenant-plan-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-2.5 py-3 text-white">
               <option value="pro">Pro (R$ 119)</option>
               <option value="basic">Básico (R$ 79)</option>
               <option value="vip">VIP (R$ 189)</option>
             </select>
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">Mensalidade R$ *</label>
-            <input type="number" step="0.5" id="tenant-fee-input" placeholder="119.00" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white font-bold text-amber-400" required />
+            <label class="block text-stone-300 font-semibold mb-1.5">Mensalidade R$ *</label>
+            <input type="number" step="0.5" id="tenant-fee-input" placeholder="119.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" required />
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1">Vencimento (Dia)</label>
-            <input type="number" min="1" max="31" id="tenant-due-day-input" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white" required />
+            <label class="block text-stone-300 font-semibold mb-1.5">Vencimento (Dia)</label>
+            <input type="number" min="1" max="31" id="tenant-due-day-input" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange" required />
           </div>
         </div>
 
         <div>
-          <label class="block text-stone-300 font-semibold mb-1">Status Inicial da Loja</label>
-          <select id="tenant-status-select" class="w-full bg-[#1A130F] border border-white/10 rounded-xl px-3 py-2.5 text-white">
-            <option value="trial">⏳ Teste Grátis (7 Dias)</option>
+          <label class="block text-stone-300 font-semibold mb-1.5">Status da Loja</label>
+          <select id="tenant-status-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white">
             <option value="active">🟢 Ativo (Assinante Pago)</option>
+            <option value="trial">⏳ Teste Grátis (7 Dias)</option>
             <option value="blocked">🔴 Bloqueado (Inadimplente)</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-stone-300 font-semibold mb-1">Observações Internas</label>
-          <textarea id="tenant-notes-input" rows="2" placeholder="Ex: Fechou no plano anual, indicou pizzaria X..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white resize-none"></textarea>
+          <label class="block text-stone-300 font-semibold mb-1.5">Observações Internas</label>
+          <textarea id="tenant-notes-input" rows="2" placeholder="Ex: Fechou no plano anual, faturamento bom..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
         </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-anton tracking-wide py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-xs mt-3">
-          SALVAR EMPRESA
+        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs mt-2">
+          SALVAR RESTAURANTE
         </button>
       </form>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div id="superadmin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] bg-black/95 text-white text-xs font-poppins font-semibold px-5 py-3 rounded-2xl shadow-2xl border border-white/15 flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+  <!-- TOAST NOTIFICATION -->
+  <div id="superadmin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] bg-[#120D0A] text-white text-xs font-poppins font-semibold px-5 py-3.5 rounded-2xl shadow-2xl border border-brand-orange/30 flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
     <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
     <span id="superadmin-toast-text">Ação executada!</span>
   </div>

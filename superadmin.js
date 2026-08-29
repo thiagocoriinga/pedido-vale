@@ -1,7 +1,7 @@
 /**
  * =========================================================================
- * SUPER ADMIN ENGINE • GESTÃO MULTI-LOJAS & MENSALIDADES
- * Controle completo de empresas, assinaturas, bloqueios e faturamento.
+ * PEDIDOVALE MASTER ENGINE • GESTÃO MULTI-LOJAS & FATURAMENTO
+ * Identidade visual e motor de alta conversão inspirado no São José Burguer
  * =========================================================================
  */
 
@@ -9,23 +9,23 @@ const SUPERADMIN_CONFIG_KEY = 'SUPERADMIN_PLATFORM_CONFIG';
 const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
 const SUPERADMIN_AUTH_KEY = 'SUPERADMIN_AUTHENTICATED';
 
-// Configuração Padrão da sua Plataforma
+// Configuração Padrão da Plataforma PedidoVale
 const DEFAULT_PLATFORM_CONFIG = {
-  platformName: "Vale Pedidos • Multi-Delivery",
+  platformName: "PedidoVale • Multi-Delivery",
   adminMasterPassword: "admin",
   pixKey: "99991040222",
-  pixBeneficiary: "Thiago Silva / Plataforma",
+  pixBeneficiary: "Thiago Siqueira / PedidoVale",
   defaultTrialDays: 7
 };
 
-// Lojas Iniciais Padrão (Mock e Semente)
+// Lojas Iniciais Padrão (Seed Oficial)
 const INITIAL_TENANTS = [
   {
     id: "tenant-sao-jose-001",
     slug: "sao-jose",
     name: "São José Burguer",
     segment: "Hamburgueria",
-    owner_name: "Thiago",
+    owner_name: "Thiago Siqueira",
     owner_phone: "5599991040222",
     plan: "pro",
     monthly_fee: 119.00,
@@ -33,7 +33,7 @@ const INITIAL_TENANTS = [
     due_day: 10,
     trial_ends_at: null,
     created_at: new Date().toISOString(),
-    notes: "Cliente Oficial #01 • Plano Pro Ativo"
+    notes: "Restaurante Oficial Modelo • Cardápio & Delivery Ativo"
   }
 ];
 
@@ -74,8 +74,8 @@ function loadTenants() {
   }
 
   // Tentar sincronizar da nuvem Supabase
-  if (window.SAO_JOSE_SUPABASE && window.SAO_JOSE_SUPABASE.client) {
-    window.SAO_JOSE_SUPABASE.client
+  if (window.supabase && window.supabaseClient) {
+    window.supabaseClient
       .from('tenants')
       .select('*')
       .then(({ data, error }) => {
@@ -118,9 +118,9 @@ function handleSuperAdminLogin(e) {
   if (pass === PLATFORM_CONFIG.adminMasterPassword) {
     sessionStorage.setItem(SUPERADMIN_AUTH_KEY, 'true');
     checkAuth();
-    showSuperToast('👑 Bem-vindo ao Painel Super Admin!');
+    showSuperToast('👑 Bem-vindo ao Super Admin PedidoVale!');
   } else {
-    alert('Senha incorreta!');
+    alert('Senha incorreta! A senha padrão é: admin');
   }
 }
 
@@ -133,7 +133,6 @@ function handleSuperAdminLogout() {
 // DASHBOARD & MÉTRICAS (MRR, LOJAS ATIVAS, TRIAL)
 // -------------------------------------------------------------------------
 function renderSuperAdminDashboard() {
-  // 1. Cálculos de KPIs
   const totalTenants = TENANTS.length;
   const activeTenants = TENANTS.filter(t => t.status === 'active').length;
   const trialTenants = TENANTS.filter(t => t.status === 'trial').length;
@@ -149,16 +148,93 @@ function renderSuperAdminDashboard() {
   const kpiActive = document.getElementById('kpi-active-stores');
   const kpiTrial = document.getElementById('kpi-trial-stores');
   const kpiBlocked = document.getElementById('kpi-blocked-stores');
+  const summaryPix = document.getElementById('summary-pix-key');
 
   if (kpiMrr) kpiMrr.innerText = formatCurrency(mrr);
   if (kpiActive) kpiActive.innerText = `${activeTenants} lojas`;
   if (kpiTrial) kpiTrial.innerText = `${trialTenants} em teste`;
   if (kpiBlocked) kpiBlocked.innerText = `${blockedTenants} bloqueadas`;
+  if (summaryPix) summaryPix.innerText = PLATFORM_CONFIG.pixKey || 'Não configurada';
 
-  // Renderizar tabelas
+  // Renderizar componentes
+  renderDashboardGrid();
   renderTenantsTable();
   renderFinancialTable();
   populateSettingsForm();
+}
+
+// -------------------------------------------------------------------------
+// RENDERIZAÇÃO DOS CARDS NO DASHBOARD
+// -------------------------------------------------------------------------
+function renderDashboardGrid() {
+  const grid = document.getElementById('dashboard-tenants-grid');
+  if (!grid) return;
+
+  if (TENANTS.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full p-8 text-center bg-[#120D0A] border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs font-poppins">
+        Nenhum restaurante cadastrado ainda. Clique em "+ Nova Empresa" para começar!
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = TENANTS.slice(0, 6).map(t => {
+    let statusClass = 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400';
+    let statusText = '🟢 Ativo';
+    if (t.status === 'trial') {
+      statusClass = 'bg-amber-500/15 border-amber-500/30 text-amber-400';
+      statusText = '⏳ Teste 7D';
+    } else if (t.status === 'blocked') {
+      statusClass = 'bg-rose-500/15 border-rose-500/30 text-rose-400';
+      statusText = '🔴 Bloqueado';
+    }
+
+    const segmentIcon = getSegmentIcon(t.segment);
+
+    return `
+      <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark space-y-4 transition-all group">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-orange/20 to-brand-amber/20 border border-brand-orange/30 flex items-center justify-center text-xl shrink-0">
+              ${segmentIcon}
+            </div>
+            <div>
+              <h4 class="font-anton text-base text-white tracking-wide leading-tight group-hover:text-brand-orange transition-colors">${t.name}</h4>
+              <div class="text-[11px] text-brand-textMuted">/${t.slug} • <span class="text-stone-400">${t.segment || 'Geral'}</span></div>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full border text-[10px] font-bold ${statusClass}">
+            ${statusText}
+          </span>
+        </div>
+
+        <div class="bg-black/40 rounded-2xl p-3 flex items-center justify-between text-xs">
+          <div>
+            <span class="text-[10px] text-brand-textMuted block font-semibold">MENSALIDADE:</span>
+            <span class="font-anton text-white text-sm">${formatCurrency(t.monthly_fee)}/mês</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-brand-textMuted block font-semibold">VENCIMENTO:</span>
+            <span class="text-stone-300 font-bold text-xs">Todo dia ${t.due_day || 10}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <a href="index-sj.html" target="_blank" class="flex-1 bg-brand-orange/15 hover:bg-brand-orange text-brand-orange hover:text-white border border-brand-orange/30 py-2.5 rounded-xl font-anton text-xs tracking-wider flex items-center justify-center gap-1.5 transition-all">
+            <span>🍔</span>
+            <span>VER APP</span>
+          </a>
+          <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs transition-all" title="Cobrar no WhatsApp">
+            💬
+          </button>
+          <button onclick="openEditTenantModal('${t.id}')" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-stone-300 hover:text-white border border-white/10 text-xs transition-all" title="Editar">
+            ✏️
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // -------------------------------------------------------------------------
@@ -184,7 +260,7 @@ function renderTenantsTable() {
   if (filtered.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="p-8 text-center text-stone-400 font-poppins text-xs">
+        <td colspan="5" class="p-8 text-center text-brand-textMuted font-poppins text-xs">
           Nenhuma empresa encontrada com os filtros selecionados.
         </td>
       </tr>
@@ -197,49 +273,55 @@ function renderTenantsTable() {
     if (t.status === 'active') {
       statusBadge = '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">🟢 Ativo (Pago)</span>';
     } else if (t.status === 'trial') {
-      statusBadge = '<span class="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-bold">⏳ Teste Grátis</span>';
+      statusBadge = '<span class="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-bold">⏳ Teste 7 Dias</span>';
     } else if (t.status === 'blocked') {
-      statusBadge = '<span class="px-2.5 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 text-[10px] font-bold">🔴 Bloqueado</span>';
+      statusBadge = '<span class="px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[10px] font-bold">🔴 Bloqueado</span>';
     }
 
     const planBadge = `<span class="px-2 py-0.5 rounded-full bg-white/10 text-stone-300 uppercase font-anton text-[9px]">${t.plan || 'pro'}</span>`;
+    const segmentIcon = getSegmentIcon(t.segment);
 
     return `
       <tr class="border-b border-white/5 hover:bg-white/5 transition-colors font-poppins text-xs">
         <td class="p-4">
-          <div class="font-anton text-sm text-white tracking-wide">${t.name}</div>
-          <div class="text-[10px] text-brand-orange">/${t.slug} • <span class="text-stone-400">${t.segment || 'Geral'}</span></div>
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">${segmentIcon}</span>
+            <div>
+              <div class="font-anton text-sm text-white tracking-wide">${t.name}</div>
+              <div class="text-[10px] text-brand-orange font-mono">/${t.slug} • <span class="text-stone-400">${t.segment || 'Geral'}</span></div>
+            </div>
+          </div>
         </td>
         <td class="p-4">
           <div class="text-white font-medium">${t.owner_name}</div>
-          <a href="https://wa.me/${cleanPhone(t.owner_phone)}" target="_blank" class="text-[11px] text-emerald-400 hover:underline flex items-center gap-1">
+          <a href="https://wa.me/${cleanPhone(t.owner_phone)}" target="_blank" class="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 mt-0.5">
             <span>📱 ${t.owner_phone}</span>
           </a>
         </td>
         <td class="p-4">
           <div class="flex items-center gap-2">
             ${planBadge}
-            <span class="font-bold text-white">${formatCurrency(t.monthly_fee)}/mês</span>
+            <span class="font-anton text-white text-sm">${formatCurrency(t.monthly_fee)}/mês</span>
           </div>
-          <div class="text-[10px] text-stone-400">Vencimento todo dia ${t.due_day || 10}</div>
+          <div class="text-[10px] text-stone-400 mt-0.5">Vencimento todo dia ${t.due_day || 10}</div>
         </td>
         <td class="p-4">
           ${statusBadge}
         </td>
-        <td class="p-4 text-right space-x-1">
-          <button onclick="openEditTenantModal('${t.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs" title="Editar Loja">
-            ✏️
+        <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
+          <a href="index-sj.html" target="_blank" class="p-2 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-xs inline-block" title="Ver Cardápio do Cliente">
+            🍔
+          </a>
+          <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs" title="Cobrar / Enviar Pix no WhatsApp">
+            💬
           </button>
           <button onclick="toggleTenantStatus('${t.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs" title="${t.status === 'blocked' ? 'Desbloquear Loja' : 'Bloquear por Inadimplência'}">
             ${t.status === 'blocked' ? '🔓' : '🔒'}
           </button>
-          <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs" title="Cobrar / Enviar Pix no WhatsApp">
-            💬
+          <button onclick="openEditTenantModal('${t.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs" title="Editar Loja">
+            ✏️
           </button>
-          <a href="../index.html" target="_blank" class="p-2 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-xs inline-block" title="Ver Cardápio">
-            🌐
-          </a>
-          <button onclick="deleteTenant('${t.id}')" class="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs" title="Excluir">
+          <button onclick="deleteTenant('${t.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs" title="Excluir">
             🗑️
           </button>
         </td>
@@ -255,9 +337,9 @@ let currentEditingTenantId = null;
 
 function openCreateTenantModal() {
   currentEditingTenantId = null;
-  document.getElementById('modal-tenant-title').innerText = "CADASTRAR NOVA EMPRESA / RESTAURANTE";
+  document.getElementById('modal-tenant-title').innerText = "CADASTRAR NOVO RESTAURANTE";
   document.getElementById('form-tenant').reset();
-  document.getElementById('tenant-status-select').value = 'trial';
+  document.getElementById('tenant-status-select').value = 'active';
   document.getElementById('tenant-fee-input').value = '119.00';
   document.getElementById('tenant-due-day-input').value = '10';
 
@@ -309,7 +391,6 @@ function saveTenantForm(e) {
   }
 
   if (currentEditingTenantId) {
-    // Editar
     const idx = TENANTS.findIndex(t => t.id === currentEditingTenantId);
     if (idx !== -1) {
       TENANTS[idx] = {
@@ -317,24 +398,21 @@ function saveTenantForm(e) {
         name, slug, segment, owner_name, owner_phone, plan, monthly_fee, status, due_day, notes,
         updated_at: new Date().toISOString()
       };
-      showSuperToast(`✅ Empresa "${name}" atualizada!`);
+      showSuperToast(`✅ Restaurante "${name}" atualizado!`);
     }
   } else {
-    // Criar Novo
     const newTenant = {
       id: `tenant-${Date.now()}`,
       name, slug, segment, owner_name, owner_phone, plan, monthly_fee, status, due_day, notes,
       created_at: new Date().toISOString()
     };
     TENANTS.push(newTenant);
-    showSuperToast(`🚀 Nova empresa "${name}" cadastrada com sucesso!`);
+    showSuperToast(`🚀 Restaurante "${name}" cadastrado com sucesso!`);
   }
 
   saveTenantsToStorage();
   closeTenantModal();
   renderSuperAdminDashboard();
-
-  // Sincronizar com Supabase se disponível
   syncTenantWithSupabase();
 }
 
@@ -359,13 +437,26 @@ function deleteTenant(id) {
   const tenant = TENANTS.find(t => t.id === id);
   if (!tenant) return;
 
-  if (confirm(`Tem certeza que deseja excluir permanentemente a empresa "${tenant.name}"?`)) {
+  if (confirm(`Tem certeza que deseja excluir permanentemente o restaurante "${tenant.name}"?`)) {
     TENANTS = TENANTS.filter(t => t.id !== id);
     saveTenantsToStorage();
     renderSuperAdminDashboard();
-    showSuperToast('🗑️ Empresa removida.');
+    showSuperToast('🗑️ Restaurante removido.');
     syncTenantWithSupabase();
   }
+}
+
+// -------------------------------------------------------------------------
+// SIMULADOR DO APP DO CLIENTE (MOLDURA MOBILE)
+// -------------------------------------------------------------------------
+function openClientAppSimulator() {
+  const modal = document.getElementById('client-simulator-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeClientAppSimulator() {
+  const modal = document.getElementById('client-simulator-modal');
+  if (modal) modal.classList.add('hidden');
 }
 
 // -------------------------------------------------------------------------
@@ -388,12 +479,12 @@ Passando para enviar o lembrete da mensalidade da sua plataforma de pedidos refe
 
 📋 *Plano:* ${t.plan.toUpperCase()}
 💰 *Valor:* ${feeFormatted}
-📅 *Vencimento:* Dia ${t.due_day}
+📅 *Vencimento:* Todo dia ${t.due_day}
 
 🔑 *Chave PIX:* \`${PLATFORM_CONFIG.pixKey}\`
 👤 *Favorecido:* ${PLATFORM_CONFIG.pixBeneficiary}
 
-Assim que realizar o pagamento, basta me enviar o comprovante por aqui para darmos baixa. 
+Assim que realizar o pagamento, basta me enviar o comprovante por aqui para darmos baixa automática.
 Qualquer dúvida, estamos à disposição! 🚀`;
 
   const encoded = encodeURIComponent(msg);
@@ -410,15 +501,18 @@ function renderFinancialTable() {
   tbody.innerHTML = TENANTS.map(t => {
     return `
       <tr class="border-b border-white/5 hover:bg-white/5 transition-colors font-poppins text-xs">
-        <td class="p-4 font-bold text-white">${t.name}</td>
+        <td class="p-4">
+          <div class="font-bold text-white">${t.name}</div>
+          <div class="text-[10px] text-brand-orange">/${t.slug}</div>
+        </td>
         <td class="p-4 text-stone-300">${t.owner_name} (${t.owner_phone})</td>
-        <td class="p-4 font-anton text-brand-orange">${formatCurrency(t.monthly_fee)}</td>
-        <td class="p-4 text-stone-300">Todo dia ${t.due_day}</td>
+        <td class="p-4 font-anton text-brand-orange text-sm">${formatCurrency(t.monthly_fee)}</td>
+        <td class="p-4 text-stone-300 font-semibold">Todo dia ${t.due_day}</td>
         <td class="p-4">
           <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-bold text-[10px]">✓ Em Dia</span>
         </td>
         <td class="p-4 text-right">
-          <button onclick="sendWhatsAppBilling('${t.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center gap-1 ml-auto">
+          <button onclick="sendWhatsAppBilling('${t.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center gap-1.5 ml-auto transition-colors">
             <span>💬 Cobrar no Zap</span>
           </button>
         </td>
@@ -453,17 +547,28 @@ function savePlatformSettingsForm(e) {
   }
 
   savePlatformConfig();
+  renderSuperAdminDashboard();
   showSuperToast('⚙️ Configurações da plataforma salvas com sucesso!');
 }
 
+function copyMasterPixKey() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(PLATFORM_CONFIG.pixKey).then(() => {
+      showSuperToast('📋 Chave PIX copiada para a área de transferência!');
+    });
+  } else {
+    showSuperToast(`Chave PIX: ${PLATFORM_CONFIG.pixKey}`);
+  }
+}
+
 // -------------------------------------------------------------------------
-// NAVEGAÇÃO DE ABAS NO SUPER ADMIN
+// NAVEGAÇÃO DE ABAS
 // -------------------------------------------------------------------------
 function switchSuperTab(tabName) {
   document.querySelectorAll('.super-tab-content').forEach(tab => tab.classList.add('hidden'));
   document.querySelectorAll('.super-sidebar-btn').forEach(btn => {
-    btn.classList.remove('bg-brand-orange', 'text-white');
-    btn.classList.add('text-stone-400');
+    btn.classList.remove('bg-brand-orange', 'text-white', 'shadow-orange-glow');
+    btn.classList.add('text-brand-textMuted');
   });
 
   const activeView = document.getElementById(`super-view-${tabName}`);
@@ -471,8 +576,8 @@ function switchSuperTab(tabName) {
 
   if (activeView) activeView.classList.remove('hidden');
   if (activeBtn) {
-    activeBtn.classList.add('bg-brand-orange', 'text-white');
-    activeBtn.classList.remove('text-stone-400');
+    activeBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-orange-glow');
+    activeBtn.classList.remove('text-brand-textMuted');
   }
 }
 
@@ -487,6 +592,18 @@ function cleanPhone(phone) {
   return (phone || '').replace(/\D/g, '');
 }
 
+function getSegmentIcon(segment) {
+  switch (segment) {
+    case 'Hamburgueria': return '🍔';
+    case 'Pizzaria': return '🍕';
+    case 'Açaí': return '🍧';
+    case 'Sushi': return '🍣';
+    case 'Marmitaria': return '🍛';
+    case 'Doceria': return '🍰';
+    default: return '🍽️';
+  }
+}
+
 function showSuperToast(msg) {
   const toast = document.getElementById('superadmin-toast');
   const text = document.getElementById('superadmin-toast-text');
@@ -497,13 +614,13 @@ function showSuperToast(msg) {
     setTimeout(() => {
       toast.classList.remove('translate-y-0', 'opacity-100');
       toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-    }, 2800);
+    }, 3000);
   }
 }
 
 function syncTenantWithSupabase() {
-  if (window.SAO_JOSE_SUPABASE && window.SAO_JOSE_SUPABASE.client) {
-    window.SAO_JOSE_SUPABASE.client
+  if (window.supabase && window.supabaseClient) {
+    window.supabaseClient
       .from('tenants')
       .upsert(TENANTS, { onConflict: 'slug' })
       .then(() => console.log('☁️ [SuperAdmin] Lojas sincronizadas com Supabase.'))

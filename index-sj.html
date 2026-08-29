@@ -1,0 +1,3178 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080504">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>São José Burguer • Cardápio & Pedidos Online</title>
+  <meta name="description" content="Peça os melhores hambúrgueres artesanais, combos e batatas crocantes do São José Burguer direto pelo WhatsApp!">
+
+  <!-- PWA & Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="São José Burguer">
+  <link rel="apple-touch-icon" href="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.webp">
+
+  <!-- Favicon Oficial -->
+  <link rel="icon" type="image/png" href="assets/e8392808a1c7659c_favicon.png">
+
+  <!-- Google Fonts: Anton & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FBF5ED',
+              creamDark: '#F2E8DA',
+              orange: '#FF5E1E',
+              orangeHover: '#E54A0D',
+              orangeLight: '#FFF0EA',
+              amber: '#FF9E1B',
+              dark: '#080504',
+              darkSurface: '#120D0A',
+              darkCard: '#18120E',
+              darkBorder: '#29211C',
+              cardDark: '#1E1713',
+              textMuted: '#8C827A',
+              textDark: '#2B211B',
+              surface: '#FFFFFF',
+              border: '#EFE6DB',
+            }
+          },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          boxShadow: {
+            'card-dark': '0 10px 30px -10px rgba(0, 0, 0, 0.7)',
+            'card-light': '0 10px 30px -10px rgba(140, 90, 60, 0.1)',
+            'electric': '0 0 35px rgba(249, 115, 22, 0.3), inset 0 0 20px rgba(249, 115, 22, 0.08)',
+            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html.dark body {
+      background-color: #080504;
+      color: #F3EBE1;
+    }
+
+    html:not(.dark) body {
+      background-color: #F8F3EC;
+      color: #2B211B;
+    }
+
+    h1, h2, h3, h4, .font-anton, .title-anton {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+
+    .price-tag, .price-anton {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.025em;
+    }
+
+    .font-poppins, p, span, input, textarea, button, label {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .stars {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+      background-size: 200px 200px;
+    }
+
+    .grid-bg-dark {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .grid-bg-light {
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* OTIMIZAÇÃO MÓVEL CRÍTICA: Elimina lag/zoom de teclado em inputs no mobile */
+    @media screen and (max-width: 768px) {
+      input, select, textarea {
+        font-size: 16px !important;
+        line-height: 1.4 !important;
+        transform: translateZ(0);
+        touch-action: manipulation;
+      }
+    }
+
+    .ease-spring {
+      transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* STAR BORDER EFFECT */
+    .star-border-container {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      padding: 1.5px;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    }
+
+    html.dark .star-border-container {
+      background: #140E0A;
+    }
+    html:not(.dark) .star-border-container {
+      background: #FFFFFF;
+    }
+
+    .star-border-container:hover {
+      transform: translateY(-4px);
+    }
+
+    .border-gradient-bottom {
+      position: absolute;
+      width: 300%;
+      height: 60%;
+      opacity: 0.85;
+      bottom: -10px;
+      right: -250%;
+      border-radius: 50%;
+      background: radial-gradient(circle, #FF5E1E, transparent 18%);
+      animation: star-movement-bottom 5s linear infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .border-gradient-top {
+      position: absolute;
+      opacity: 0.85;
+      width: 300%;
+      height: 60%;
+      top: -10px;
+      left: -250%;
+      border-radius: 50%;
+      background: radial-gradient(circle, #FF9E1B, transparent 18%);
+      animation: star-movement-top 5s linear infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .inner-content {
+      position: relative;
+      border-radius: calc(1.5rem - 1.5px);
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    html.dark .inner-content {
+      background: #120D0A;
+      border: 1px solid rgba(255, 94, 30, 0.15);
+    }
+    html:not(.dark) .inner-content {
+      background: #FFFFFF;
+      border: 1px solid rgba(239, 230, 219, 0.95);
+    }
+
+    .star-border-dark {
+      border-radius: 1.75rem;
+      padding: 2px;
+      background: #0E0B09;
+    }
+    .star-border-dark .inner-content {
+      background: #0E0B09;
+      border: 1px solid rgba(255, 94, 30, 0.25);
+      border-radius: calc(1.75rem - 2px);
+    }
+
+    @keyframes star-movement-bottom {
+      0% { transform: translate(0%, 0%); opacity: 1; }
+      100% { transform: translate(-100%, 0%); opacity: 0.3; }
+    }
+
+    @keyframes star-movement-top {
+      0% { transform: translate(0%, 0%); opacity: 1; }
+      100% { transform: translate(100%, 0%); opacity: 0.3; }
+    }
+
+    /* PERSISTENT HEADER & SMOOTH SPA TRANSITIONS */
+    [transition\:persist], [data-transition="persist"], #main-header, #categories-sticky-section {
+      view-transition-name: persistent-header;
+      contain: layout style;
+      will-change: transform;
+    }
+
+    @keyframes menuFadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-menu-enter {
+      animation: menuFadeSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Modal Animation */
+    .modal-enter {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    .modal-enter-active {
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col antialiased selection:bg-orange-500/30 selection:text-orange-200 relative overflow-x-hidden pb-24 md:pb-0">
+
+  <!-- AURA BACKGROUND GLOWS & STARLIGHT -->
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="stars absolute inset-0 opacity-25 dark:opacity-30"></div>
+    <div id="grid-layer" class="grid-bg-dark absolute inset-0"></div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[950px] h-[550px] bg-orange-600/12 dark:bg-orange-600/16 blur-[140px] rounded-full"></div>
+    <div class="absolute bottom-0 right-0 w-[700px] h-[700px] bg-orange-950/20 dark:bg-orange-950/30 blur-[130px] rounded-full"></div>
+    <div class="absolute top-1/3 -left-24 w-[500px] h-[500px] bg-amber-600/10 dark:bg-amber-600/10 blur-[110px] rounded-full"></div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. TOP HEADER / NAVBAR PERSISTENTE (NÃO PISCA NA NAVEGAÇÃO) -->
+  <!-- ========================================================================= -->
+  <header id="main-header" transition:persist data-transition="persist" class="sticky top-0 z-50 w-full backdrop-blur-xl bg-[#080504]/90 dark:bg-[#080504]/90 border-b border-white/10 dark:border-white/10 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- LOGO & BRAND INFO -->
+      <a href="#" class="flex items-center gap-2.5 sm:gap-3.5 group">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/15 bg-black/50 shadow-md flex items-center justify-center p-0.5 group-hover:scale-105 transition-transform flex-shrink-0">
+          <img src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo São José Burguer" class="w-full h-full object-cover rounded-xl" onerror="this.src='assets/e8392808a1c7659c_favicon.png'" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-2xl font-anton text-white tracking-wider leading-none">
+              SÃO JOSÉ <span class="text-brand-orange">BURGUER</span>
+            </h1>
+          </div>
+          <div class="mt-1 flex items-center gap-2">
+            <button onclick="openStoreInfoModal()" id="header-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm" title="Ver Horários, PIX e Endereço">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="header-status-text">Aberto até 23h30</span>
+            </button>
+            <span class="text-[11px] text-stone-400 font-poppins font-medium hidden md:inline">• Pedreiras & Trizidela</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- SEARCH BAR (DESKTOP) -->
+      <div class="hidden md:flex flex-1 max-w-sm mx-4 relative items-center">
+        <span class="absolute left-3.5 pointer-events-none text-stone-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </span>
+        <input 
+          type="text" 
+          id="desktop-search-input"
+          oninput="handleSearch(this.value)"
+          placeholder="Buscar no cardápio..." 
+          class="w-full bg-white/5 border border-white/10 rounded-2xl pl-10 pr-10 py-2.5 text-xs font-poppins text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange transition-colors"
+        />
+        <button id="desktop-clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 text-stone-400 hover:text-white text-xs bg-white/10 rounded-full w-5 h-5 flex items-center justify-center">✕</button>
+      </div>
+
+      <!-- ACTIONS: TEMA, INFO, WHATSAPP & SACOLA -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5">
+        
+        <!-- Toggle Modo Claro / Escuro -->
+        <button onclick="toggleTheme()" class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-orange text-stone-300 flex items-center justify-center shadow-sm active:scale-95 transition-all" aria-label="Alternar Tema" title="Alternar Modo Claro/Escuro">
+          <span id="theme-icon-container">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+          </span>
+        </button>
+
+        <!-- Informações da Loja Modal Trigger -->
+        <button onclick="openStoreInfoModal()" class="w-10 h-10 sm:w-auto sm:px-3.5 sm:py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-stone-200 border border-white/10 hover:border-brand-orange transition-all font-poppins text-xs font-semibold shadow-sm active:scale-95 flex items-center justify-center gap-1.5" title="Ver Horários, PIX e Endereço">
+          <span class="text-sm">ℹ️</span>
+          <span class="hidden lg:inline">Loja</span>
+        </button>
+
+        <!-- WhatsApp Direto -->
+        <button onclick="contactWhatsApp()" class="hidden xl:flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition-all font-poppins text-xs font-semibold">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"></path></svg>
+          <span>WhatsApp</span>
+        </button>
+
+        <!-- Botão Sacola -->
+        <button onclick="toggleCartDrawer()" class="relative flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-110 text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all font-poppins text-xs font-bold" aria-label="Sacola de Pedidos">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+          <span class="hidden sm:inline">Sacola</span>
+          <span id="nav-cart-badge" class="bg-black/30 text-white text-[11px] font-black px-2 py-0.5 rounded-full border border-white/20">0</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- SEARCH BAR MOBILE -->
+    <div class="px-4 pb-3 md:hidden">
+      <div class="relative flex items-center">
+        <span class="absolute left-3.5 pointer-events-none text-stone-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </span>
+        <input 
+          type="text" 
+          id="mobile-search-input"
+          oninput="handleSearch(this.value)"
+          placeholder="Buscar hambúrguer, combo, batata..." 
+          class="w-full bg-white/5 dark:bg-white/5 border border-white/10 rounded-2xl pl-10 pr-10 py-2.5 text-xs font-poppins text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange transition-colors"
+        />
+        <button id="mobile-clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 text-stone-400 hover:text-white text-xs bg-white/10 rounded-full w-5 h-5 flex items-center justify-center">✕</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT CONTAINER -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-8 relative z-10">
+
+    <!-- ========================================================================= -->
+    <!-- 2. CATEGORIAS DE NAVEGAÇÃO / FILTROS (PERSISTENTE NO TOPO - ACESSO IMEDIATO) -->
+    <!-- ========================================================================= -->
+    <section id="categories-sticky-section" transition:persist data-transition="persist" class="sticky top-20 z-40 bg-[#080504]/95 dark:bg-[#080504]/95 backdrop-blur-xl py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-y border-white/10 shadow-lg">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+        
+        <!-- BOTÃO ROLAR ESQUERDA -->
+        <button 
+          onclick="scrollCategories(-250)" 
+          class="hidden sm:flex w-9 h-9 rounded-xl bg-white/5 hover:bg-brand-orange text-white border border-white/10 items-center justify-center shadow-md active:scale-90 transition-all flex-shrink-0"
+          aria-label="Rolar para esquerda"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+
+        <!-- CONTAINER DAS CATEGORIAS -->
+        <div 
+          id="categories-pills-bar" 
+          class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar py-1 scroll-smooth w-full select-none"
+        >
+          <!-- Injetado dinamicamente via Javascript -->
+        </div>
+
+        <!-- BOTÃO ROLAR DIREITA -->
+        <button 
+          onclick="scrollCategories(250)" 
+          class="hidden sm:flex w-9 h-9 rounded-xl bg-white/5 hover:bg-brand-orange text-white border border-white/10 items-center justify-center shadow-md active:scale-90 transition-all flex-shrink-0"
+          aria-label="Rolar para direita"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- CONTAINER DE DESTAQUES & OFERTAS (RECOLHE AUTOMATICAMENTE EM OUTRAS CATEGORIAS) -->
+    <!-- ========================================================================= -->
+    <div id="hero-featured-banners-section" class="space-y-8 transition-all duration-300">
+
+      <!-- 3. HERO FEATURED BANNER (OFERTA DO DIA / DESTAQUE PROMOÇÃO) -->
+      <section onclick="openProductById('6a8f2939efa864ebad3960cf')" class="star-border-container star-border-dark electric-card cursor-pointer group rounded-3xl overflow-hidden shadow-2xl">
+      <div class="border-gradient-bottom"></div>
+      <div class="border-gradient-top"></div>
+
+      <div class="inner-content p-6 sm:p-8 lg:p-10 relative overflow-hidden text-white flex flex-col-reverse md:flex-row items-center justify-between gap-6">
+        <div class="absolute inset-0 bg-gradient-to-r from-red-950/70 via-[#140E0A]/95 to-amber-950/60 pointer-events-none"></div>
+
+        <!-- TEXTOS E BOTÃO DO HERO (LADO ESQUERDO) -->
+        <div class="relative z-10 flex-1 max-w-xl space-y-3.5 text-left w-full">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 bg-brand-orange text-white text-[10px] sm:text-xs font-anton tracking-wider uppercase px-3 py-1 rounded-full shadow-md">
+              🔥 OFERTA DO DIA • MAIS PEDIDO
+            </span>
+            <span class="text-xs text-amber-400 font-poppins font-bold flex items-center gap-1">
+              ★ 4.9 (500+ pedidos)
+            </span>
+          </div>
+
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-anton leading-none tracking-wide text-white drop-shadow">
+            BURGUER <span class="text-brand-orange">SÃO JOSÉ</span>
+          </h2>
+
+          <p class="text-xs sm:text-sm text-stone-300 font-poppins font-normal leading-relaxed max-w-md">
+            Pão Brioche artesanal selado, 3 suculentos blends bovinos de 100g grelhados no fogo, 2 camadas de cheddar duplo, cebola caramelizada, catupiry cremoso e bacon crocante.
+          </p>
+
+          <div class="pt-1 flex flex-wrap items-center gap-3">
+            <button 
+              class="bg-gradient-to-r from-orange-500 to-orange-600 group-hover:brightness-110 text-white text-xs sm:text-sm font-poppins font-bold px-6 py-3 rounded-full inline-flex items-center gap-2 shadow-orange-glow active:scale-95 transition-all border-t border-white/20"
+            >
+              <span>Pedir Agora</span>
+              <span class="font-anton text-base ml-1">(R$ 33,00)</span>
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+
+            <span class="text-[11px] sm:text-xs text-stone-400 font-poppins flex items-center gap-1">
+              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              Entrega rápida em Pedreiras & Trizidela
+            </span>
+          </div>
+        </div>
+
+        <!-- FOTO DO HAMBÚRGUER (LADO DIREITO - NUNCA COBRE AS LETRAS) -->
+        <div class="relative z-10 w-full md:w-[42%] lg:w-[45%] flex items-center justify-center flex-shrink-0">
+          <div class="w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 relative">
+            <img 
+              src="assets/e982e903924b9f51_-1751323111578blob.jpg" 
+              alt="Burguer São José" 
+              class="w-full h-full object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transform group-hover:scale-106 transition-transform duration-500 ease-out"
+              onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'"
+            />
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 4. MAIS PEDIDOS DA SEMANA (CARROSSEL / GRID DE DESTAQUES) -->
+    <!-- ========================================================================= -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xl sm:text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-2.5 h-5 bg-brand-orange rounded-full"></span>
+            MAIS PEDIDOS DA SEMANA
+          </h3>
+          <p class="text-xs text-stone-400 font-poppins mt-0.5">Os favoritos da galera que todo mundo ama</p>
+        </div>
+        <span class="text-xs text-amber-400 font-poppins font-semibold hidden sm:block">Recomendados pelo Chef ⭐</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        
+        <!-- 1. Burguer São José -->
+        <div onclick="openProductById('6a8f2939efa864ebad3960cf')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
+          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
+            <img src="assets/e982e903924b9f51_-1751323111578blob.jpg" alt="Burguer São José" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+            <span class="absolute top-2 left-2 bg-brand-orange text-white text-[9px] font-anton px-2 py-0.5 rounded-full shadow">TOP 1</span>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">BURGUER SÃO JOSÉ</h4>
+              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">3 Blends 100g, cheddar duplo, catupiry e bacon.</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 33,00</span>
+              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Brioche Prime -->
+        <div onclick="openProductDetail('Brioche Prime', 17.00, 'Pão brioche, Blend Bovino De 100 Gramas - Cream cheese, cebola caramelizada, queijo coalho, Maionese Caseira e molho barbecue', 'assets/3218ef457e3140d1_-1781817483869blob.jpg')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
+          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
+            <img src="assets/3218ef457e3140d1_-1781817483869blob.jpg" alt="Brioche Prime" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+            <span class="absolute top-2 left-2 bg-amber-500 text-black text-[9px] font-anton px-2 py-0.5 rounded-full shadow">PREMIUM</span>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">BRIOCHE PRIME</h4>
+              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">Cream cheese, cebola caramelizada e queijo coalho.</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 17,00</span>
+              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Supremo Duplo -->
+        <div onclick="openProductDetail('Supremo Duplo', 22.00, 'Pão brioche, 2 blends de 100gramas cada, queijo coalho, cebola caramelizada, maionese caseira e molho especial são josé', 'assets/d01c24cc0387395c_-1782242426840blob.jpg')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
+          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
+            <img src="assets/d01c24cc0387395c_-1782242426840blob.jpg" alt="Supremo Duplo" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+            <span class="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] font-anton px-2 py-0.5 rounded-full shadow">DUPLO</span>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">SUPREMO DUPLO</h4>
+              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">2 blends 100g, queijo coalho e molho São José.</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 22,00</span>
+              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Combo Kids -->
+        <div onclick="openProductDetail('Combo Kids', 19.00, '1 burguer tradicional + 1 porção de fritas tradicional + 1 mini refrigerante', 'assets/15dfa4dcc6ebc4c5_-1780090896913blob.jpg')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
+          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
+            <img src="assets/15dfa4dcc6ebc4c5_-1780090896913blob.jpg" alt="Combo Kids" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+            <span class="absolute top-2 left-2 bg-brand-orange text-white text-[9px] font-anton px-2 py-0.5 rounded-full shadow">COMBO</span>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">COMBO KIDS</h4>
+              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">1 burguer tradicional + 1 porção de batata frita.</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 19,00</span>
+              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Combo Lucca -->
+        <div onclick="openProductDetail('Combo Lucca', 24.50, '1 Burger do Lucca + 1 Porção De Batata Frita Tradicional', 'assets/9c2b8a8b4c07438a_-1732476706087blob.png')" class="hidden lg:flex bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex-col justify-between">
+          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
+            <img src="assets/9c2b8a8b4c07438a_-1732476706087blob.png" alt="Combo Lucca" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+            <span class="absolute top-2 left-2 bg-amber-500 text-black text-[9px] font-anton px-2 py-0.5 rounded-full shadow">PROMO</span>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">COMBO LUCCA</h4>
+              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">1 Burger do Lucca + 1 Porção de Batata Frita.</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 24,50</span>
+              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. CATÁLOGO PRINCIPAL DE PRODUTOS (GRID RESPONSIVO) -->
+    <!-- ========================================================================= -->
+    <section id="main-products-section" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 id="current-section-title" class="text-2xl sm:text-3xl font-anton text-white tracking-wider">
+            BURGERS
+          </h3>
+          <p class="text-xs text-stone-400 font-poppins mt-0.5">Selecione para ver opcionais, adicionais e observações</p>
+        </div>
+        <span id="products-count-badge" class="px-3 py-1 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-xs font-poppins font-bold">
+          27 opções
+        </span>
+      </div>
+
+      <!-- GRID DE PRODUTOS RESPONSIVO (2 COLUNAS MOBILE / 4-5 DESKTOP) -->
+      <div id="products-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        <!-- Injetado via Javascript -->
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 6. BANNER PROMOÇÃO COMBOS & BATATAS -->
+    <!-- ========================================================================= -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Banner Combos -->
+      <div onclick="selectCategoryByName('Combos')" class="star-border-container star-border-dark electric-card cursor-pointer group rounded-3xl overflow-hidden shadow-2xl">
+        <div class="border-gradient-bottom"></div>
+        <div class="border-gradient-top"></div>
+        
+        <div class="inner-content p-0 relative overflow-hidden text-white flex flex-col sm:flex-row items-stretch min-h-[200px]">
+          
+          <div class="p-6 sm:p-7 flex flex-col justify-between flex-1 relative z-10 bg-gradient-to-t sm:bg-gradient-to-r from-[#120B08] via-[#120B08]/95 to-transparent">
+            <div>
+              <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-[10px] font-anton uppercase text-amber-400 tracking-wider mb-2">
+                ECONOMIZE MAIS 🔥
+              </span>
+              <h3 class="text-2xl sm:text-3xl font-anton leading-tight text-white tracking-wide">
+                COMBOS ESPECIAIS
+              </h3>
+              <p class="text-xs text-stone-300 font-poppins mt-1">A partir de R$ 19,99 com batata frita inclusa!</p>
+            </div>
+            
+            <div class="pt-4">
+              <button class="bg-gradient-to-r from-orange-500 to-orange-600 group-hover:brightness-110 text-white text-xs font-poppins font-bold px-4 py-2.5 rounded-full inline-flex items-center gap-1.5 shadow-lg active:scale-95 transition-all">
+                <span>Ver Todos os Combos</span>
+                <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="w-full sm:w-[46%] h-48 sm:h-auto relative overflow-hidden flex-shrink-0">
+            <img 
+              src="assets/6d002fb23256ab05_-1780090878920blob.jpg" 
+              alt="Combo Laika" 
+              class="w-full h-full object-cover object-center transform group-hover:scale-108 transition-transform duration-500"
+              onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#120B08] via-transparent to-transparent sm:w-16 pointer-events-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner Batata Suprema -->
+      <div onclick="selectCategoryByName('Batata Frita')" class="star-border-container star-border-dark electric-card cursor-pointer group rounded-3xl overflow-hidden shadow-2xl">
+        <div class="border-gradient-bottom"></div>
+        <div class="border-gradient-top"></div>
+        
+        <div class="inner-content p-0 relative overflow-hidden text-white flex flex-col sm:flex-row items-stretch min-h-[200px]">
+          
+          <div class="p-6 sm:p-7 flex flex-col justify-between flex-1 relative z-10 bg-gradient-to-t sm:bg-gradient-to-r from-[#120B08] via-[#120B08]/95 to-transparent">
+            <div>
+              <span class="inline-block px-2.5 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-[10px] font-anton uppercase text-orange-400 tracking-wider mb-2">
+                PORÇÕES CROCANTES 🍟
+              </span>
+              <h3 class="text-2xl sm:text-3xl font-anton leading-tight text-white tracking-wide">
+                BATATAS RECHEADAS
+              </h3>
+              <p class="text-xs text-stone-300 font-poppins mt-1">Cheddar cremoso, bacon crocante, catupiry e calabresa.</p>
+            </div>
+            
+            <div class="pt-4">
+              <button class="bg-gradient-to-r from-amber-500 to-orange-500 group-hover:brightness-110 text-white text-xs font-poppins font-bold px-4 py-2.5 rounded-full inline-flex items-center gap-1.5 shadow-lg active:scale-95 transition-all">
+                <span>Ver Porções de Batata</span>
+                <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="w-full sm:w-[46%] h-48 sm:h-auto relative overflow-hidden flex-shrink-0">
+            <img 
+              src="assets/7a46c49dc2198538_-1774548907089blob.jpg" 
+              alt="Batata Frita Suprema" 
+              class="w-full h-full object-cover object-center transform group-hover:scale-108 transition-transform duration-500"
+              onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#120B08] via-transparent to-transparent sm:w-16 pointer-events-none"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 6. INFORMAÇÕES DA EMPRESA, HORÁRIOS & LOCALIZAÇÃO -->
+    <!-- ========================================================================= -->
+    <section id="store-info-section" class="space-y-6 pt-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xl sm:text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-2.5 h-5 bg-brand-orange rounded-full"></span>
+            INFORMAÇÕES & LOCALIZAÇÃO
+          </h3>
+          <p class="text-xs text-stone-400 font-poppins mt-0.5">Horários de atendimento, formas de pagamento e localização da empresa</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        <!-- CARD 1: HORÁRIO DE ATENDIMENTO -->
+        <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-6 shadow-card-dark flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <span id="store-status-pill-card" class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-poppins font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Aberto Hoje • 19h30
+              </span>
+            </div>
+
+            <h4 class="font-anton text-lg text-white tracking-wide">HORÁRIO DE ATENDIMENTO</h4>
+            <p class="text-xs text-stone-400 mt-1">Pedido mínimo: <strong class="text-white">R$ 6,00</strong></p>
+
+            <div class="mt-4 space-y-1.5 text-xs font-poppins">
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="0"><span class="text-stone-300">Domingo:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="1"><span class="text-stone-300">Segunda-feira:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="2"><span class="text-stone-300">Terça-feira:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="3"><span class="text-stone-300">Quarta-feira:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="4"><span class="text-stone-300">Quinta-feira:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="5"><span class="text-stone-300">Sexta-feira:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+              <div class="schedule-day-row flex justify-between py-1.5 px-2 rounded-lg transition-colors" data-day="6"><span class="text-stone-300">Sábado:</span><span class="text-amber-400 font-semibold">19:30 às 23:30</span></div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-stone-400 font-poppins">
+            <span>🛵 Delivery para toda Pedreiras</span>
+            <span class="text-emerald-400 font-bold">Entrega Rápida</span>
+          </div>
+        </div>
+
+        <!-- CARD 2: FORMAS DE PAGAMENTO -->
+        <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-6 shadow-card-dark flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-poppins font-bold">
+                Pague Fácil
+              </span>
+            </div>
+
+            <h4 class="font-anton text-lg text-white tracking-wide">FORMAS DE PAGAMENTO</h4>
+            <p class="text-xs text-stone-400 mt-1">Opções aceitas no balcão e na entrega:</p>
+
+            <div class="mt-4 space-y-3 font-poppins text-xs">
+              <!-- PIX -->
+              <div class="p-3 bg-white/5 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">💠</div>
+                  <div>
+                    <strong class="text-white block">PIX Instantâneo</strong>
+                    <span class="text-[11px] text-emerald-400">Chave direta no pedido</span>
+                  </div>
+                </div>
+                <button onclick="copyPixKey()" class="text-[10px] bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg transition-colors shadow-sm">
+                  Copiar PIX
+                </button>
+              </div>
+
+              <!-- Cartão -->
+              <div class="p-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm">💳</div>
+                <div>
+                  <strong class="text-white block">Cartão de Crédito e Débito</strong>
+                  <span class="text-[11px] text-stone-400">Pagamento na entrega (Maquininha)</span>
+                </div>
+              </div>
+
+              <!-- Dinheiro -->
+              <div class="p-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">💵</div>
+                <div>
+                  <strong class="text-white block">Dinheiro em Espécie</strong>
+                  <span class="text-[11px] text-stone-400">Pagamento na entrega (com troco)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-white/10 text-[11px] text-stone-400 font-poppins">
+            🔒 Pagamentos 100% seguros e confirmados na entrega.
+          </div>
+        </div>
+
+        <!-- CARD 3: ENDEREÇO & MAPA -->
+        <div class="bg-[#120D0A] border border-white/10 rounded-3xl p-6 shadow-card-dark flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <button onclick="copyStoreAddress()" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-brand-orange text-xs font-poppins font-bold flex items-center gap-1 transition-colors">
+                <span>Copiar Endereço</span>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+              </button>
+            </div>
+
+            <h4 class="font-anton text-lg text-white tracking-wide">LOCALIZAÇÃO & ENDEREÇO</h4>
+            <div class="mt-2 text-xs font-poppins space-y-1 text-stone-300">
+              <p class="font-bold text-white leading-relaxed text-sm">AVENIDA MARIANO LISBOA, 1370</p>
+              <p class="text-stone-300">Bairro: <strong class="text-amber-400">ENGENHO</strong></p>
+              <p class="text-stone-400">Pedreiras - MA, CEP 65725-000, Brasil</p>
+            </div>
+
+            <div class="mt-4 rounded-2xl overflow-hidden border border-white/10 relative h-32 bg-black/40 group">
+              <img src="https://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=-1.8349260767850524&panoid=g-nh5LwAU1_k4DA_T65XbA&yaw=239.90248477383724" alt="Street View São José Burguer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end justify-between p-3">
+                <span class="text-[11px] font-poppins font-semibold text-white flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
+                  São José Burguer • Engenho
+                </span>
+                <span class="text-[10px] bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-stone-300">Pedreiras - MA</span>
+              </div>
+            </div>
+          </div>
+
+          <a 
+            href="https://www.google.com/maps/@-4.5761055,-44.5947994,3a,75y,239.9h,91.83t/data=!3m7!1e1!3m5!1sg-nh5LwAU1_k4DA_T65XbA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-1.8349260767850524%26panoid%3Dg-nh5LwAU1_k4DA_T65XbA%26yaw%3D239.90248477383724!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDgyNS4wIKXMDSoASAFQAw%3D%3D" 
+            target="_blank"
+            class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-110 text-white font-poppins font-bold py-2.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all text-xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Abrir no Google Maps / Traçar Rota</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 7. FOOTER COMPLETO (DESKTOP & MOBILE) -->
+  <!-- ========================================================================= -->
+  <footer class="mt-16 bg-[#050302] border-t border-white/10 text-stone-400 font-poppins py-12 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+        
+        <!-- Coluna 1: Sobre -->
+        <div class="md:col-span-2 space-y-3">
+          <div class="flex items-center gap-3">
+            <img src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo" class="w-10 h-10 rounded-xl object-cover border border-white/10" />
+            <div>
+              <h4 class="text-xl font-anton text-white tracking-wider">SÃO JOSÉ BURGUER</h4>
+              <p class="text-[11px] text-amber-400 font-semibold">Os melhores hambúrgueres artesanais</p>
+            </div>
+          </div>
+          <p class="text-xs leading-relaxed max-w-md text-stone-400">
+            A verdadeira experiência de hambúrguer artesanal grelhado no fogo, preparado com ingredientes nobres, queijos especiais e molhos exclusivos.
+          </p>
+          <div class="text-xs text-stone-400 space-y-0.5 pt-1">
+            <p>📍 <strong>Avenida Mariano Lisboa, 1370</strong> - Bairro Engenho</p>
+            <p>Pedreiras - MA, CEP 65725-000</p>
+          </div>
+          <div class="flex items-center gap-3 pt-2">
+            <a href="https://wa.me/5599991040222" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 flex items-center gap-2 transition-colors text-xs font-bold">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"></path></svg>
+              <span>WhatsApp: (99) 99104-0222</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Coluna 2: Horários & Funcionamento -->
+        <div class="space-y-2.5">
+          <h5 class="text-sm font-anton text-white tracking-wider">HORÁRIO DE ATENDIMENTO</h5>
+          <ul class="text-xs space-y-1.5 text-stone-400">
+            <li class="flex items-center justify-between"><span>Todos os dias:</span> <span class="text-amber-400 font-semibold">19:30 às 23:30</span></li>
+            <li class="flex items-center justify-between"><span>Pedido Mínimo:</span> <span class="text-white font-semibold">R$ 6,00</span></li>
+            <li class="flex items-center gap-1.5 text-emerald-400 font-semibold mt-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Delivery & Retirada no Balcão
+            </li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3: Formas de Pagamento -->
+        <div class="space-y-2.5">
+          <h5 class="text-sm font-anton text-white tracking-wider">PAGAMENTOS ACEITOS</h5>
+          <div class="space-y-2 text-xs text-stone-300">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">💠 PIX:</span>
+              <span class="text-stone-400">Pagamento instantâneo</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-blue-400 font-bold">💳 Cartão:</span>
+              <span class="text-stone-400">Crédito / Débito na entrega</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400 font-bold">💵 Dinheiro:</span>
+              <span class="text-stone-400">Pagamento na entrega</span>
+            </div>
+          </div>
+          <div class="pt-2">
+            <a href="https://www.google.com/maps/@-4.5761055,-44.5947994,3a,75y,239.9h,91.83t/data=!3m7!1e1!3m5!1sg-nh5LwAU1_k4DA_T65XbA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-1.8349260767850524%26panoid%3Dg-nh5LwAU1_k4DA_T65XbA%26yaw%3D239.90248477383724!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDgyNS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="text-brand-orange hover:underline text-xs flex items-center gap-1 font-semibold">
+              <span>📍 Abrir rota no Google Maps</span>
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Linha Inferior -->
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+        <p>© 2026 São José Burguer • Avenida Mariano Lisboa, 1370 - Engenho, Pedreiras - MA.</p>
+        <div class="flex items-center gap-3">
+          <p class="flex items-center gap-1">Feito com paixão por hambúrgueres artesanais 🔥</p>
+          <span>•</span>
+          <a href="admin.html" class="text-stone-400 hover:text-brand-orange transition-colors flex items-center gap-1 font-semibold" title="Painel do Administrador">
+            <span>Painel Admin 🔐</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 8. MODAL DE DETALHES DO PRODUTO & ADICIONAIS (RESPONSIVO / BOTTOM SHEET MOBILE) -->
+  <!-- ========================================================================= -->
+  <div id="product-modal-backdrop" class="fixed inset-0 z-[150] bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200 flex items-end sm:items-center justify-center p-0 sm:p-4 touch-none overscroll-contain">
+    
+    <div id="product-modal" class="bg-[#120D0A] text-white w-full h-[86dvh] sm:h-auto sm:max-h-[85vh] sm:max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-white/10 shadow-2xl flex flex-col overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 relative z-[151] overscroll-contain" onclick="event.stopPropagation()">
+      
+      <!-- Mobile Pull Bar Indicator -->
+      <div class="sm:hidden flex justify-center pt-2.5 pb-1 bg-black/40">
+        <div class="w-12 h-1.5 rounded-full bg-white/20"></div>
+      </div>
+
+      <!-- Top Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-black/40 flex-shrink-0">
+        <h3 class="text-base sm:text-lg font-anton tracking-wider text-white flex items-center gap-2">
+          <span class="w-2 h-4 bg-brand-orange rounded-full"></span>
+          <span>PERSONALIZAR PEDIDO</span>
+        </h3>
+        
+        <button type="button" onclick="event.stopPropagation(); closeProductModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center transition-colors font-bold text-sm" aria-label="Fechar Modal">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 overflow-y-auto flex-1 space-y-5 no-scrollbar overscroll-contain">
+        
+        <!-- Header do Produto: Imagem + Info -->
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl">
+          <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden bg-black/30 border border-white/10 flex-shrink-0 flex items-center justify-center">
+            <img 
+              id="modal-product-img" 
+              src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" 
+              alt="Produto" 
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <div class="flex-1 text-center sm:text-left">
+            <h4 id="modal-product-title" class="text-xl sm:text-2xl font-anton text-white tracking-wide leading-tight">BRIOCHE PRIME</h4>
+            <div id="modal-product-price" class="text-xl font-anton text-brand-orange mt-1">R$ 17,00</div>
+            <p id="modal-product-desc" class="text-xs text-stone-400 font-poppins font-normal leading-relaxed mt-2">
+              Pão brioche, Blend Bovino De 100 Gramas - Cream cheese, cebola caramelizada, queijo coalho, Maionese Caseira e molho barbecue.
+            </p>
+          </div>
+        </div>
+
+        <!-- Seção de Adicionais -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h5 class="text-sm font-anton text-white tracking-wider">ADICIONAIS ESPECIAIS</h5>
+              <p class="text-xs text-amber-500 font-poppins font-medium">Turbine seu hambúrguer (até 10 itens)</p>
+            </div>
+            <span class="text-xs text-stone-400 font-poppins">Opcional</span>
+          </div>
+
+          <!-- Busca de adicionais -->
+          <div class="relative flex items-center">
+            <span class="absolute left-3.5 pointer-events-none text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+            <input 
+              type="text" 
+              id="additionals-search-input"
+              oninput="filterAdditionals(this.value)"
+              placeholder="Pesquisar bacon, queijo, carne, ovo..." 
+              class="w-full bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-2.5 text-[16px] sm:text-xs font-poppins text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+            />
+          </div>
+
+          <!-- Lista de adicionais em grid de 2 colunas no desktop -->
+          <div id="additionals-list-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
+            <!-- Injetado via Javascript -->
+          </div>
+        </div>
+
+        <!-- Seção de Observações -->
+        <div class="space-y-2">
+          <label for="modal-product-notes" class="block text-xs font-anton text-white tracking-wider">
+            OBSERVAÇÕES DO ITEM
+          </label>
+          <textarea 
+            id="modal-product-notes" 
+            rows="2"
+            placeholder="Ex: Ponto da carne bem passada, sem cebola, maionese à parte, etc."
+            class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-[16px] sm:text-xs font-poppins text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange resize-none"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer (Barra de Ação Fixa - Protegida contra vazamento de clique) -->
+      <div class="p-4 sm:p-5 bg-[#0F0A08] border-t border-white/10 flex items-center gap-4 flex-shrink-0 relative z-[152] pb-6 sm:pb-5 touch-manipulation" onclick="event.stopPropagation()">
+        
+        <!-- Quantidade -->
+        <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2.5 rounded-2xl font-poppins">
+          <button type="button" onclick="event.stopPropagation(); changeModalQty(-1)" class="text-stone-400 hover:text-white font-bold text-base px-1 active:scale-90 transition-transform"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"></path></svg></button>
+          <span id="modal-qty-display" class="text-sm font-bold text-white min-w-[20px] text-center">1</span>
+          <button type="button" onclick="event.stopPropagation(); changeModalQty(1)" class="text-brand-orange hover:text-white font-bold text-base px-1 active:scale-90 transition-transform"><svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+        </div>
+
+        <!-- Botão Adicionar -->
+        <button 
+          type="button"
+          onclick="event.stopPropagation(); addCurrentProductToCart()"
+          class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-110 text-white font-poppins font-bold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-orange-glow active:scale-95 transition-all text-xs sm:text-sm"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <span id="modal-add-btn-text">Adicionar <span class="font-anton text-sm sm:text-base ml-1">R$ 17,00</span></span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 9. SLIDE-OVER DRAWER: SACOLA DE PEDIDOS & CHECKOUT WHATSAPP -->
+  <!-- ========================================================================= -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/75 z-[160] opacity-0 pointer-events-none transition-opacity duration-200 touch-none overscroll-contain" onclick="toggleCartDrawer()"></div>
+
+  <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:max-w-md bg-[#100B08] z-[161] translate-x-full transition-transform duration-250 ease-out shadow-2xl flex flex-col justify-between border-l border-white/10 text-white font-poppins overscroll-contain touch-pan-y will-change-transform">
+    
+    <!-- Drawer Header -->
+    <div class="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-brand-orange text-white flex items-center justify-center font-bold shadow-md">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        </div>
+        <div>
+          <h3 class="font-anton text-base text-white tracking-wide">SUA SACOLA DE PEDIDOS</h3>
+          <p class="text-[11px] text-stone-400">São José Burguer • WhatsApp Direto</p>
+        </div>
+      </div>
+      
+      <button onclick="toggleCartDrawer()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center gap-1 font-poppins text-xs font-semibold transition-colors shadow-sm" aria-label="Continuar Comprando">
+        <span>← Voltar</span>
+      </button>
+    </div>
+
+    <!-- Drawer Items List -->
+    <div id="cart-items-container" class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-3 font-poppins no-scrollbar"></div>
+
+    <!-- Drawer Footer / Checkout -->
+    <div class="p-4 sm:p-5 bg-[#0C0806] border-t border-white/10 space-y-3.5 max-h-[62vh] overflow-y-auto no-scrollbar font-poppins">
+      
+      <!-- 1. IDENTIFICAÇÃO DO CLIENTE (PADRÃO ANOTA AI) -->
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-stone-400">Este pedido será entregue a:</span>
+          <button type="button" onclick="toggleCustomerEditMode()" id="btn-toggle-client-edit" class="px-2.5 py-1 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-[11px] font-bold transition-all">
+            Trocar
+          </button>
+        </div>
+
+        <div id="customer-view-badge" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-brand-orange/20 text-brand-orange flex items-center justify-center font-bold text-xs">
+            👤
+          </div>
+          <div>
+            <div id="display-client-name" class="font-bold text-white text-xs">Cliente (Preencher Dados)</div>
+            <div id="display-client-phone" class="text-[11px] text-stone-400">Toque em "Trocar" para alterar</div>
+          </div>
+        </div>
+
+        <!-- Campos Editáveis de Telefone e Nome (Padrão Anota AI) -->
+        <div id="customer-edit-fields" class="space-y-2 pt-2 border-t border-white/5 hidden">
+          <div>
+            <label class="block text-[10px] text-stone-400 font-bold uppercase mb-1">Seu número de WhatsApp é:</label>
+            <input 
+              type="tel" 
+              id="customer-phone" 
+              placeholder="(99) 9 9999-9999 *" 
+              oninput="handlePhoneInput(this.value)"
+              onblur="handlePhoneLookup(this.value)"
+              class="w-full bg-black/40 border border-brand-orange/40 text-amber-400 font-bold rounded-xl px-3 py-2.5 text-[16px] sm:text-xs placeholder-stone-500 focus:outline-none focus:border-brand-orange"
+              required
+              autocomplete="tel"
+            />
+          </div>
+          <div>
+            <label class="block text-[10px] text-stone-400 font-bold uppercase mb-1">Seu nome e sobrenome:</label>
+            <input 
+              type="text" 
+              id="customer-name" 
+              placeholder="Digite seu nome completo *" 
+              oninput="updateClientDisplay()"
+              class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+              required
+              autocomplete="name"
+            />
+          </div>
+          <div id="phone-autofill-hint" class="hidden text-[10px] text-emerald-400 flex items-center gap-1 font-semibold">
+            <span>✨</span>
+            <span>Cadastro localizado! Dados preenchidos automaticamente.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. ESCOLHA COMO RECEBER O PEDIDO (3 MODALIDADES ANOTA AI) -->
+      <div class="rounded-2xl overflow-hidden border border-brand-orange/30 shadow-md">
+        <div class="bg-gradient-to-r from-orange-600 to-amber-600 px-3.5 py-2 text-white font-anton text-xs tracking-wider flex items-center gap-1.5">
+          <span>🛵</span>
+          <span>ESCOLHA COMO RECEBER O PEDIDO</span>
+        </div>
+
+        <div class="bg-black/60 p-2 space-y-1.5 text-xs">
+          
+          <!-- Opção 1: Entrega Delivery -->
+          <label onclick="setDeliveryMode('delivery')" class="flex items-center justify-between p-2.5 rounded-xl border border-white/10 hover:border-brand-orange/40 cursor-pointer transition-all bg-white/5" id="card-mode-delivery">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base">🏠</span>
+              <div>
+                <strong class="text-white block text-xs">Cadastrar novo endereço / Entrega</strong>
+                <span class="text-[10px] text-amber-400">⚡ Entrega mais rápida • 45 - 60 min</span>
+              </div>
+            </div>
+            <input type="radio" name="order-mode-radio" id="radio-mode-delivery" checked class="accent-brand-orange w-4 h-4 cursor-pointer" />
+          </label>
+
+          <!-- Opção 2: Retirada no Balcão -->
+          <label onclick="setDeliveryMode('pickup')" class="flex items-center justify-between p-2.5 rounded-xl border border-white/10 hover:border-brand-orange/40 cursor-pointer transition-all bg-white/5" id="card-mode-pickup">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base">🛍️</span>
+              <div>
+                <strong class="text-white block text-xs">Buscar o pedido (Retirada no Balcão)</strong>
+                <span class="text-[10px] text-emerald-400">Grátis • Pronto em 20 - 30 min</span>
+              </div>
+            </div>
+            <input type="radio" name="order-mode-radio" id="radio-mode-pickup" class="accent-brand-orange w-4 h-4 cursor-pointer" />
+          </label>
+
+          <!-- Opção 3: Consumir no Local -->
+          <label onclick="setDeliveryMode('dine_in')" class="flex items-center justify-between p-2.5 rounded-xl border border-white/10 hover:border-brand-orange/40 cursor-pointer transition-all bg-white/5" id="card-mode-dinein">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base">🍽️</span>
+              <div>
+                <strong class="text-white block text-xs">Consumir no local (Mesa / Salão)</strong>
+                <span class="text-[10px] text-blue-400">Grátis • Servido na mesa</span>
+              </div>
+            </div>
+            <input type="radio" name="order-mode-radio" id="radio-mode-dinein" class="accent-brand-orange w-4 h-4 cursor-pointer" />
+          </label>
+
+        </div>
+      </div>
+
+      <!-- 3. MEUS ENDEREÇOS SALVOS (HISTÓRICO NO APARELHO) -->
+      <div id="saved-addresses-wrapper" class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-2 hidden">
+        <div class="flex items-center justify-between text-xs">
+          <label class="font-anton text-stone-300 tracking-wider flex items-center gap-1.5">
+            <span>📍</span>
+            <span>MEUS ENDEREÇOS SALVOS:</span>
+          </label>
+        </div>
+        <div id="saved-addresses-list" class="space-y-1.5 text-xs"></div>
+      </div>
+
+      <!-- 4. CAMPOS DE ENDEREÇO & CIDADE COM TAXA (DELIVERY) -->
+      <div id="delivery-fields-container" class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-2.5">
+        <label class="block text-[11px] font-anton text-white tracking-wider">ENDEREÇO DE ENTREGA:</label>
+
+        <!-- Seletor de Cidade / Região com Taxa Automática -->
+        <div class="space-y-1">
+          <label class="text-[10px] text-stone-400 font-bold uppercase">Selecione sua Cidade / Região:</label>
+          <select 
+            id="customer-neighborhood-select" 
+            onchange="handleNeighborhoodChange(this.value)"
+            class="w-full bg-[#1A120D] border border-brand-orange/40 text-amber-400 font-bold rounded-xl px-3 py-2.5 text-[16px] sm:text-xs focus:outline-none focus:border-brand-orange cursor-pointer"
+          >
+            <!-- Injetado dinamicamente -->
+          </select>
+        </div>
+
+        <!-- Bairro -->
+        <div>
+          <input 
+            type="text" 
+            id="customer-bairro-text" 
+            placeholder="Seu Bairro (Ex: Engenho, Centro, Goiabal, etc.) *" 
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+            autocomplete="address-level2"
+          />
+        </div>
+        
+        <!-- CEP e Rua com Autocomplete de Ruas Mapeadas -->
+        <div class="grid grid-cols-3 gap-2">
+          <input 
+            type="text" 
+            id="customer-cep" 
+            oninput="handleCepAutofill(this.value)"
+            placeholder="CEP (Opcional)" 
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+            autocomplete="postal-code"
+          />
+          <input 
+            type="text" 
+            id="customer-street" 
+            list="pedreiras-streets-datalist"
+            onchange="saveCustomStreetIfNotExists(this.value, selectedNeighborhoodName)"
+            placeholder="Rua / Avenida *" 
+            class="col-span-2 w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+            autocomplete="address-line1"
+          />
+          <datalist id="pedreiras-streets-datalist"></datalist>
+        </div>
+
+        <!-- Número da Casa e Complemento -->
+        <div class="grid grid-cols-2 gap-2">
+          <input 
+            type="text" 
+            id="customer-number" 
+            placeholder="Nº da Casa *" 
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+          />
+          <input 
+            type="text" 
+            id="customer-complement" 
+            placeholder="Complemento (Apto, etc.)" 
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+          />
+        </div>
+
+        <!-- Ponto de Referência -->
+        <div>
+          <input 
+            type="text" 
+            id="customer-reference" 
+            placeholder="Ponto de Referência (Próximo a...)" 
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+          />
+        </div>
+      </div>
+
+      <!-- 5. CAMPO DE MESA (CONSUMO NO LOCAL) -->
+      <div id="dinein-fields-container" class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-2 hidden">
+        <label class="block text-[11px] font-anton text-white tracking-wider">CONSUMIR NO LOCAL:</label>
+        <input 
+          type="text" 
+          id="customer-table" 
+          placeholder="Número da sua Mesa (Opcional)" 
+          class="w-full bg-black/40 border border-blue-500/40 rounded-xl px-3.5 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+        />
+      </div>
+
+      <!-- 6. FORMA DE PAGAMENTO -->
+      <div class="space-y-1.5 pt-1">
+        <label class="block text-[11px] font-anton text-white tracking-wider">ESCOLHA A FORMA DE PAGAMENTO:</label>
+        <div class="grid grid-cols-3 gap-1.5 text-xs font-semibold">
+          <button type="button" id="pay-pix-btn" onclick="setPaymentMethod('pix')" class="py-2.5 px-1 rounded-xl bg-emerald-600 text-white font-bold border border-emerald-400/40 transition-all flex flex-col items-center justify-center gap-0.5">
+            <span class="text-sm">💠</span>
+            <span class="text-[10px]">PIX</span>
+          </button>
+          <button type="button" id="pay-card-btn" onclick="setPaymentMethod('cartao')" class="py-2.5 px-1 rounded-xl bg-white/5 text-stone-300 hover:text-white border border-white/10 transition-all flex flex-col items-center justify-center gap-0.5">
+            <span class="text-sm">💳</span>
+            <span class="text-[10px]">Cartão</span>
+          </button>
+          <button type="button" id="pay-cash-btn" onclick="setPaymentMethod('dinheiro')" class="py-2.5 px-1 rounded-xl bg-white/5 text-stone-300 hover:text-white border border-white/10 transition-all flex flex-col items-center justify-center gap-0.5">
+            <span class="text-sm">💵</span>
+            <span class="text-[10px]">Dinheiro</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Campo de Troco (Exibido apenas se Dinheiro) -->
+      <div id="cash-change-container" class="hidden">
+        <input 
+          type="text" 
+          id="customer-change" 
+          placeholder="Precisa de troco para quanto? (Ex: R$ 50,00)" 
+          class="w-full bg-black/40 border border-amber-500/40 rounded-xl px-3.5 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+        />
+      </div>
+
+      <!-- Observações Gerais -->
+      <div>
+        <input 
+          type="text" 
+          id="customer-notes" 
+          placeholder="Observações do pedido (ponto da carne, talher, etc.)" 
+          class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[16px] sm:text-xs text-white placeholder-stone-400 focus:outline-none focus:border-brand-orange"
+        />
+      </div>
+
+      <!-- 7. TOTAIS COM TAXA DE ENTREGA CALCULADA -->
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1.5 text-xs text-stone-400">
+        <div class="flex justify-between items-center">
+          <span>Subtotal dos Itens:</span>
+          <span id="cart-subtotal-val" class="font-anton text-sm text-white tracking-wide">R$ 0,00</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span id="cart-delivery-label">Taxa de Entrega:</span>
+          <span id="cart-delivery-fee" class="text-emerald-400 font-anton text-xs font-bold">R$ 3,00</span>
+        </div>
+        <div class="flex justify-between items-center text-sm font-bold text-white pt-2 border-t border-white/10">
+          <span class="font-anton tracking-wide">TOTAL DO PEDIDO:</span>
+          <span id="cart-total-val" class="text-brand-orange font-anton text-xl tracking-wide">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- 8. BOTÕES DE AÇÃO -->
+      <div class="space-y-2 pt-1 pb-4">
+        <button 
+          id="btn-checkout-whatsapp"
+          onclick="initiateCheckout()" 
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"></path></svg>
+          <span>Confirmar & Enviar no WhatsApp</span>
+        </button>
+
+        <button 
+          type="button" 
+          onclick="toggleCartDrawer()" 
+          class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 hover:text-white border border-white/10 font-poppins text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95"
+        >
+          <span>← Voltar a Comprar / Adicionar Mais Itens</span>
+        </button>
+      </div>
+
+    </div>
+
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 9.5. MODAL DE CONFIRMAÇÃO DO PEDIDO & PAGAMENTO PIX -->
+  <!-- ========================================================================= -->
+  <div id="checkout-confirm-modal-backdrop" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    
+    <div id="checkout-confirm-modal" class="bg-[#120D0A] text-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border-t sm:border border-white/10 shadow-2xl flex flex-col overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-300 font-poppins">
+      
+      <!-- Top Modal Header -->
+      <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">✅</span>
+          <div>
+            <h4 class="font-anton text-base text-white tracking-wide">CONFIRMAR PEDIDO</h4>
+            <p class="text-[11px] text-stone-400">Verifique os dados antes do envio</p>
+          </div>
+        </div>
+        <button onclick="closeConfirmModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center font-bold text-sm">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto no-scrollbar text-xs">
+        
+        <!-- Resumo do Cliente & Entrega -->
+        <div id="confirm-customer-summary" class="p-3.5 bg-white/5 border border-white/10 rounded-2xl space-y-1 text-stone-300"></div>
+
+        <!-- Bloco Específico da Forma de Pagamento -->
+        <div id="confirm-payment-box" class="p-3.5 rounded-2xl space-y-2"></div>
+
+        <!-- Resumo dos Itens & Total -->
+        <div class="p-3.5 bg-black/40 border border-white/10 rounded-2xl space-y-1.5">
+          <div class="flex justify-between items-center text-stone-400">
+            <span>Total dos Produtos:</span>
+            <span id="confirm-subtotal-val" class="font-anton text-sm text-white"></span>
+          </div>
+          <div class="flex justify-between items-center text-stone-400">
+            <span>Taxa de Entrega:</span>
+            <span class="text-emerald-400 font-semibold">A combinar com entregador</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-white/10 text-white font-bold">
+            <span class="font-anton text-sm">VALOR TOTAL:</span>
+            <span id="confirm-total-val" class="font-anton text-lg text-brand-orange"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-black/60 border-t border-white/10 space-y-2">
+        <button 
+          onclick="finalizeWhatsAppSend()" 
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-sm"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"></path></svg>
+          <span id="confirm-btn-text">Confirmar e Abrir WhatsApp</span>
+        </button>
+
+        <button 
+          onclick="closeConfirmModal()" 
+          class="w-full py-2 text-stone-400 hover:text-white font-poppins text-xs text-center"
+        >
+          Corrigir dados do pedido
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 10. MODAL DE INFORMAÇÕES DA LOJA (HORÁRIOS, PIX & LOCALIZAÇÃO) -->
+  <!-- ========================================================================= -->
+  <div id="store-info-modal-backdrop" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-0 sm:p-4">
+    
+    <div id="store-info-modal" class="bg-[#120D0A] text-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-3xl border-0 sm:border border-white/10 shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-all duration-300">
+      
+      <!-- Top Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-black/40 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <img src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo" class="w-10 h-10 rounded-xl object-cover border border-white/10" />
+          <div>
+            <h3 class="text-base sm:text-lg font-anton tracking-wider text-white">SÃO JOSÉ BURGUER</h3>
+            <p class="text-[11px] text-amber-400 font-poppins font-medium">Perfil & Informações Oficiais</p>
+          </div>
+        </div>
+        
+        <button onclick="closeStoreInfoModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center transition-colors font-bold text-sm" aria-label="Fechar Modal">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 overflow-y-auto flex-1 space-y-4 no-scrollbar font-poppins">
+        
+        <!-- Status & Horários -->
+        <div class="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-anton tracking-wide text-white uppercase flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              HORÁRIO DE ATENDIMENTO
+            </span>
+            <span id="modal-status-indicator" class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">Aberto Hoje</span>
+          </div>
+
+          <div class="space-y-1.5 text-xs font-poppins">
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="0"><span class="text-stone-300">Domingo:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="1"><span class="text-stone-300">Segunda-feira:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="2"><span class="text-stone-300">Terça-feira:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="3"><span class="text-stone-300">Quarta-feira:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="4"><span class="text-stone-300">Quinta-feira:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg border-b border-white/5 transition-colors" data-day="5"><span class="text-stone-300">Sexta-feira:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+            <div class="modal-schedule-day-row flex justify-between py-1.5 px-2 rounded-lg transition-colors" data-day="6"><span class="text-stone-300">Sábado:</span><span class="text-white font-semibold">19:30 às 23:30</span></div>
+          </div>
+          <div class="pt-2 border-t border-white/5 text-[11px] text-amber-400 font-semibold">
+            Pedido mínimo: R$ 6,00
+          </div>
+        </div>
+
+        <!-- Formas de Pagamento -->
+        <div class="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+          <span class="text-xs font-anton tracking-wide text-white uppercase flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+            FORMAS DE PAGAMENTO
+          </span>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between p-2.5 bg-black/40 rounded-xl border border-emerald-500/30">
+              <div class="flex items-center gap-2">
+                <span class="text-base">💠</span>
+                <div>
+                  <strong class="text-white block">PIX</strong>
+                  <span class="text-[10px] text-emerald-400">Instantâneo</span>
+                </div>
+              </div>
+              <button onclick="copyPixKey()" class="text-[10px] bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-2 py-1 rounded-lg transition-colors">Copiar Chave</button>
+            </div>
+
+            <div class="flex items-center gap-2 p-2.5 bg-black/40 rounded-xl border border-white/5">
+              <span class="text-base">💳</span>
+              <div>
+                <strong class="text-white block">Cartão de Crédito e Débito</strong>
+                <span class="text-[10px] text-stone-400">Pagamento na entrega na maquininha</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 p-2.5 bg-black/40 rounded-xl border border-white/5">
+              <span class="text-base">💵</span>
+              <div>
+                <strong class="text-white block">Dinheiro em Espécie</strong>
+                <span class="text-[10px] text-stone-400">Pagamento na entrega (com troco)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endereço e Google Maps -->
+        <div class="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-anton tracking-wide text-white uppercase flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              ENDEREÇO
+            </span>
+            <button onclick="copyStoreAddress()" class="text-[10px] bg-white/10 hover:bg-brand-orange text-white font-bold px-2.5 py-1 rounded-lg transition-colors">Copiar Endereço</button>
+          </div>
+
+          <div class="text-xs text-stone-300 space-y-0.5">
+            <p class="font-bold text-white text-sm">AVENIDA MARIANO LISBOA, 1370</p>
+            <p class="text-stone-300">Bairro: <strong class="text-amber-400">ENGENHO</strong></p>
+            <p class="text-stone-400">Pedreiras - MA, CEP 65725-000, Brasil</p>
+          </div>
+
+          <a 
+            href="https://www.google.com/maps/@-4.5761055,-44.5947994,3a,75y,239.9h,91.83t/data=!3m7!1e1!3m5!1sg-nh5LwAU1_k4DA_T65XbA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-1.8349260767850524%26panoid%3Dg-nh5LwAU1_k4DA_T65XbA%26yaw%3D239.90248477383724!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDgyNS4wIKXMDSoASAFQAw%3D%3D" 
+            target="_blank"
+            class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-110 text-white font-poppins font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all text-xs mt-2"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Abrir no Google Maps / Traçar Rota</span>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 10. MOBILE BOTTOM NAVIGATION DOCK (BARRA FIXA INFERIOR MOBILE) -->
+  <!-- ========================================================================= -->
+  <nav id="mobile-bottom-dock" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0A0705]/95 backdrop-blur-xl border-t border-white/10 px-3 py-2.5 flex items-center justify-between shadow-2xl safe-area-bottom">
+    
+    <!-- Botão Início / Cardápio -->
+    <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="flex-1 flex flex-col items-center gap-0.5 text-stone-400 hover:text-white active:scale-95 transition-all">
+      <span class="text-base">🍔</span>
+      <span class="text-[10px] font-poppins font-medium">Cardápio</span>
+    </button>
+
+    <!-- Botão Informações & Horários -->
+    <button onclick="openStoreInfoModal()" class="flex-1 flex flex-col items-center gap-0.5 text-stone-400 hover:text-white active:scale-95 transition-all">
+      <span class="text-base">ℹ️</span>
+      <span class="text-[10px] font-poppins font-medium">Loja & PIX</span>
+    </button>
+
+    <!-- Botão WhatsApp Direto -->
+    <button onclick="contactWhatsApp()" class="flex-1 flex flex-col items-center gap-0.5 text-emerald-400 hover:text-emerald-300 active:scale-95 transition-all">
+      <span class="text-base">💬</span>
+      <span class="text-[10px] font-poppins font-bold">WhatsApp</span>
+    </button>
+
+    <!-- Botão Sacola de Pedidos com Badge & Total -->
+    <button onclick="toggleCartDrawer()" class="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3.5 py-2 rounded-2xl shadow-orange-glow active:scale-95 transition-all border border-orange-400/40">
+      <div class="relative flex items-center">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+        <span id="mobile-dock-badge" class="absolute -top-2.5 -right-2.5 bg-white text-brand-black text-[9px] font-anton w-4 h-4 rounded-full flex items-center justify-center shadow font-bold">0</span>
+      </div>
+      <span id="mobile-dock-total" class="font-anton text-xs tracking-wide">R$ 0,00</span>
+    </button>
+
+  </nav>
+
+  <!-- Botão Flutuante Sacola (Apenas Desktop) -->
+  <div class="hidden md:flex fixed bottom-6 right-6 z-40 items-center gap-3">
+    <button 
+      onclick="toggleCartDrawer()" 
+      class="flex items-center gap-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-110 text-white px-5 py-3.5 rounded-full shadow-2xl active:scale-95 transition-all border border-white/20"
+      aria-label="Abrir Sacola"
+    >
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+      <span class="font-anton text-sm tracking-wide" id="floating-cart-count">0 itens</span>
+    </button>
+  </div>
+
+  <!-- TOAST NOTIFICATION (TOPO DA TELA, 100% LIVRE DE BLOQUEIO) -->
+  <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[200] bg-[#1C140F]/95 backdrop-blur-md text-white text-xs font-poppins font-semibold px-4 py-2.5 rounded-full shadow-2xl border border-brand-orange/40 flex items-center gap-2 transform -translate-y-12 opacity-0 transition-all duration-200 pointer-events-none select-none">
+    <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+    <span id="toast-text">Produto adicionado!</span>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SCRIPT LOGIC & STORE DATA -->
+  <!-- ========================================================================= -->
+  <script>
+    const STORE_DATA = {"store":{"name":"São José Burguer","whatsapp":"5599991040222","minOrder":6,"logo":"assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg","favicon":"assets/e8392808a1c7659c_favicon.png"},"categories":[{"name":"Burgers","items":[{"id":"6a8f2939efa864ebad3960ba","title":"Brioche Prime","price":17,"description":"Pão brioche, Blend Bovino De 100 Gramas - Cream chesse, cebola caramelizada, queijo coalho, Maionese Caseira e molho barbecue","image":"assets/3218ef457e3140d1_-1781817483869blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bb","title":"SUPREMO DUPLO","price":22,"description":"Pão brioche, 2 blends de 100gramas cada, queijo coalho duplo, cebola caramelizada,  Maionese Caseira e barbecue","image":"assets/d01c24cc0387395c_-1782242426840blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bc","title":"Burguer Cheddar Duplo","price":22,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Camadas De Cheddar - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/a72f39878e035cf9_-1732476623587blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bd","title":"Burguer Da Laika","price":16.5,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Queijo Coalho - Salsicha E Ovo - Alface Americano  e  Tomate - Molho Da Casa E Maionese Caseira","image":"assets/5abe8f6bd98e273e_-1771044026200blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960be","title":"Burguer Do Lucca","price":16,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Salsicha - Queijo Coalho - Cebola Caramelizada - Alface Americano E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/233ca9f421828a95_-1765087473053blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bf","title":"Burguer Caramelo","price":14.5,"description":"Pão brioche - Blend De 100 Gramas - Cebola Caramelizada - Queijo Coalho - Alface Americano E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/915cb7ef803d7c03_-1765088067003blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c0","title":"Burguer Picante","price":19,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Calabresa - Ovo - Molho Picante - Queijo Coalho - Maionese Caseira","image":"assets/49ca683ae2d34fbc_-1752185473373blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c1","title":"Burguer Bacon","price":19,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Queijo Coalho - Bacon - Alface Americana E Tomate - Molho Da Casa - Maionese Caseira","image":"assets/b3f61889cbea07fc_-1732477229543blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c2","title":"Duplo Calabresa","price":23.5,"description":"Pão De Brioche Selado - 2 Blend's De 100 Gramas - Queijo Coalho - Calabresa - Cebola Refogada - Molho Barbecue - Maionese Caseira","image":"assets/3ef7a49c5004399a_-1771044129110blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c3","title":"Burguer Carne Seca","price":18.5,"description":"Pão brioche - Blend 100 Gramas - Queijo Coalho - Carne Seca Desfiada - Cebola Refogada - Catupiry - Molho Barbecue - Maionese Caseira","image":"assets/burguer_carne_seca.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c4","title":"Burguer Cheddar Melt","price":16.5,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Cheddar - Cebola Caramelizada -  Molho Barbecue - Maionese Caseira","image":"assets/635f2e88437415a3_-1765087501175blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960c5","title":"Burguer Cheddar Bacon","price":20,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Cheddar - Bacon - Queijo Coalho - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/9b25e54b4c3d6ee0_-1767120154154blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c6","title":"Burguer Cheddar","price":14,"description":"Pão brioche - Blend De 100 Gramas - Cheddar - Queijo Coalho - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/79fc064c5a104258_-1771044439577blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c7","title":"Burguer Tradicional","price":12.5,"description":"Pão brioche ,blend 100gr, queijo coalho,molho barbecue e maionese caseira.","image":"assets/39f2d8b06ff4196d_-1771044509714blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c8","title":"Burguer Ovo","price":15.5,"description":"Pão brioche ,Blend De 100 Gramas - Queijo Coalho - Ovo - Alface Americana E Tomate - Molho Da Casa - Maionese Caseira","image":"assets/a36ced0bf8f9e2bb_-1765088093946blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c9","title":"Burguer Blend Duplo","price":19,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Queijo Coalho - MOLHO ESPECIAL SÃO JOSÉ - Molho Barbecue","image":"assets/01d4d5c874352f98_-1771045033619blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ca","title":"Burguer Calabresa","price":18,"description":"Pão brioche - Blend 100 Gramas - Queijo Coalho - Calabresa  - Alface Americano E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/af610b7a642fe2b9_-1755517549671blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cb","title":"Burguer 195","price":21,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Queijo Coalho - Cebola Caramelizada - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/1414dcc3ffbe6af7_-1771045409109blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cc","title":"Burguer Tudo","price":22,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Ovo - Bacon - Calabresa  Salsicha - Alface Americana E Tomate - Molho Da Casa - Maionese Caseira","image":"assets/1fae780699df9a71_-1771045514950blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cd","title":"Burgão","price":27,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Queijo Coalho - Ovo, Salsicha, Calabresa, Bacon - Frango Desfiado, Cheddar - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/a411eb4f8bc509f5_-1771045598469blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ce","title":"Burguer Duplo Bacon","price":24.5,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Queijo Coalho - 2 Camadas De Bacon - Maionese Caseira - Molho Barbecue","image":"assets/1927b4e760b3a7bf_-1771045553837blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cf","title":"Burguer São José","price":33,"description":"Pão Brioche,3 blends de 100gramas cada, 2 camadas de cheddar,cebola caramelizada,1 camada de catupiry,bacon,maionese caseira e molho especial são josé","image":"assets/e982e903924b9f51_-1751323111578blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960d0","title":"Burguer Do Cheff","price":29,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - Ovo, Calabresa, Bacon, Cheddar - Queijo Coalho - Molho Picante - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/94eea273eb6be8b9_-1752185597804blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d1","title":"melt Duplo","price":23,"description":"PÃO DE BRIOCHE , 2 blends de 100 gramas cada,2 camadas de cheddar,cebola caramelizada, molho especial sao jose e molho barbecue","image":"assets/38c207f4af7e56ee_-1751323152050blob.png","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960d2","title":"Clássico","price":13,"description":"Pão brioche, blend de 100gramas,  queijo coalho, Alface americano, tomate, molho da casa e maionese caseira","image":"assets/b8072f3ea6a53e19_-1770009534471blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d3","title":"Burguer Frango","price":18,"description":"Pao brioche , blend bovino de 100gramas, queijo coalho, frango desfiado, catupiry, Alface americano,  tomate , molho da casa e maionese caseira","image":"assets/burguer_frango_catupiry.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d4","title":"Simples","price":13.5,"description":"Pão brioche,  blend de 100gramas , cebola refogada , queijo coalho , Alface Americana, tomate ,Maionese caseira e molho da casa","image":"assets/b8072f3ea6a53e19_-1770009534471blob.jpg","isPromo":false,"isBestseller":false}]},{"name":"Combos","items":[{"id":"6a8f2939efa864ebad3960d6","title":"Combo Kids","price":19,"description":"1 burguer tradicional + 1 Porção de fritas tradicional","image":"assets/15dfa4dcc6ebc4c5_-1780090896913blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960d7","title":"Combo Lucca","price":24.5,"description":"1 Burger Do Lucca - 1 Porção De Batata Frita Tradicional","image":"assets/9c2b8a8b4c07438a_-1732476706087blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d8","title":"Combo Laika","price":25.5,"description":"1 Burger Da Laika - 1 Porção De Batata Frita Tradicional","image":"assets/6d002fb23256ab05_-1780090878920blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d9","title":"Combo Caramelo","price":38,"description":"2 Burger Caramelo - Fritas Com Cheddar e calabresa","image":"assets/824cd1524acdd50a_-1771042863284blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960da","title":"Triplo Caramelo","price":52,"description":"3 burguer caramelo + batata com cheddar e Calabresa","image":"assets/18b66bd23edd7f6d_-1785167022808blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960db","title":"COMBO CASAL","price":44,"description":"2 BURGUERES OVO + FRITAS COM Cheddar, calabresa e bacon","image":"assets/4bc7ec367b8dcea8_-1742006872169blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960dc","title":"Combo MELT","price":47,"description":"2 burgueres cheddar melt + Fritas Com cheddar e calabresa","image":"assets/724bdd606dbcd75d_-1771045858794blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960dd","title":"Combo Triplo","price":54,"description":"3 Burger Ovo - + Fritas Com Cheddar, bacon e calabresa","image":"assets/9dd9d6134e601915_-1771042111612blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960de","title":"Combo Família","price":65,"description":"4 Burger Ovo - + Fritas Com Cheddar, calabresa e bacon","image":"assets/cee13c8498cae824_-1771042738763blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960df","title":"Combo Calabresa + 1 Lata","price":29.5,"description":"1 Burger Calabresa - 1 Porção De Batata Frita Tradicional - 1 Lata De 350ml \n\nCOLOQUE O SABOR DA LATA NA OBSERVAÇÃO DO PEDIDO","image":"assets/99cf23ecf004b75e_-1780090922380blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e0","title":"Combo Bacon + 1 Lata","price":31.5,"description":"1 Burger Bacon - 1 Porção De Batata Frita Tradicional - 1 Lata De 350ml\n\nCOLOQUE O SABOR DA LATA NA OBSERVAÇÃO DO PEDIDO","image":"assets/bbcc77f0724db47b_-1780090943821blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e1","title":"Combo Barca","price":33,"description":"1 Burger Cheddar Melt - 1 Porção De Batata Frita Com Cheddar E bacon(montado Na Barca)","image":"assets/01b72e55d2e8a412_-1732476782445blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e2","title":"Combo CHEDDAR MELT + Fritas + 1 lata refri","price":34,"description":"1 burguer cheddar melt\n+ 1 Porção de Fritas tradicional \n+ 1 refri de 350ml lata\n\n\nOBS: COLOQUE O SABOR DA LATA NA OBSERVAÇÃO","image":"assets/98ce72e64126881f_-1780090969176blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960e3","title":"Combo Calabresa PROMOÇÃO","price":36,"description":"2 burguer calabresa","image":"assets/99cf23ecf004b75e_-1780090922380blob.jpg","isPromo":true,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e4","title":"COMBO MELT PROMO","price":19.99,"description":"2 burguer Cheddar melt","image":"assets/724bdd606dbcd75d_-1771045858794blob.jpg","isPromo":true,"isBestseller":true},{"id":"6a8f2939efa864ebad3960e5","title":"Combo Duplo PROMO","price":19.99,"description":"1 burguer calabresa. + 1 burguer cheddar melt","image":"assets/4bc7ec367b8dcea8_-1742006872169blob.jpg","isPromo":true,"isBestseller":false}]},{"name":"Batata Frita","items":[{"id":"6a8f2939efa864ebad3960e8","title":"Batata Frita Tradicional - M","price":13.5,"description":"","image":"assets/2c0ca85cf38ed0ca_-1734884797247blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e9","title":"Batata Frita Simples - G","price":16.5,"description":"","image":"assets/2c0ca85cf38ed0ca_-1734884797247blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ea","title":"Batata Frita Com Cheddar e Bacon - M","price":16.5,"description":"","image":"assets/b88df38abb6b247b_-1734884825155blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960eb","title":"Batata Frita com Cheddar e  Calabresa - M","price":16,"description":"","image":"assets/940e32e8d66a6723_-1734884936446blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ec","title":"Batata Frita com Cheddar e Calabresa - G","price":20.5,"description":"","image":"assets/940e32e8d66a6723_-1734884936446blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ed","title":"Batata Frita Com Queijo coalho (M)","price":15,"description":"Batata com queijo coalho ralado (Média)","image":"assets/3019e21821302b16_-1780091500287blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ee","title":"Batata Frita Mista - M","price":20,"description":"Com Cheddar ,calabresa e bacon","image":"assets/f2bb32092b5388c5_-1734884961544blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ef","title":"Batata Frita Com cheddar e Bacon - G","price":21,"description":"","image":"assets/355739a59cbafe94_-1734884840284blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f0","title":"Batata Frita Mista - G","price":23,"description":"Batata com Calabresa bacon e Cheddar","image":"assets/60cde6395454a13d_-1734885011825blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f1","title":"Batata Frita Com Queijo Coalho ( G)","price":18,"description":"Batata Frita Com Queijo ralado (Grande)","image":"assets/3019e21821302b16_-1780091500287blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f2","title":"Batata Frita Suprema GG","price":29,"description":"Com  catupiry cheddar e bacon e calabresa","image":"assets/7a46c49dc2198538_-1774548907089blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f3","title":"Batata Frita Especial - Montada na Caixa de Pizza P","price":39,"description":"Com bacon,calabresa e catupiry","image":"assets/aa6cbdfa5fe96e50_-1771045816305blob.jpg","isPromo":false,"isBestseller":false}]},{"name":"Bebidas","items":[{"id":"6a8f2939efa864ebad3960fa","title":"lata 350ml coca cola","price":6,"description":"","image":"assets/coca_cola_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960fb","title":"Suco de Maracujá 300ml","price":7,"description":"","image":"assets/suco_natural_gelado.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960fc","title":"Água sem Gás 500ml","price":3,"description":"","image":"assets/agua mineral.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960fe","title":"Lata 350ml COCA ZERO","price":6,"description":"","image":"assets/coca_zero_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ff","title":"lata refrigerante 350ml LARANJA","price":6,"description":"","image":"assets/fanta_laranja_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396100","title":"COCA ZERO 1 LITRO","price":12,"description":"1 litro coca ZERO","image":"assets/coca zero 1 litro.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396101","title":"Lata 350ml kuat","price":6,"description":"","image":"assets/guarana_lata_gelada.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396102","title":"LATA JESUS 350ML","price":6,"description":"","image":"assets/guarana_jesus_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396104","title":"Guaraná lata 350ml Zero","price":6,"description":"Lata350ml","image":"assets/guarana_lata_gelada.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396106","title":"1 litro GUARANÁ","price":11,"description":"1litro","image":"assets/guarana 1 litro.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396107","title":"Coca cola 1litro","price":12,"description":"Coca cola 1litro","image":"assets/coca zero 1 litro.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396108","title":"1 litro GUARANÁ ZERO","price":11,"description":"1 litro guaraná zero","image":"assets/guarana 1 litro.png","isPromo":false,"isBestseller":false}]},{"name":"Molhos","items":[{"id":"6a8f2939efa864ebad3960f5","title":"Molho Maionese Caseira","price":2,"description":"","image":"assets/1b9f6212cbd9d7cf_-1772816597312blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f6","title":"Molho Barbecue","price":3,"description":"","image":"assets/b41b477d3c9f1dbd_-1733343492281blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f7","title":"Molho Picante","price":2.5,"description":"","image":"assets/6e1b5fa15565548f_-1733344420241blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f8","title":"Baconese","price":3,"description":"Maionese de bacon 🥓","image":"assets/molho_baconese.jpg","isPromo":false,"isBestseller":false}]}],"adicionais":[{"id":"6a8f2939efa864ebad3960a4","title":"Blend Bovino 100g","price":6.5,"image":"assets/01d4d5c874352f98_-1771045033619blob.jpg"},{"id":"6a8f2939efa864ebad3960a5","title":"Carne Seca","price":4.5,"image":"assets/burguer_carne_seca.jpg"},{"id":"6a8f2939efa864ebad3960a6","title":"Cebola Caramelizada","price":3,"image":"assets/915cb7ef803d7c03_-1765088067003blob.jpg"},{"id":"6a8f2939efa864ebad3960a7","title":"Calabresa","price":4.5,"image":"assets/af610b7a642fe2b9_-1755517549671blob.jpg"},{"id":"6a8f2939efa864ebad3960a8","title":"Bacon","price":4.5,"image":"assets/b3f61889cbea07fc_-1732477229543blob.png"},{"id":"6a8f2939efa864ebad3960a9","title":"Cebola Refogada","price":2.5,"image":"assets/3ef7a49c5004399a_-1771044129110blob.jpg"},{"id":"6a8f2939efa864ebad3960aa","title":"Salsicha","price":2.5,"image":"assets/233ca9f421828a95_-1765087473053blob.jpg"},{"id":"6a8f2939efa864ebad3960ab","title":"Frango Desfiado","price":4,"image":"assets/burguer_frango_catupiry.jpg"},{"id":"6a8f2939efa864ebad3960ac","title":"Salada","price":2,"image":"assets/b8072f3ea6a53e19_-1770009534471blob.jpg"},{"id":"6a8f2939efa864ebad3960ad","title":"Queijo Coalho","price":2,"image":"assets/3019e21821302b16_-1780091500287blob.jpg"},{"id":"6a8f2939efa864ebad3960ae","title":"Catupiry","price":3,"image":"assets/e982e903924b9f51_-1751323111578blob.jpg"},{"id":"6a8f2939efa864ebad3960af","title":"Ovo","price":2.5,"image":"assets/a36ced0bf8f9e2bb_-1765088093946blob.jpg"},{"id":"6a8f2939efa864ebad3960b0","title":"Cheddar","price":3.5,"image":"assets/635f2e88437415a3_-1765087501175blob.jpg"}]};
+
+    const CATEGORY_SVGS = {
+      'Burgers': '<svg class="w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16a1 1 0 0 0 1-1C21 6.5 17 4 12 4S3 6.5 3 10a1 1 0 0 0 1 1z"/><path d="M3 15h18"/><path d="M4 19h16a2 2 0 0 0 2-2H2a2 2 0 0 0 2 2z"/></svg>',
+      'Combos': '<svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16h14a2 2 0 0 0 2-2V7l-4.5 3L12 4 7.5 10 3 7v7a2 2 0 0 0 2 2z"/><path d="M5 16v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3"/></svg>',
+      'Batata Frita': '<svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10l1.5 11h9L18 10"/><path d="M7 10V4l2 1v5"/><path d="M11 10V2l2 1v7"/><path d="M15 10V5l2 1v4"/><line x1="4" y1="10" x2="20" y2="10"/></svg>',
+      'Bebidas': '<svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10h10l-1.5 11h-7z"/><path d="M6 10a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1"/><line x1="14" y1="2" x2="11" y2="9"/></svg>',
+      'NUGGETS': '<svg class="w-5 h-5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c-3.5 0-6 2.5-6 6 0 2 .8 3.5 2 4.5L7 20h10l-1-5.5c1.2-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/></svg>',
+      'Sobremesa': '<svg class="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a2 2 0 0 0-2 2c0 .6.3 1.2.8 1.6C7.5 7.5 5 10 5 13a7 7 0 0 0 14 0c0-3-2.5-5.5-5.8-6.4.5-.4.8-1 .8-1.6a2 2 0 0 0-2-2z"/><path d="M9 19v2"/><path d="M15 19v2"/></svg>',
+      'Molhos': '<svg class="w-5 h-5 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 0 0 16 0H4z"/><path d="M6 11V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/><line x1="8" y1="19" x2="16" y2="19"/></svg>',
+      'Macarronada': '<svg class="w-5 h-5 text-orange-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13a9 9 0 0 0 18 0H3z"/><path d="M8 13V8c0-1.5 1-2 2-2s2 .5 2 2v5"/><path d="M14 13V9c0-1 1-1.5 2-1.5s2 .5 2 1.5v4"/></svg>'
+    };
+
+    let cart = [];
+    let activeCategoryIndex = 0;
+    let orderMode = 'delivery';
+
+    let currentSelectedProduct = null;
+    let modalQuantity = 1;
+    let selectedAdditionals = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Carregar dados dinâmicos do Admin caso existam
+      const dynamicStore = localStorage.getItem('SAO_JOSE_STORE_DATA');
+      if (dynamicStore) {
+        try {
+          const parsed = JSON.parse(dynamicStore);
+          if (parsed && parsed.categories && parsed.categories.length > 0) {
+            STORE_DATA = parsed;
+          }
+        } catch (e) {}
+      }
+
+      initTheme();
+      renderCategoryPills();
+      renderProducts(STORE_DATA.categories[activeCategoryIndex]);
+      renderCart();
+    });
+
+    function scrollCategories(distance) {
+      const bar = document.getElementById('categories-pills-bar');
+      bar.scrollBy({ left: distance, behavior: 'smooth' });
+    }
+
+    // TEMA CLARO / ESCURO
+    function initTheme() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      applyTheme(saved);
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const nextTheme = isDark ? 'light' : 'dark';
+      applyTheme(nextTheme);
+      localStorage.setItem('theme', nextTheme);
+      showToast(nextTheme === 'dark' ? 'Modo Escuro Ativado 🌙' : 'Modo Claro Ativado ☀️');
+    }
+
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const themeIconContainer = document.getElementById('theme-icon-container');
+      const gridLayer = document.getElementById('grid-layer');
+
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        themeIconContainer.innerHTML = `<svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`;
+        gridLayer.className = 'grid-bg-dark absolute inset-0';
+      } else {
+        html.classList.remove('dark');
+        themeIconContainer.innerHTML = `<svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`;
+        gridLayer.className = 'grid-bg-light absolute inset-0';
+      }
+
+      renderCategoryPills();
+      renderProducts(STORE_DATA.categories[activeCategoryIndex]);
+    }
+
+    // CATEGORIAS TABS
+    function renderCategoryPills() {
+      const container = document.getElementById('categories-pills-bar');
+
+      container.innerHTML = STORE_DATA.categories.map((cat, idx) => {
+        const iconSvg = CATEGORY_SVGS[cat.name] || CATEGORY_SVGS['Burgers'];
+        const isActive = idx === activeCategoryIndex;
+        const count = cat.items ? cat.items.length : 0;
+
+        if (isActive) {
+          return `
+            <button 
+              onclick="selectCategoryByIndex(${idx})" 
+              class="category-pill active flex-shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-orange-glow border border-orange-400/30 transform scale-102 transition-all duration-300"
+            >
+              <div class="w-7 h-7 rounded-xl bg-black/20 flex items-center justify-center flex-shrink-0 text-white">
+                ${iconSvg.replace(/text-[a-z]+-[0-9]+/g, 'text-white')}
+              </div>
+              <div class="text-left leading-tight">
+                <span class="block text-xs font-anton tracking-wide uppercase text-white">${cat.name}</span>
+                <span class="block text-[9px] font-poppins font-medium text-amber-200">${count} opções</span>
+              </div>
+            </button>
+          `;
+        } else {
+          return `
+            <button 
+              onclick="selectCategoryByIndex(${idx})" 
+              class="category-pill flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-stone-300 border border-white/10 hover:border-brand-orange/50 transition-all duration-300 active:scale-95 group"
+            >
+              <div class="w-7 h-7 rounded-xl bg-black/30 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                ${iconSvg}
+              </div>
+              <div class="text-left leading-tight">
+                <span class="block text-xs font-anton tracking-wide uppercase text-stone-200 group-hover:text-brand-orange transition-colors">${cat.name}</span>
+                <span class="block text-[9px] font-poppins font-normal text-stone-400">${count} opções</span>
+              </div>
+            </button>
+          `;
+        }
+      }).join('');
+    }
+
+    function selectCategoryByIndex(idx) {
+      activeCategoryIndex = idx;
+      renderCategoryPills();
+      const cat = STORE_DATA.categories[idx];
+      const bannerSection = document.getElementById('hero-featured-banners-section');
+      const productsSection = document.getElementById('main-products-section');
+
+      if (cat) {
+        document.getElementById('current-section-title').innerText = cat.name.toUpperCase();
+        document.getElementById('products-count-badge').innerText = `${cat.items.length} opções`;
+        renderProducts(cat);
+
+        // Se o usuário selecionou qualquer outra categoria (Bebidas, Combos, Batatas, Molhos, etc.),
+        // recolhe a tela de oferta/mais pedidos para exibir imediatamente todos os produtos da categoria
+        if (bannerSection) {
+          if (idx === 0) {
+            bannerSection.classList.remove('hidden');
+          } else {
+            bannerSection.classList.add('hidden');
+          }
+        }
+
+        // Rola suavemente para posicionar o cardápio logo abaixo da barra de categorias
+        if (productsSection) {
+          const stickyOffset = 135; // Altura do Header + Barra de Categorias persistente
+          const targetY = productsSection.getBoundingClientRect().top + window.pageYOffset - stickyOffset;
+          window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+        }
+      }
+
+      const activeEl = document.querySelectorAll('.category-pill')[idx];
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+
+    function selectCategoryByName(name) {
+      const idx = STORE_DATA.categories.findIndex(c => c.name.toLowerCase().includes(name.toLowerCase()));
+      if (idx !== -1) {
+        selectCategoryByIndex(idx);
+      }
+    }
+
+    // BUSCA DE PRODUTOS EM TEMPO REAL
+    function handleSearch(query) {
+      const q = (query || '').trim().toLowerCase();
+      const clearBtnDesk = document.getElementById('desktop-clear-search-btn');
+      const clearBtnMob = document.getElementById('mobile-clear-search-btn');
+      const container = document.getElementById('products-container');
+      const sectionTitle = document.getElementById('current-section-title');
+      const countBadge = document.getElementById('products-count-badge');
+
+      if (q) {
+        if (clearBtnDesk) clearBtnDesk.classList.remove('hidden');
+        if (clearBtnMob) clearBtnMob.classList.remove('hidden');
+
+        // Buscar em todas as categorias
+        let allItems = [];
+        STORE_DATA.categories.forEach(cat => {
+          if (cat.items) {
+            cat.items.forEach(item => {
+              if (
+                item.title.toLowerCase().includes(q) || 
+                (item.description && item.description.toLowerCase().includes(q)) ||
+                cat.name.toLowerCase().includes(q)
+              ) {
+                if (!allItems.some(existing => existing.id === item.id)) {
+                  allItems.push(item);
+                }
+              }
+            });
+          }
+        });
+
+        const bannerSection = document.getElementById('hero-featured-banners-section');
+        if (bannerSection) bannerSection.classList.add('hidden');
+
+        if (sectionTitle) sectionTitle.innerText = `RESULTADOS: "${query.toUpperCase()}"`;
+        if (countBadge) countBadge.innerText = `${allItems.length} encontrados`;
+
+        if (allItems.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full text-center py-16 space-y-3">
+              <div class="text-4xl">🔍</div>
+              <p class="text-white font-anton text-base">Nenhum item encontrado para "${query}"</p>
+              <p class="text-stone-400 text-xs">Tente buscar por nome do hambúrguer, combo ou batata.</p>
+            </div>
+          `;
+        } else {
+          container.innerHTML = allItems.map(renderProductCardHTML).join('');
+        }
+      } else {
+        if (clearBtnDesk) clearBtnDesk.classList.add('hidden');
+        if (clearBtnMob) clearBtnMob.classList.add('hidden');
+
+        const bannerSection = document.getElementById('hero-featured-banners-section');
+        if (bannerSection && activeCategoryIndex === 0) bannerSection.classList.remove('hidden');
+
+        const cat = STORE_DATA.categories[activeCategoryIndex];
+        if (sectionTitle && cat) sectionTitle.innerText = cat.name.toUpperCase();
+        if (countBadge && cat) countBadge.innerText = `${cat.items.length} opções`;
+        renderProducts(cat);
+      }
+    }
+
+    function clearSearch() {
+      const inputDesk = document.getElementById('desktop-search-input');
+      const inputMob = document.getElementById('mobile-search-input');
+      if (inputDesk) inputDesk.value = '';
+      if (inputMob) inputMob.value = '';
+      handleSearch('');
+    }
+
+    function renderProductCardHTML(item) {
+      const formattedPrice = item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      let badge = item.isPromo ? 'PROMO' : (item.isBestseller ? 'DESTAQUE' : '');
+      if (!badge) {
+        const t = item.title.toLowerCase();
+        if (t.includes('duplo')) badge = 'DUPLO';
+        else if (t.includes('prime') || item.price >= 25) badge = 'PREMIUM';
+        else if (t.includes('combo')) badge = 'COMBO';
+      }
+
+      const safeTitle = item.title.replace(/'/g, "\\'");
+      const safeDesc = (item.description || '').replace(/'/g, "\\'");
+
+      return `
+        <div onclick="openProductDetail('${safeTitle}', ${item.price}, '${safeDesc}', '${item.image}')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
+          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
+            <img 
+              src="${item.image}" 
+              alt="${item.title}" 
+              loading="lazy" 
+              class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" 
+              onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'" 
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+            ${badge ? `<span class="absolute top-2 left-2 ${badge === 'PREMIUM' ? 'bg-amber-500 text-black' : (badge === 'DUPLO' ? 'bg-emerald-500 text-white' : 'bg-brand-orange text-white')} text-[9px] font-anton px-2 py-0.5 rounded-full shadow">${badge}</span>` : ''}
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">${item.title.toUpperCase()}</h4>
+              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">${item.description || 'Ingredientes nobres selecionados e preparados na hora.'}</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+              <span class="text-xs sm:text-sm font-anton text-brand-orange">${formattedPrice}</span>
+              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // RENDERIZAÇÃO DOS PRODUTOS COM TRANSIÇÃO SUAVE (TOP PERSISTENTE)
+    function renderProducts(category) {
+      const container = document.getElementById('products-container');
+      if (!container) return;
+
+      // Animação suave no grid central (fade-in + slide) enquanto o topo permanece imóvel
+      container.classList.remove('animate-menu-enter');
+      void container.offsetWidth; // Força repaint apenas do container central
+      container.classList.add('animate-menu-enter');
+
+      if (!category || !category.items || category.items.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-16 text-stone-400 font-poppins text-sm">Nenhum produto cadastrado nesta categoria.</div>`;
+        return;
+      }
+
+      container.innerHTML = category.items.map(renderProductCardHTML).join('');
+    }
+
+    // MODAL DE DETALHES DO PRODUTO & ADICIONAIS
+    function openProductDetail(title, price, desc, image) {
+      currentSelectedProduct = {
+        title,
+        price: parseFloat(price),
+        desc: desc || 'Pão artesanal selado na manteiga, blend especial nobre grelhado no fogo e queijos selecionados.',
+        image: image || 'assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'
+      };
+
+      modalQuantity = 1;
+      selectedAdditionals = {};
+
+      document.getElementById('modal-product-title').innerText = currentSelectedProduct.title.toUpperCase();
+      document.getElementById('modal-product-price').innerText = currentSelectedProduct.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('modal-product-desc').innerText = currentSelectedProduct.desc;
+      document.getElementById('modal-product-img').src = currentSelectedProduct.image;
+      document.getElementById('modal-product-notes').value = '';
+      document.getElementById('modal-qty-display').innerText = '1';
+      document.getElementById('additionals-search-input').value = '';
+
+      renderAdditionalsList(STORE_DATA.adicionais || []);
+      updateModalTotalPrice();
+
+      const backdrop = document.getElementById('product-modal-backdrop');
+      const modal = document.getElementById('product-modal');
+      const dock = document.getElementById('mobile-bottom-dock');
+      
+      document.body.classList.add('overflow-hidden');
+      if (dock) dock.style.display = 'none';
+
+      if (backdrop) {
+        backdrop.style.pointerEvents = 'auto';
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100', 'pointer-events-auto');
+      }
+      if (modal) {
+        modal.classList.remove('translate-y-full', 'sm:scale-95');
+        modal.classList.add('translate-y-0', 'sm:scale-100');
+      }
+    }
+
+    function openProductById(id) {
+      openProductDetail(
+        'Burguer São José', 
+        33.00, 
+        'Pão Brioche, 3 blends de 100g cada, 2 camadas de cheddar, cebola caramelizada, 1 camada de catupiry, bacon, maionese caseira e molho especial São José.', 
+        'assets/e982e903924b9f51_-1751323111578blob.jpg'
+      );
+    }
+
+    function closeProductModal() {
+      const backdrop = document.getElementById('product-modal-backdrop');
+      const modal = document.getElementById('product-modal');
+      const dock = document.getElementById('mobile-bottom-dock');
+
+      document.body.classList.remove('overflow-hidden');
+      if (dock) dock.style.display = '';
+
+      if (backdrop) {
+        backdrop.style.pointerEvents = 'none';
+        backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+      }
+      if (modal) {
+        modal.classList.remove('translate-y-0', 'sm:scale-100');
+        modal.classList.add('translate-y-full', 'sm:scale-95');
+      }
+    }
+
+    function renderAdditionalsList(items) {
+      const container = document.getElementById('additionals-list-container');
+      if (!items || items.length === 0) {
+        container.innerHTML = `<div class="text-xs text-stone-400 py-3 font-poppins col-span-full">Nenhum adicional encontrado.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(add => {
+        const qty = selectedAdditionals[add.title] || 0;
+        const formattedPrice = add.price > 0 
+          ? add.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) 
+          : 'Grátis';
+
+        return `
+          <div class="flex items-center justify-between p-2.5 bg-white/5 border border-white/10 rounded-2xl hover:border-brand-orange/40 transition-colors">
+            <div class="flex items-center gap-2.5 flex-1 pr-2">
+              <div class="w-9 h-9 rounded-xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 flex items-center justify-center">
+                <img src="${add.image}" alt="${add.title}" class="w-full h-full object-cover" onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'" />
+              </div>
+              <div>
+                <h6 class="text-xs font-anton tracking-wide text-white leading-tight">${add.title.toUpperCase()}</h6>
+                <span class="text-xs font-anton text-brand-orange tracking-wide">${formattedPrice}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 bg-black/50 px-2 py-1 rounded-xl border border-white/10 font-poppins">
+              <button onclick="changeAdditionalQty('${add.title.replace(/'/g, "\\'")}', -1)" class="text-stone-400 hover:text-white font-bold text-xs px-1 active:scale-90 transition-transform"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"></path></svg></button>
+              <span class="text-xs font-bold text-white min-w-[14px] text-center">${qty}</span>
+              <button onclick="changeAdditionalQty('${add.title.replace(/'/g, "\\'")}', 1)" class="text-brand-orange hover:text-white font-bold text-xs px-1 active:scale-90 transition-transform"><svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterAdditionals(query) {
+      const clean = query.trim().toLowerCase();
+      const all = STORE_DATA.adicionais || [];
+      const filtered = all.filter(a => a.title.toLowerCase().includes(clean));
+      renderAdditionalsList(filtered);
+    }
+
+    function changeAdditionalQty(title, delta) {
+      const current = selectedAdditionals[title] || 0;
+      const next = current + delta;
+      
+      const totalCount = Object.values(selectedAdditionals).reduce((a, b) => a + b, 0);
+      if (delta > 0 && totalCount >= 10) {
+        showToast('Limite de 10 adicionais atingido!');
+        return;
+      }
+
+      if (next <= 0) {
+        delete selectedAdditionals[title];
+      } else {
+        selectedAdditionals[title] = next;
+      }
+
+      const searchVal = document.getElementById('additionals-search-input').value;
+      filterAdditionals(searchVal);
+      updateModalTotalPrice();
+    }
+
+    function changeModalQty(delta) {
+      modalQuantity = Math.max(1, modalQuantity + delta);
+      document.getElementById('modal-qty-display').innerText = modalQuantity;
+      updateModalTotalPrice();
+    }
+
+    function updateModalTotalPrice() {
+      if (!currentSelectedProduct) return;
+      
+      let base = currentSelectedProduct.price;
+      let addsTotal = 0;
+      const all = STORE_DATA.adicionais || [];
+
+      for (const [title, count] of Object.entries(selectedAdditionals)) {
+        const itemObj = all.find(a => a.title === title);
+        if (itemObj) {
+          addsTotal += (itemObj.price * count);
+        }
+      }
+
+      const unitTotal = base + addsTotal;
+      const grandTotal = unitTotal * modalQuantity;
+
+      document.getElementById('modal-add-btn-text').innerHTML = `Adicionar <span class="font-anton text-sm sm:text-base tracking-wide ml-1">${grandTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>`;
+    }
+
+    function addCurrentProductToCart() {
+      if (!currentSelectedProduct) return;
+
+      const notes = document.getElementById('modal-product-notes').value.trim();
+      const all = STORE_DATA.adicionais || [];
+      
+      let addsList = [];
+      let addsCost = 0;
+      for (const [title, count] of Object.entries(selectedAdditionals)) {
+        const itemObj = all.find(a => a.title === title);
+        if (itemObj) {
+          addsList.push(`${count}x ${title} (+R$ ${(itemObj.price * count).toFixed(2)})`);
+          addsCost += (itemObj.price * count);
+        }
+      }
+
+      const unitPrice = currentSelectedProduct.price + addsCost;
+      const itemTitle = currentSelectedProduct.title;
+      let descText = currentSelectedProduct.desc;
+      if (addsList.length > 0) {
+        descText += ` | Adicionais: ${addsList.join(', ')}`;
+      }
+      if (notes) {
+        descText += ` | Obs: ${notes}`;
+      }
+
+      cart.push({
+        title: itemTitle,
+        price: unitPrice,
+        desc: descText,
+        img: currentSelectedProduct.image,
+        quantity: modalQuantity,
+        adicionais: addsList,
+        notes: notes
+      });
+
+      // Fechar modal de personalização instantaneamente
+      closeProductModal();
+      renderCart();
+
+      // Animar o badge da sacola mobile/desktop para dar feedback visual imediato
+      const dockBtn = document.getElementById('mobile-dock-badge');
+      if (dockBtn) {
+        dockBtn.classList.add('scale-125', 'bg-brand-orange', 'text-white');
+        setTimeout(() => dockBtn.classList.remove('scale-125', 'bg-brand-orange', 'text-white'), 300);
+      }
+
+      showToast(`✓ "${itemTitle}" adicionado!`);
+    }
+
+    // BUSCA
+    function handleSearch(query) {
+      const desktopClear = document.getElementById('desktop-clear-search-btn');
+      const mobileClear = document.getElementById('mobile-clear-search-btn');
+      const clean = query.trim().toLowerCase();
+
+      // Sincronizar inputs
+      if (document.getElementById('desktop-search-input').value !== query) {
+        document.getElementById('desktop-search-input').value = query;
+      }
+      if (document.getElementById('mobile-search-input').value !== query) {
+        document.getElementById('mobile-search-input').value = query;
+      }
+
+      if (clean.length > 0) {
+        desktopClear.classList.remove('hidden');
+        mobileClear.classList.remove('hidden');
+        
+        let results = [];
+        STORE_DATA.categories.forEach(cat => {
+          cat.items.forEach(item => {
+            if (item.title.toLowerCase().includes(clean) || (item.description && item.description.toLowerCase().includes(clean))) {
+              results.push(item);
+            }
+          });
+        });
+
+        document.getElementById('current-section-title').innerText = `Busca: "${query}"`;
+        document.getElementById('products-count-badge').innerText = `${results.length} resultados`;
+        renderProducts({ items: results });
+      } else {
+        desktopClear.classList.add('hidden');
+        mobileClear.classList.add('hidden');
+        selectCategoryByIndex(activeCategoryIndex);
+      }
+    }
+
+    function clearSearch() {
+      document.getElementById('desktop-search-input').value = '';
+      document.getElementById('mobile-search-input').value = '';
+      handleSearch('');
+    }
+
+    // CEP AUTOFILL
+    function handleCepAutofill(val) {
+      const clean = val.replace(/\D/g, '');
+      if (clean.length === 8) {
+        fetch(`https://viacep.com.br/ws/${clean}/json/`)
+          .then(res => res.json())
+          .then(data => {
+            if (!data.erro) {
+              if (data.logradouro) document.getElementById('customer-street').value = data.logradouro;
+              if (data.bairro) document.getElementById('customer-neighborhood').value = data.bairro;
+              document.getElementById('customer-number').focus();
+              showToast(`Endereço localizado: ${data.bairro}! 📍`);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    // SACOLA & CHECKOUT
+    function changeCartQty(index, delta) {
+      if (cart[index]) {
+        cart[index].quantity += delta;
+        if (cart[index].quantity <= 0) {
+          cart.splice(index, 1);
+        }
+      }
+      renderCart();
+    }
+
+    // =========================================================================
+    // CIDADES E TAXAS DE ENTREGA (PEDREIRAS / TRIZIDELA DO VALE - MA)
+    // =========================================================================
+    const DEFAULT_NEIGHBORHOODS = [
+      { name: "Pedreiras", fee: 5.00, cityKey: "pedreiras" },
+      { name: "Trizidela do Vale", fee: 7.00, cityKey: "trizidela" }
+    ];
+
+    let currentDeliveryFee = 5.00;
+    let selectedNeighborhoodName = "Pedreiras";
+    let cachedMapData = null;
+
+    function getStoreNeighborhoods() {
+      try {
+        const saved = localStorage.getItem('SAO_JOSE_NEIGHBORHOODS');
+        if (saved) {
+          const list = JSON.parse(saved);
+          const filtered = list.filter(item => !item.name.toLowerCase().includes('outro'));
+          if (filtered.length > 0) return filtered;
+        }
+      } catch (e) {}
+      return DEFAULT_NEIGHBORHOODS;
+    }
+
+    function initNeighborhoodSelect() {
+      const select = document.getElementById('customer-neighborhood-select');
+      if (!select) return;
+
+      const list = getStoreNeighborhoods();
+      select.innerHTML = list.map(item => `
+        <option value="${item.name}" data-fee="${item.fee}">
+          📍 ${item.name} • Taxa: R$ ${item.fee.toFixed(2).replace('.', ',')}
+        </option>
+      `).join('');
+
+      if (list.length > 0) {
+        selectedNeighborhoodName = list[0].name;
+        currentDeliveryFee = list[0].fee;
+      }
+
+      updateStreetAutocompleteForCity(selectedNeighborhoodName);
+    }
+
+    function handleNeighborhoodChange(name) {
+      const list = getStoreNeighborhoods();
+      const found = list.find(n => n.name === name);
+      if (found) {
+        selectedNeighborhoodName = found.name;
+        currentDeliveryFee = found.fee;
+      } else {
+        selectedNeighborhoodName = name;
+        currentDeliveryFee = (name === "Trizidela do Vale") ? 7.00 : 5.00;
+      }
+
+      updateStreetAutocompleteForCity(selectedNeighborhoodName);
+
+      const bairroInput = document.getElementById('customer-bairro-text');
+      if (bairroInput) {
+        if (selectedNeighborhoodName === "Trizidela do Vale") {
+          bairroInput.placeholder = "Seu Bairro em Trizidela (Ex: Aeroporto, Santo Antônio, etc.) *";
+        } else {
+          bairroInput.placeholder = "Seu Bairro em Pedreiras (Ex: Engenho, Centro, Goiabal, etc.) *";
+        }
+      }
+
+      renderCart();
+    }
+
+    function updateStreetAutocompleteForCity(cityName) {
+      const datalist = document.getElementById('pedreiras-streets-datalist');
+      if (!datalist) return;
+
+      const populate = (data) => {
+        if (!data || !data.cidades) return;
+        const key = (cityName && cityName.toLowerCase().includes('trizidela')) ? 'trizidela' : 'pedreiras';
+        const cityObj = data.cidades[key];
+        let list = cityObj && cityObj.ruas ? [...cityObj.ruas] : [];
+
+        // Integrar ruas adicionadas por clientes
+        try {
+          const custom = JSON.parse(localStorage.getItem('SAO_JOSE_CUSTOM_STREETS') || '{"pedreiras":[],"trizidela":[]}');
+          if (custom[key] && Array.isArray(custom[key])) {
+            custom[key].forEach(st => {
+              if (!list.some(existing => existing.toLowerCase() === st.toLowerCase())) {
+                list.push(st);
+              }
+            });
+          }
+        } catch(e) {}
+
+        list.sort();
+        datalist.innerHTML = list.map(rua => `<option value="${rua}"></option>`).join('');
+      };
+
+      if (cachedMapData) {
+        populate(cachedMapData);
+      } else {
+        fetch('assets/pedreiras_trizidela_map_data.json')
+          .then(res => res.json())
+          .then(data => {
+            cachedMapData = data;
+            populate(data);
+          })
+          .catch(() => {});
+      }
+    }
+
+    function saveCustomStreetIfNotExists(streetName, cityName) {
+      if (!streetName || streetName.trim().length < 3) return;
+      const clean = streetName.trim();
+      const key = (cityName && cityName.toLowerCase().includes('trizidela')) ? 'trizidela' : 'pedreiras';
+
+      try {
+        let custom = JSON.parse(localStorage.getItem('SAO_JOSE_CUSTOM_STREETS') || '{"pedreiras":[],"trizidela":[]}');
+        if (!custom[key]) custom[key] = [];
+
+        const alreadyInCustom = custom[key].some(s => s.toLowerCase() === clean.toLowerCase());
+        let alreadyInBase = false;
+        if (cachedMapData && cachedMapData.cidades && cachedMapData.cidades[key] && cachedMapData.cidades[key].ruas) {
+          alreadyInBase = cachedMapData.cidades[key].ruas.some(s => s.toLowerCase() === clean.toLowerCase());
+        }
+
+        if (!alreadyInCustom && !alreadyInBase) {
+          custom[key].push(clean);
+          localStorage.setItem('SAO_JOSE_CUSTOM_STREETS', JSON.stringify(custom));
+          updateStreetAutocompleteForCity(cityName);
+        }
+      } catch(e) {}
+    }
+
+    function initStreetAutocomplete() {
+      updateStreetAutocompleteForCity(selectedNeighborhoodName);
+    }
+
+    // =========================================================================
+    // MODALIDADES DE PEDIDO (DELIVERY / BALCÃO / CONSUMO LOCAL - ANOTA AI)
+    // =========================================================================
+    function setDeliveryMode(mode) {
+      orderMode = mode;
+      
+      const cardDel = document.getElementById('card-mode-delivery');
+      const cardPick = document.getElementById('card-mode-pickup');
+      const cardDine = document.getElementById('card-mode-dinein');
+      
+      const radioDel = document.getElementById('radio-mode-delivery');
+      const radioPick = document.getElementById('radio-mode-pickup');
+      const radioDine = document.getElementById('radio-mode-dinein');
+
+      const delContainer = document.getElementById('delivery-fields-container');
+      const dineContainer = document.getElementById('dinein-fields-container');
+      const savedWrapper = document.getElementById('saved-addresses-wrapper');
+
+      // Reset card styles
+      [cardDel, cardPick, cardDine].forEach(c => {
+        if (c) c.className = "flex items-center justify-between p-2.5 rounded-xl border border-white/10 hover:border-brand-orange/40 cursor-pointer transition-all bg-white/5";
+      });
+
+      if (mode === 'delivery') {
+        if (radioDel) radioDel.checked = true;
+        if (cardDel) cardDel.className = "flex items-center justify-between p-2.5 rounded-xl border border-brand-orange bg-brand-orange/10 cursor-pointer transition-all";
+        if (delContainer) delContainer.classList.remove('hidden');
+        if (dineContainer) dineContainer.classList.add('hidden');
+        if (savedWrapper) checkSavedAddressesVisibility();
+      } else if (mode === 'pickup') {
+        if (radioPick) radioPick.checked = true;
+        if (cardPick) cardPick.className = "flex items-center justify-between p-2.5 rounded-xl border border-emerald-500 bg-emerald-500/10 cursor-pointer transition-all";
+        if (delContainer) delContainer.classList.add('hidden');
+        if (dineContainer) dineContainer.classList.add('hidden');
+        if (savedWrapper) savedWrapper.classList.add('hidden');
+      } else if (mode === 'dine_in') {
+        if (radioDine) radioDine.checked = true;
+        if (cardDine) cardDine.className = "flex items-center justify-between p-2.5 rounded-xl border border-blue-500 bg-blue-500/10 cursor-pointer transition-all";
+        if (delContainer) delContainer.classList.add('hidden');
+        if (dineContainer) dineContainer.classList.remove('hidden');
+        if (savedWrapper) savedWrapper.classList.add('hidden');
+      }
+
+      renderCart();
+    }
+
+    // =========================================================================
+    // IDENTIFICAÇÃO E ENDEREÇOS SALVOS (MEMÓRIA NO NAVEGADOR & AUTOFILL POR TELEFONE)
+    // =========================================================================
+    let isEditingProfile = false;
+
+    function toggleCustomerEditMode() {
+      const editFields = document.getElementById('customer-edit-fields');
+      const viewBadge = document.getElementById('customer-view-badge');
+      const btn = document.getElementById('btn-toggle-client-edit');
+
+      isEditingProfile = !isEditingProfile;
+      if (isEditingProfile) {
+        if (editFields) editFields.classList.remove('hidden');
+        if (btn) btn.innerText = "Salvar";
+        const phoneInp = document.getElementById('customer-phone');
+        if (phoneInp) phoneInp.focus();
+      } else {
+        if (editFields) editFields.classList.add('hidden');
+        if (btn) btn.innerText = "Trocar";
+        saveCustomerProfile();
+      }
+      updateClientDisplay();
+    }
+
+    function formatPhoneMask(v) {
+      if (!v) return '';
+      v = v.replace(/\D/g, '');
+      if (v.length > 11) v = v.substring(0, 11);
+      if (v.length > 10) {
+        return v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+      } else if (v.length > 6) {
+        return v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+      } else if (v.length > 2) {
+        return v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+      }
+      return v;
+    }
+
+    function handlePhoneInput(val) {
+      const phoneInput = document.getElementById('customer-phone');
+      if (phoneInput) {
+        const masked = formatPhoneMask(val);
+        phoneInput.value = masked;
+      }
+      updateClientDisplay();
+      
+      const digits = (val || '').replace(/\D/g, '');
+      if (digits.length >= 10) {
+        lookupCustomerByPhone(digits);
+      }
+    }
+
+    function handlePhoneLookup(val) {
+      const digits = (val || '').replace(/\D/g, '');
+      if (digits.length >= 10) {
+        lookupCustomerByPhone(digits, true);
+      }
+    }
+
+    function lookupCustomerByPhone(phoneDigits, notifyOnFound = false) {
+      try {
+        let foundData = null;
+
+        // 1. Procurar no banco de clientes
+        const db = JSON.parse(localStorage.getItem('SAO_JOSE_CUSTOMERS_DB') || '{}');
+        if (db[phoneDigits]) {
+          foundData = db[phoneDigits];
+        }
+
+        // 2. Procurar em pedidos anteriores caso não esteja no DB
+        if (!foundData) {
+          const orders = JSON.parse(localStorage.getItem('SAO_JOSE_ORDERS') || '[]');
+          const pastOrder = orders.find(o => o.customer && o.customer.phone && o.customer.phone.replace(/\D/g, '') === phoneDigits);
+          if (pastOrder) {
+            foundData = {
+              name: pastOrder.customer.name,
+              phone: pastOrder.customer.phone,
+              city: pastOrder.neighborhood || 'Pedreiras',
+              bairro: pastOrder.bairro || '',
+              street: pastOrder.street || '',
+              number: pastOrder.number || '',
+              complement: pastOrder.complement || '',
+              reference: pastOrder.reference || '',
+              cep: pastOrder.cep || ''
+            };
+          }
+        }
+
+        if (foundData) {
+          if (foundData.name) {
+            const nameInput = document.getElementById('customer-name');
+            if (nameInput && (!nameInput.value || nameInput.value.trim() === '')) {
+              nameInput.value = foundData.name;
+            }
+          }
+          if (foundData.street) {
+            const streetInp = document.getElementById('customer-street');
+            if (streetInp && (!streetInp.value || streetInp.value.trim() === '')) {
+              streetInp.value = foundData.street;
+            }
+          }
+          if (foundData.number) {
+            const numInp = document.getElementById('customer-number');
+            if (numInp && (!numInp.value || numInp.value.trim() === '')) {
+              numInp.value = foundData.number;
+            }
+          }
+          if (foundData.bairro) {
+            const bInp = document.getElementById('customer-bairro-text');
+            if (bInp && (!bInp.value || bInp.value.trim() === '')) {
+              bInp.value = foundData.bairro;
+            }
+          }
+          if (foundData.complement) {
+            const compInp = document.getElementById('customer-complement');
+            if (compInp && (!compInp.value || compInp.value.trim() === '')) {
+              compInp.value = foundData.complement;
+            }
+          }
+          if (foundData.reference) {
+            const refInp = document.getElementById('customer-reference');
+            if (refInp && (!refInp.value || refInp.value.trim() === '')) {
+              refInp.value = foundData.reference;
+            }
+          }
+          if (foundData.cep) {
+            const cepInp = document.getElementById('customer-cep');
+            if (cepInp && (!cepInp.value || cepInp.value.trim() === '')) {
+              cepInp.value = foundData.cep;
+            }
+          }
+          if (foundData.city) {
+            const citySel = document.getElementById('customer-neighborhood-select');
+            if (citySel) {
+              citySel.value = foundData.city;
+              handleNeighborhoodChange(foundData.city);
+            }
+          }
+
+          const hint = document.getElementById('phone-autofill-hint');
+          if (hint) hint.classList.remove('hidden');
+
+          updateClientDisplay();
+          renderSavedAddresses();
+
+          showToast(`✨ Olá, ${foundData.name}! Seus dados e endereço foram preenchidos automaticamente!`);
+        }
+      } catch (e) {}
+    }
+
+    function updateClientDisplay() {
+      const name = document.getElementById('customer-name')?.value.trim();
+      const phone = document.getElementById('customer-phone')?.value.trim();
+      const nameDisplay = document.getElementById('display-client-name');
+      const phoneDisplay = document.getElementById('display-client-phone');
+
+      if (nameDisplay) nameDisplay.innerText = name || "Cliente (Toque em Trocar)";
+      if (phoneDisplay) phoneDisplay.innerText = phone || "Telefone / WhatsApp não informado";
+    }
+
+    function loadCustomerProfile() {
+      try {
+        const savedProfile = JSON.parse(localStorage.getItem('SAO_JOSE_CUSTOMER_PROFILE') || '{}');
+        if (savedProfile.phone) {
+          const phoneInp = document.getElementById('customer-phone');
+          if (phoneInp) phoneInp.value = formatPhoneMask(savedProfile.phone);
+          const digits = savedProfile.phone.replace(/\D/g, '');
+          if (digits.length >= 10) lookupCustomerByPhone(digits, false);
+        }
+        if (savedProfile.name) {
+          const nameInp = document.getElementById('customer-name');
+          if (nameInp) nameInp.value = savedProfile.name;
+        }
+        updateClientDisplay();
+        renderSavedAddresses();
+      } catch (e) {}
+    }
+
+    function saveCustomerProfile() {
+      const name = document.getElementById('customer-name')?.value.trim() || '';
+      const phone = document.getElementById('customer-phone')?.value.trim() || '';
+      if (name || phone) {
+        try {
+          localStorage.setItem('SAO_JOSE_CUSTOMER_PROFILE', JSON.stringify({ name, phone }));
+        } catch (e) {}
+      }
+    }
+
+    function renderSavedAddresses() {
+      const wrapper = document.getElementById('saved-addresses-wrapper');
+      const list = document.getElementById('saved-addresses-list');
+      if (!wrapper || !list) return;
+
+      try {
+        const saved = JSON.parse(localStorage.getItem('SAO_JOSE_SAVED_ADDRESSES') || '[]');
+        if (!saved || saved.length === 0) {
+          wrapper.classList.add('hidden');
+          return;
+        }
+
+        if (orderMode === 'delivery') {
+          wrapper.classList.remove('hidden');
+        }
+
+        list.innerHTML = saved.map((addr, idx) => `
+          <div class="p-2.5 bg-black/40 border border-white/10 hover:border-brand-orange/40 rounded-xl flex items-center justify-between gap-2 transition-colors">
+            <div class="flex-1 cursor-pointer" onclick="selectSavedAddress(${idx})">
+              <strong class="text-white text-xs block">${addr.street}, Nº ${addr.number}</strong>
+              <span class="text-[10px] text-stone-400">Local: <span class="text-amber-400 font-semibold">${addr.neighborhood}</span> ${addr.bairro ? `(${addr.bairro})` : ''}</span>
+              ${addr.reference ? `<p class="text-[10px] text-stone-400">Ref: ${addr.reference}</p>` : ''}
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="selectSavedAddress(${idx})" class="px-2.5 py-1 rounded-lg bg-brand-orange/20 text-brand-orange hover:bg-brand-orange hover:text-white font-bold text-[10px] transition-all">
+                Usar
+              </button>
+              <button type="button" onclick="deleteSavedAddress(${idx})" class="px-2 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white font-bold text-[10px] transition-all" title="Excluir endereço">
+                ✕
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    function checkSavedAddressesVisibility() {
+      const wrapper = document.getElementById('saved-addresses-wrapper');
+      if (!wrapper) return;
+      try {
+        const saved = JSON.parse(localStorage.getItem('SAO_JOSE_SAVED_ADDRESSES') || '[]');
+        if (saved && saved.length > 0 && orderMode === 'delivery') {
+          wrapper.classList.remove('hidden');
+        } else {
+          wrapper.classList.add('hidden');
+        }
+      } catch (e) {}
+    }
+
+    function selectSavedAddress(idx) {
+      try {
+        const saved = JSON.parse(localStorage.getItem('SAO_JOSE_SAVED_ADDRESSES') || '[]');
+        const addr = saved[idx];
+        if (!addr) return;
+
+        if (addr.street) document.getElementById('customer-street').value = addr.street;
+        if (addr.number) document.getElementById('customer-number').value = addr.number;
+        if (addr.bairro) {
+          const bInp = document.getElementById('customer-bairro-text');
+          if (bInp) bInp.value = addr.bairro;
+        }
+        if (addr.complement) document.getElementById('customer-complement').value = addr.complement;
+        if (addr.reference) document.getElementById('customer-reference').value = addr.reference;
+        if (addr.cep) document.getElementById('customer-cep').value = addr.cep;
+
+        if (addr.neighborhood) {
+          const select = document.getElementById('customer-neighborhood-select');
+          if (select) {
+            select.value = addr.neighborhood;
+            handleNeighborhoodChange(addr.neighborhood);
+          }
+        }
+
+        showToast("Endereço selecionado com sucesso! 🏠");
+      } catch (e) {}
+    }
+
+    function deleteSavedAddress(idx) {
+      try {
+        const saved = JSON.parse(localStorage.getItem('SAO_JOSE_SAVED_ADDRESSES') || '[]');
+        saved.splice(idx, 1);
+        localStorage.setItem('SAO_JOSE_SAVED_ADDRESSES', JSON.stringify(saved));
+        renderSavedAddresses();
+        showToast("Endereço excluído.");
+      } catch (e) {}
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items-container');
+      const navBadge = document.getElementById('nav-cart-badge');
+      const floatingBadge = document.getElementById('floating-cart-count');
+      const subtotalEl = document.getElementById('cart-subtotal-val');
+      const totalEl = document.getElementById('cart-total-val');
+      const feeEl = document.getElementById('cart-delivery-fee');
+      const feeLabelEl = document.getElementById('cart-delivery-label');
+      const checkoutBtn = document.getElementById('btn-checkout-whatsapp');
+
+      const totalCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+      const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+      navBadge.innerText = totalCount;
+      floatingBadge.innerText = `${totalCount} item${totalCount !== 1 ? 's' : ''}`;
+
+      let deliveryFeeAmount = 0;
+      if (orderMode === 'delivery') {
+        deliveryFeeAmount = currentDeliveryFee;
+        if (feeEl) feeEl.innerText = `R$ ${deliveryFeeAmount.toFixed(2).replace('.', ',')}`;
+        if (feeEl) feeEl.className = "text-amber-400 font-anton text-xs font-bold";
+        if (feeLabelEl) feeLabelEl.innerText = `Taxa de Entrega (${selectedNeighborhoodName}):`;
+      } else if (orderMode === 'pickup') {
+        deliveryFeeAmount = 0;
+        if (feeEl) feeEl.innerText = "Grátis (Retirada no Balcão)";
+        if (feeEl) feeEl.className = "text-emerald-400 font-poppins text-xs font-bold";
+        if (feeLabelEl) feeLabelEl.innerText = "Taxa de Entrega:";
+      } else if (orderMode === 'dine_in') {
+        deliveryFeeAmount = 0;
+        if (feeEl) feeEl.innerText = "Grátis (Consumo no Local)";
+        if (feeEl) feeEl.className = "text-blue-400 font-poppins text-xs font-bold";
+        if (feeLabelEl) feeLabelEl.innerText = "Taxa de Serviço:";
+      }
+
+      const finalTotal = subtotal + deliveryFeeAmount;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20 text-stone-400 font-poppins">
+            <span class="text-5xl block mb-3">🍔</span>
+            <p class="font-anton text-lg text-white tracking-wide">SUA SACOLA ESTÁ VAZIA</p>
+            <p class="text-xs mt-1 text-stone-400">Adicione hambúrgueres e combos do cardápio!</p>
+          </div>
+        `;
+        if (subtotalEl) subtotalEl.innerText = "R$ 0,00";
+        if (totalEl) totalEl.innerText = "R$ 0,00";
+        if (checkoutBtn) checkoutBtn.disabled = true;
+        return;
+      }
+
+      if (checkoutBtn) checkoutBtn.disabled = false;
+
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="bg-white/5 p-3.5 rounded-2xl border border-white/10 flex items-start justify-between gap-3 shadow-sm font-poppins">
+          <img src="${item.img}" alt="${item.title}" class="w-14 h-14 rounded-xl object-cover mt-0.5 bg-black/30" onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'" />
+          <div class="flex-1">
+            <h5 class="font-anton text-sm text-white tracking-wide">${item.title.toUpperCase()}</h5>
+            <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5 font-poppins">${item.desc}</p>
+            <div class="text-brand-orange text-sm font-anton mt-1 tracking-wide">R$ ${ (item.price * item.quantity).toFixed(2).replace('.', ',') }</div>
+          </div>
+          <div class="flex items-center gap-1.5 bg-black/50 px-2.5 py-1.5 rounded-xl border border-white/10 shadow-sm flex-shrink-0">
+            <button onclick="changeCartQty(${idx}, -1)" class="text-stone-400 hover:text-white font-bold px-1 text-xs"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"></path></svg></button>
+            <span class="text-xs font-bold text-white px-1.5">${item.quantity}</span>
+            <button onclick="changeCartQty(${idx}, 1)" class="text-stone-400 hover:text-white font-bold px-1 text-xs"><svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+          </div>
+        </div>
+      `).join('');
+
+      const formattedSubtotal = subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const formattedTotal = finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      
+      if (subtotalEl) subtotalEl.innerText = formattedSubtotal;
+      if (totalEl) totalEl.innerText = formattedTotal;
+
+      const dockBadge = document.getElementById('mobile-dock-badge');
+      const dockTotal = document.getElementById('mobile-dock-total');
+      if (dockBadge) dockBadge.innerText = totalCount;
+      if (dockTotal) dockTotal.innerText = formattedTotal;
+    }
+
+    function toggleCartDrawer() {
+      const overlay = document.getElementById('cart-drawer-overlay');
+      const drawer = document.getElementById('cart-drawer');
+      const isOpen = drawer.classList.contains('translate-x-0');
+
+      if (isOpen) {
+        drawer.classList.remove('translate-x-0');
+        drawer.classList.add('translate-x-full');
+        overlay.classList.remove('opacity-100', 'pointer-events-auto');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        document.body.classList.remove('overflow-hidden');
+      } else {
+        drawer.classList.remove('translate-x-full');
+        drawer.classList.add('translate-x-0');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.add('opacity-100', 'pointer-events-auto');
+        document.body.classList.add('overflow-hidden');
+      }
+    }
+
+    let selectedPayment = 'pix';
+
+    function setPaymentMethod(method) {
+      selectedPayment = method;
+      const pixBtn = document.getElementById('pay-pix-btn');
+      const cardBtn = document.getElementById('pay-card-btn');
+      const cashBtn = document.getElementById('pay-cash-btn');
+      const changeContainer = document.getElementById('cash-change-container');
+
+      // Reset
+      [pixBtn, cardBtn, cashBtn].forEach(btn => {
+        if (btn) {
+          btn.className = "py-2 px-1 rounded-xl bg-white/5 text-stone-300 hover:text-white border border-white/10 transition-all flex flex-col items-center justify-center gap-0.5";
+        }
+      });
+
+      if (method === 'pix' && pixBtn) {
+        pixBtn.className = "py-2 px-1 rounded-xl bg-emerald-600 text-white font-bold border border-emerald-400/40 transition-all flex flex-col items-center justify-center gap-0.5";
+        if (changeContainer) changeContainer.classList.add('hidden');
+      } else if (method === 'cartao' && cardBtn) {
+        cardBtn.className = "py-2 px-1 rounded-xl bg-blue-600 text-white font-bold border border-blue-400/40 transition-all flex flex-col items-center justify-center gap-0.5";
+        if (changeContainer) changeContainer.classList.add('hidden');
+      } else if (method === 'dinheiro' && cashBtn) {
+        cashBtn.className = "py-2 px-1 rounded-xl bg-amber-600 text-white font-bold border border-amber-400/40 transition-all flex flex-col items-center justify-center gap-0.5";
+        if (changeContainer) changeContainer.classList.remove('hidden');
+      }
+    }
+
+    // MODAL DE INFORMAÇÕES DA LOJA
+    function openStoreInfoModal() {
+      const backdrop = document.getElementById('store-info-modal-backdrop');
+      const modal = document.getElementById('store-info-modal');
+      backdrop.classList.remove('opacity-0', 'pointer-events-none');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
+      modal.classList.remove('scale-95');
+      modal.classList.add('scale-100');
+    }
+
+    function closeStoreInfoModal() {
+      const backdrop = document.getElementById('store-info-modal-backdrop');
+      const modal = document.getElementById('store-info-modal');
+      modal.classList.remove('scale-100');
+      modal.classList.add('scale-95');
+      backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function copyStoreAddress() {
+      const addr = "Avenida Mariano Lisboa, 1370 - Engenho, Pedreiras - MA, CEP 65725-000";
+      navigator.clipboard.writeText(addr).then(() => {
+        showToast("Endereço copiado para a área de transferência! 📍");
+      }).catch(() => {
+        showToast("Endereço: Avenida Mariano Lisboa, 1370 - Engenho");
+      });
+    }
+
+    function copyPixKey() {
+      const pixKey = "99991040222";
+      navigator.clipboard.writeText(pixKey).then(() => {
+        showToast("Chave PIX copiada: (99) 99104-0222 💠");
+      }).catch(() => {
+        showToast("Chave PIX: 99991040222");
+      });
+    }
+
+    function handleCepAutofill(val) {
+      if (!val) return;
+      const cleanCep = val.replace(/\D/g, '');
+      if (cleanCep.length === 8) {
+        fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+          .then(res => res.json())
+          .then(data => {
+            if (!data.erro) {
+              const streetInput = document.getElementById('customer-street');
+              const neighInput = document.getElementById('customer-neighborhood');
+              if (streetInput && data.logradouro) streetInput.value = data.logradouro;
+              if (neighInput && data.bairro) neighInput.value = data.bairro;
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    let pendingOrderMessage = "";
+
+    function initiateCheckout() {
+      if (!cart || cart.length === 0) {
+        showToast('Sua sacola está vazia! Adicione itens do cardápio.');
+        return;
+      }
+
+      // Validação de Dados do Cliente
+      const nameInput = document.getElementById('customer-name');
+      const phoneInput = document.getElementById('customer-phone');
+      const streetInput = document.getElementById('customer-street');
+      const numberInput = document.getElementById('customer-number');
+
+      // Limpar estilos de erro
+      [nameInput, phoneInput, streetInput, numberInput].forEach(inp => {
+        if (inp) inp.classList.remove('border-red-500', 'bg-red-500/10');
+      });
+
+      const name = nameInput ? nameInput.value.trim() : '';
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+
+      if (!name) {
+        if (nameInput) {
+          nameInput.classList.add('border-red-500', 'bg-red-500/10');
+          nameInput.focus();
+        }
+        if (isEditingProfile === false) toggleCustomerEditMode();
+        showToast('⚠️ Por favor, digite seu Nome Completo!');
+        return;
+      }
+      if (!phone) {
+        if (phoneInput) {
+          phoneInput.classList.add('border-red-500', 'bg-red-500/10');
+          phoneInput.focus();
+        }
+        if (isEditingProfile === false) toggleCustomerEditMode();
+        showToast('⚠️ Por favor, digite seu Telefone / WhatsApp!');
+        return;
+      }
+
+      saveCustomerProfile();
+
+      const street = streetInput ? streetInput.value.trim() : '';
+      const number = numberInput ? numberInput.value.trim() : '';
+      const bairroText = document.getElementById('customer-bairro-text') ? document.getElementById('customer-bairro-text').value.trim() : '';
+      const neighborhood = selectedNeighborhoodName;
+      const cep = document.getElementById('customer-cep') ? document.getElementById('customer-cep').value.trim() : '';
+      const reference = document.getElementById('customer-reference') ? document.getElementById('customer-reference').value.trim() : '';
+      const complement = document.getElementById('customer-complement') ? document.getElementById('customer-complement').value.trim() : '';
+      const tableNumber = document.getElementById('customer-table') ? document.getElementById('customer-table').value.trim() : '';
+      const notes = document.getElementById('customer-notes') ? document.getElementById('customer-notes').value.trim() : '';
+      const changeVal = document.getElementById('customer-change') ? document.getElementById('customer-change').value.trim() : '';
+
+      if (orderMode === 'delivery') {
+        if (!street) {
+          if (streetInput) {
+            streetInput.classList.add('border-red-500', 'bg-red-500/10');
+            streetInput.focus();
+          }
+          showToast('⚠️ Informe a Rua / Avenida para entrega!');
+          return;
+        }
+        if (!number) {
+          if (numberInput) {
+            numberInput.classList.add('border-red-500', 'bg-red-500/10');
+            numberInput.focus();
+          }
+          showToast('⚠️ Informe o Número da sua residência!');
+          return;
+        }
+
+        saveCustomStreetIfNotExists(street, selectedNeighborhoodName);
+
+        // Salvar endereço e dados do cliente mapeados por telefone
+        try {
+          const cleanPhone = phone.replace(/\D/g, '');
+          let customersDb = JSON.parse(localStorage.getItem('SAO_JOSE_CUSTOMERS_DB') || '{}');
+          customersDb[cleanPhone] = {
+            name,
+            phone,
+            city: selectedNeighborhoodName,
+            bairro: bairroText,
+            street,
+            number,
+            complement,
+            reference,
+            cep,
+            lastUpdated: new Date().toISOString()
+          };
+          localStorage.setItem('SAO_JOSE_CUSTOMERS_DB', JSON.stringify(customersDb));
+
+          const saved = JSON.parse(localStorage.getItem('SAO_JOSE_SAVED_ADDRESSES') || '[]');
+          const exists = saved.some(s => s.street.toLowerCase() === street.toLowerCase() && s.number === number && s.neighborhood === neighborhood);
+          if (!exists) {
+            saved.unshift({ street, number, neighborhood, bairro: bairroText, complement, reference, cep });
+            if (saved.length > 5) saved.pop();
+            localStorage.setItem('SAO_JOSE_SAVED_ADDRESSES', JSON.stringify(saved));
+          }
+        } catch (e) {}
+      }
+
+      const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+      const deliveryFee = orderMode === 'delivery' ? currentDeliveryFee : 0;
+      const grandTotal = subtotal + deliveryFee;
+
+      let payLabel = "💠 PIX Instantâneo";
+      if (selectedPayment === 'cartao') payLabel = "💳 Cartão (Máquina com entregador)";
+      if (selectedPayment === 'dinheiro') {
+        payLabel = `💵 Dinheiro em Espécie${changeVal ? ` (Troco para: ${changeVal})` : ' (Sem troco)'}`;
+      }
+
+      let modeLabel = "🛵 Entrega Delivery";
+      if (orderMode === 'pickup') modeLabel = "🏪 Retirada no Balcão";
+      if (orderMode === 'dine_in') modeLabel = `🍽️ Consumir no Local${tableNumber ? ` (Mesa: ${tableNumber})` : ''}`;
+
+      let msg = `*🍔 NOVO PEDIDO - SÃO JOSÉ BURGUER*\n`;
+      msg += `------------------------------------------\n\n`;
+      msg += `*👤 CLIENTE:* ${name}\n`;
+      msg += `*📱 WHATSAPP:* ${phone}\n\n`;
+      msg += `*📦 FORMA DE RECEBIMENTO:*\n• ${modeLabel}\n\n`;
+
+      if (orderMode === 'delivery') {
+        msg += `*📍 ENDEREÇO DE ENTREGA:*\n`;
+        msg += `• *Cidade / Região:* ${neighborhood}\n`;
+        if (bairroText) msg += `• *Bairro:* ${bairroText}\n`;
+        msg += `• *Rua:* ${street}, Nº ${number}\n`;
+        if (cep) msg += `• *CEP:* ${cep}\n`;
+        if (reference) msg += `• *Referência:* ${reference}\n`;
+        if (complement) msg += `• *Complemento:* ${complement}\n\n`;
+      } else if (orderMode === 'pickup') {
+        msg += `*📍 RETIRADA:* Avenida Mariano Lisboa, 1370 - Engenho, Pedreiras\n\n`;
+      } else if (orderMode === 'dine_in') {
+        msg += `*📍 SALÃO:* Consumo no Local${tableNumber ? ` • *Mesa:* ${tableNumber}` : ''}\n\n`;
+      }
+
+      msg += `*💳 PAGAMENTO:* ${payLabel}\n\n`;
+      msg += `*🍔 ITENS DO PEDIDO:*\n`;
+
+      cart.forEach((item, index) => {
+        msg += `${index + 1}. *${item.quantity}x ${item.title}* - R$ ${ (item.price * item.quantity).toFixed(2).replace('.', ',') }\n`;
+        if (item.desc && (item.desc.includes('Adicionais:') || item.desc.includes('Obs:'))) {
+          msg += `   ↳ _${item.desc}_\n`;
+        }
+      });
+
+      if (notes) {
+        msg += `\n*📝 Observações:* ${notes}\n`;
+      }
+
+      msg += `\n------------------------------------------\n`;
+      msg += `*💰 SUBTOTAL:* R$ ${ subtotal.toFixed(2).replace('.', ',') }\n`;
+      if (orderMode === 'delivery') {
+        msg += `*🛵 TAXA DE ENTREGA (${neighborhood}):* R$ ${ deliveryFee.toFixed(2).replace('.', ',') }\n`;
+      } else {
+        msg += `*🛵 TAXA DE ENTREGA:* Grátis\n`;
+      }
+      msg += `*🔥 TOTAL GERAL:* R$ ${ grandTotal.toFixed(2).replace('.', ',') }\n`;
+      msg += `------------------------------------------\n\n`;
+      msg += `Por favor, confirmem o pedido e o tempo estimado!`;
+
+      // Salvar pedido no localStorage para o Painel do Admin
+      try {
+        let orderAddress = "Retirada no Balcão";
+        if (orderMode === 'delivery') {
+          orderAddress = `${street}, Nº ${number}${bairroText ? ` - ${bairroText}` : ''} (${neighborhood})`;
+        } else if (orderMode === 'dine_in') {
+          orderAddress = `Consumo no Local ${tableNumber ? `(Mesa ${tableNumber})` : ''}`;
+        }
+
+        const orderObj = {
+          id: "PED-" + (Math.floor(Math.random() * 9000) + 1000),
+          date: new Date().toISOString(),
+          customer: { name: name, phone: phone },
+          address: orderAddress,
+          mode: orderMode,
+          deliveryFee: deliveryFee,
+          neighborhood: neighborhood,
+          bairro: bairroText,
+          table: tableNumber,
+          payment: selectedPayment.toUpperCase(),
+          items: cart.map(c => ({ title: c.title, qty: c.quantity, price: c.price })),
+          subtotal: subtotal,
+          total: grandTotal,
+          status: 'pending',
+          isPaid: false
+        };
+
+        // Salvar pedido e cliente no Supabase (Nuvem) com fallback seguro
+        if (window.SAO_JOSE_SUPABASE) {
+          window.SAO_JOSE_SUPABASE.saveOrder(orderObj);
+          window.SAO_JOSE_SUPABASE.saveCustomer({
+            name: name,
+            phone: phone,
+            address: orderAddress,
+            neighborhood: neighborhood,
+            city: selectedNeighborhoodName
+          });
+        } else {
+          const existingOrders = JSON.parse(localStorage.getItem('SAO_JOSE_ORDERS') || '[]');
+          existingOrders.unshift(orderObj);
+          if (existingOrders.length > 200) existingOrders.length = 200;
+          localStorage.setItem('SAO_JOSE_ORDERS', JSON.stringify(existingOrders));
+        }
+
+        // Disparar evento para o painel Admin aberto em outra aba
+        try {
+          const channel = new BroadcastChannel('sao_jose_channel');
+          channel.postMessage({ type: 'NEW_ORDER', order: orderObj });
+        } catch (err) {}
+
+        // Transmitir pedido em tempo real pela Nuvem (para qualquer computador ou celular)
+        try {
+          fetch('https://ntfy.sh/sao_jose_burguer_pedidos', {
+            method: 'POST',
+            headers: { 'Title': 'Novo Pedido!', 'Priority': 'high' },
+            body: JSON.stringify(orderObj),
+            keepalive: true
+          }).catch(() => {});
+        } catch (err) {}
+      } catch (e) {}
+
+      // Se for PIX, copiar a chave PIX automaticamente
+      if (selectedPayment === 'pix') {
+        try {
+          navigator.clipboard.writeText("99991040222");
+        } catch (e) {}
+      }
+
+      // Envio definitivo para o WhatsApp
+      const encoded = encodeURIComponent(msg);
+      const whatsappNumber = (STORE_DATA && STORE_DATA.store && STORE_DATA.store.whatsapp) ? STORE_DATA.store.whatsapp : "5599991040222";
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encoded}`;
+
+      showToast("Pedido gerado com sucesso! Abrindo WhatsApp... 🚀");
+
+      const win = window.open(whatsappUrl, '_blank');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        window.location.href = whatsappUrl;
+      }
+    }
+
+    function contactWhatsApp() {
+      const whatsappNumber = "5599991040222";
+      window.open(`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20ou%20tirar%20uma%20d%C3%BAvida%20sobre%20o%20S%C3%A3o%20Jos%C3%A9%20Burguer.`, '_blank');
+    }
+
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      if (toast && toastText) {
+        toastText.innerText = msg;
+        if (toastTimeout) clearTimeout(toastTimeout);
+
+        toast.classList.remove('-translate-y-12', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('-translate-y-12', 'opacity-0');
+        }, 1300);
+      }
+    }
+
+    // ==========================================
+    // CONTROLE AUTOMÁTICO DE HORÁRIO EM TEMPO REAL
+    // ==========================================
+    function isStoreOpen() {
+      const now = new Date();
+      const minutesNow = now.getHours() * 60 + now.getMinutes();
+      const openMinutes = 19 * 60 + 30; // 19:30 = 1170 minutos
+      const closeMinutes = 23 * 60 + 30; // 23:30 = 1410 minutos
+      return minutesNow >= openMinutes && minutesNow <= closeMinutes;
+    }
+
+    function updateStoreLiveStatus() {
+      const open = isStoreOpen();
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+
+      // 1. Badge do Header / Navbar
+      const headerBadge = document.getElementById('header-status-badge');
+      if (headerBadge) {
+        if (open) {
+          headerBadge.className = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm";
+          headerBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Aberto até 23h30</span>`;
+        } else {
+          headerBadge.className = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm";
+          headerBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span><span>Fechado • Abre 19h30</span>`;
+        }
+      }
+
+      // 2. Badge do Card de Horários na Seção de Informações
+      const cardBadge = document.getElementById('store-status-pill-card');
+      if (cardBadge) {
+        if (open) {
+          cardBadge.className = "px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-poppins font-bold flex items-center gap-1.5";
+          cardBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>Aberto Agora • Fecha às 23h30`;
+        } else {
+          cardBadge.className = "px-2.5 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-poppins font-bold flex items-center gap-1.5";
+          cardBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>Fechado Agora • Abre às 19h30`;
+        }
+      }
+
+      // 3. Badge do Modal de Informações
+      const modalBadge = document.getElementById('modal-status-indicator');
+      if (modalBadge) {
+        if (open) {
+          modalBadge.className = "px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] flex items-center gap-1.5";
+          modalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Aberto Agora • 19:30 às 23:30`;
+        } else {
+          modalBadge.className = "px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold text-[10px] flex items-center gap-1.5";
+          modalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>Fechado Agora • Abre às 19:30`;
+        }
+      }
+
+      // 4. Destaque do dia atual na tabela de horários
+      document.querySelectorAll('.schedule-day-row').forEach(row => {
+        const d = parseInt(row.getAttribute('data-day'));
+        if (d === dayOfWeek) {
+          row.classList.add('bg-brand-orange/20', 'border-brand-orange/40', 'text-white', 'font-bold');
+        } else {
+          row.classList.remove('bg-brand-orange/20', 'border-brand-orange/40', 'text-white', 'font-bold');
+        }
+      });
+
+      document.querySelectorAll('.modal-schedule-day-row').forEach(row => {
+        const d = parseInt(row.getAttribute('data-day'));
+        if (d === dayOfWeek) {
+          row.classList.add('bg-brand-orange/20', 'border-brand-orange/40', 'text-white', 'font-bold');
+        } else {
+          row.classList.remove('bg-brand-orange/20', 'border-brand-orange/40', 'text-white', 'font-bold');
+        }
+      });
+    }
+
+    // Inicialização do status em tempo real, bairros, ruas e perfil do cliente
+    initNeighborhoodSelect();
+    initStreetAutocomplete();
+    loadCustomerProfile();
+    updateStoreLiveStatus();
+    setInterval(updateStoreLiveStatus, 15000); // Atualiza a cada 15 segundos
+
+    // REGISTRO DO SERVICE WORKER (PWA & SUPORTE OFFLINE)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('📱 PWA Service Worker registrado com sucesso!', reg.scope))
+          .catch(err => console.log('PWA Service Worker offline fallback:', err));
+      });
+    }
+
+    // Detector de Conexão Online/Offline
+    window.addEventListener('offline', () => {
+      showToast('⚠️ Modo Offline ativado! Seu cardápio continua funcionando normalmente.');
+    });
+    window.addEventListener('online', () => {
+      showToast('🟢 Conexão restabelecida!');
+    });
+  </script>
+
+</body>
+</html>
