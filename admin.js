@@ -138,15 +138,19 @@ function renderStoreTopbar() {
   const slugEl = document.getElementById('topbar-store-slug');
   const shareLinkInput = document.getElementById('share-link-input');
   const viewMenuBtn = document.getElementById('topbar-view-menu-btn');
+  const custMenuBtn = document.getElementById('btn-view-customer-menu');
   const prodsCountEl = document.getElementById('dash-products-count');
 
-  const menuUrl = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
+  const domain = (window.location.hostname || 'pedidovale.com.br').replace(/^www\./, '');
+  const cleanLink = `${domain}/${STORE_DATA.slug}`;
+  const directMenuUrl = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
 
   if (nameEl) nameEl.innerText = (STORE_DATA.name || "MEU ESTABELECIMENTO").toUpperCase();
   if (dashNameEl) dashNameEl.innerText = (STORE_DATA.name || "MEU ESTABELECIMENTO").toUpperCase();
-  if (slugEl) slugEl.innerText = `pedidovale.com.br/${STORE_DATA.slug}`;
-  if (shareLinkInput) shareLinkInput.innerText = menuUrl;
-  if (viewMenuBtn) viewMenuBtn.href = menuUrl;
+  if (slugEl) slugEl.innerText = cleanLink;
+  if (shareLinkInput) shareLinkInput.innerText = cleanLink;
+  if (viewMenuBtn) viewMenuBtn.href = directMenuUrl;
+  if (custMenuBtn) custMenuBtn.href = directMenuUrl;
   if (prodsCountEl) prodsCountEl.innerText = `${PRODUCTS.length} ${PRODUCTS.length === 1 ? 'Produto cadastrado' : 'Produtos cadastrados'}`;
 
   updateSwitchOrdersButton();
@@ -185,20 +189,23 @@ function toggleStoreOpenStatus() {
 }
 
 function copyStoreMenuLink() {
-  const url = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
+  const domain = (window.location.hostname || 'pedidovale.com.br').replace(/^www\./, '');
+  const cleanUrl = `https://${domain}/${STORE_DATA.slug}`;
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      showToast("🔗 Link do cardápio copiado com sucesso!");
+    navigator.clipboard.writeText(cleanUrl).then(() => {
+      showToast("🔗 Link oficial copiado: " + cleanUrl);
     });
   } else {
-    showToast(`Link: ${url}`);
+    showToast(`Link: ${cleanUrl}`);
   }
 }
 
 function shareOnWhatsApp() {
-  const url = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
-  const text = encodeURIComponent(`Olá! Acesse o nosso cardápio digital e faça seu pedido online: ${url}`);
-  window.open(`https://wa.me/?text=${text}`, '_blank');
+  const domain = (window.location.hostname || 'pedidovale.com.br').replace(/^www\./, '');
+  const cleanUrl = `https://${domain}/${STORE_DATA.slug}`;
+  const storeName = STORE_DATA.name || 'nosso cardápio';
+  const text = encodeURIComponent(`Olá! Acesse o cardápio oficial de *${storeName.toUpperCase()}* e faça seu pedido online:\n👉 ${cleanUrl}`);
+  window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
 }
 
 // -------------------------------------------------------------------------

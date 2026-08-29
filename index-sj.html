@@ -1465,11 +1465,19 @@
     // =========================================================================
     function loadDynamicStoreData() {
       const urlParams = new URLSearchParams(window.location.search);
-      const storeSlug = urlParams.get('store') || sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'sao-jose';
-      
-      let storeConfig = null;
-      let storeCats = null;
-      let storeProds = null;
+      let storeSlug = urlParams.get('store');
+
+      if (!storeSlug) {
+        const pathSegments = window.location.pathname.replace(/^\/+|\/+$/g, '').split('/');
+        const firstSegment = pathSegments[0];
+        if (firstSegment && !firstSegment.includes('.html') && firstSegment !== 'admin' && firstSegment !== 'login' && firstSegment !== 'cadastro') {
+          storeSlug = firstSegment;
+        }
+      }
+
+      if (!storeSlug) {
+        storeSlug = sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'demo';
+      }
 
       try {
         const savedConfig = localStorage.getItem(`STORE_${storeSlug}_CONFIG`);
