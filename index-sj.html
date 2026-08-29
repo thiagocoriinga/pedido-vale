@@ -294,20 +294,20 @@
       <!-- LOGO & BRAND INFO -->
       <a href="#" class="flex items-center gap-2.5 sm:gap-3.5 group">
         <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/15 bg-black/50 shadow-md flex items-center justify-center p-0.5 group-hover:scale-105 transition-transform flex-shrink-0">
-          <img src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo São José Burguer" class="w-full h-full object-cover rounded-xl" onerror="this.src='assets/e8392808a1c7659c_favicon.png'" />
+          <img id="header-store-logo" src="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg" alt="Logo do Restaurante" class="w-full h-full object-cover rounded-xl" onerror="this.src='assets/e8392808a1c7659c_favicon.png'" />
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-lg sm:text-2xl font-anton text-white tracking-wider leading-none">
+            <h1 id="header-store-name" class="text-lg sm:text-2xl font-anton text-white tracking-wider leading-none">
               SÃO JOSÉ <span class="text-brand-orange">BURGUER</span>
             </h1>
           </div>
           <div class="mt-1 flex items-center gap-2">
             <button onclick="openStoreInfoModal()" id="header-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm" title="Ver Horários, PIX e Endereço">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span id="header-status-text">Aberto até 23h30</span>
+              <span id="header-status-text">Aberto Hoje</span>
             </button>
-            <span class="text-[11px] text-stone-400 font-poppins font-medium hidden md:inline">• Pedreiras & Trizidela</span>
+            <span id="header-store-city" class="text-[11px] text-stone-400 font-poppins font-medium hidden md:inline">• Atendimento Online</span>
           </div>
         </div>
       </a>
@@ -1624,21 +1624,148 @@
     let modalQuantity = 1;
     let selectedAdditionals = {};
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Carregar dados dinâmicos do Admin caso existam
-      const dynamicStore = localStorage.getItem('SAO_JOSE_STORE_DATA');
-      if (dynamicStore) {
-        try {
-          const parsed = JSON.parse(dynamicStore);
-          if (parsed && parsed.categories && parsed.categories.length > 0) {
-            STORE_DATA = parsed;
-          }
-        } catch (e) {}
-      }
+    // =========================================================================
+    // MOTOR DE CARREGAMENTO MULTI-TENANT (SUPORTE A QUALQUER EMPRESA CADASTRADA)
+    // =========================================================================
+    function loadDynamicStoreData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const storeSlug = urlParams.get('store') || sessionStorage.getItem('CURRENT_LOGGED_STORE') || 'sao-jose';
+      
+      let storeConfig = null;
+      let storeCats = null;
+      let storeProds = null;
 
+      try {
+        const savedConfig = localStorage.getItem(`STORE_${storeSlug}_CONFIG`);
+        if (savedConfig) storeConfig = JSON.parse(savedConfig);
+
+        const savedCats = localStorage.getItem(`STORE_${storeSlug}_CATEGORIES`);
+        if (savedCats) storeCats = JSON.parse(savedCats);
+
+        const savedProds = localStorage.getItem(`STORE_${storeSlug}_PRODUCTS`);
+        if (savedProds) storeProds = JSON.parse(savedProds);
+
+        // Se não achou na config direta, tentar buscar no Super Admin Tenants
+        if (!storeConfig) {
+          const tenantsRaw = localStorage.getItem('SUPERADMIN_TENANTS_DATA');
+          if (tenantsRaw) {
+            const tenants = JSON.parse(tenantsRaw);
+            const found = tenants.find(t => t.slug === storeSlug);
+            if (found) {
+              storeConfig = {
+                name: found.name,
+                slug: found.slug,
+                whatsapp: found.owner_phone,
+                address: found.city,
+                pixKey: found.owner_phone,
+                pixName: found.owner_name
+              };
+            }
+          }
+        }
+      } catch (err) {}
+
+      // Se achou dados customizados desta empresa (ex: rei-teste)
+      if (storeConfig || storeProds || storeCats) {
+        const storeName = (storeConfig && storeConfig.name) ? storeConfig.name : storeSlug.toUpperCase().replace('-', ' ');
+        const storeZap = (storeConfig && storeConfig.whatsapp) ? storeConfig.whatsapp : "5599991040222";
+        const storeAddr = (storeConfig && storeConfig.address) ? storeConfig.address : "Atendimento Online";
+        const storePix = (storeConfig && storeConfig.pixKey) ? storeConfig.pixKey : "";
+
+        STORE_DATA.store.name = storeName;
+        STORE_DATA.store.whatsapp = storeZap;
+        STORE_DATA.store.address = storeAddr;
+        STORE_DATA.store.pixKey = storePix;
+
+        // Atualizar Título da Página e Header
+        document.title = `${storeName} • Cardápio Digital & Pedidos`;
+        
+        const headerNameEl = document.getElementById('header-store-name');
+        if (headerNameEl) headerNameEl.innerHTML = `<span class="text-white">${storeName.toUpperCase()}</span>`;
+
+        const headerCityEl = document.getElementById('header-store-city');
+        if (headerCityEl) headerCityEl.innerText = `• ${storeAddr}`;
+
+        // Mapear Categorias e Produtos
+        if (storeCats && storeCats.length > 0) {
+          const prodsList = storeProds || [];
+          
+          STORE_DATA.categories = storeCats
+            .filter(cat => cat.visible !== false)
+            .map(cat => {
+              const catProds = prodsList.filter(p => p.category_id === cat.id && p.status !== 'paused');
+              return {
+                id: cat.id,
+                name: cat.name,
+                icon: cat.icon || '🍽️',
+                items: catProds.map(p => ({
+                  id: p.id,
+                  title: p.name,
+                  price: parseFloat(p.promo_price || p.price) || 0,
+                  originalPrice: parseFloat(p.price) || 0,
+                  description: p.description || '',
+                  image: p.image || '',
+                  isPromo: !!p.promo_price,
+                  isBestseller: !!p.featured,
+                  isNew: !!p.is_new,
+                  isPopular: !!p.popular,
+                  extras: p.extras || []
+                }))
+              };
+            });
+
+          // Se a primeira categoria tiver itens, atualizar ou ocultar o banner fixo
+          const allProds = prodsList.filter(p => p.status !== 'paused');
+          const heroBanner = document.getElementById('hero-featured-banners-section');
+          if (heroBanner) {
+            const featProd = allProds.find(p => p.featured) || allProds[0];
+            if (featProd) {
+              heroBanner.innerHTML = `
+                <section onclick="openProductDetail('${featProd.name.replace(/'/g, "\\'")}', ${featProd.promo_price || featProd.price}, '${(featProd.description || '').replace(/'/g, "\\'")}', '${featProd.image || ''}')" class="star-border-container star-border-dark electric-card cursor-pointer group rounded-3xl overflow-hidden shadow-2xl">
+                  <div class="inner-content p-6 sm:p-8 lg:p-10 relative overflow-hidden text-white flex flex-col-reverse md:flex-row items-center justify-between gap-6">
+                    <div class="absolute inset-0 bg-gradient-to-r from-red-950/70 via-[#140E0A]/95 to-amber-950/60 pointer-events-none"></div>
+                    <div class="relative z-10 flex-1 max-w-xl space-y-3.5 text-left w-full">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 bg-brand-orange text-white text-[10px] sm:text-xs font-anton tracking-wider uppercase px-3 py-1 rounded-full shadow-md">
+                          🔥 DESTAQUE DO CARDÁPIO
+                        </span>
+                      </div>
+                      <h2 class="text-3xl sm:text-4xl font-anton leading-none tracking-wide text-white drop-shadow">
+                        ${featProd.name.toUpperCase()}
+                      </h2>
+                      <p class="text-xs sm:text-sm text-stone-300 font-poppins font-normal leading-relaxed max-w-md">
+                        ${featProd.description || 'Experimente esta especialidade da casa.'}
+                      </p>
+                      <div class="flex items-baseline gap-3 pt-2">
+                        <span class="text-2xl sm:text-3xl font-anton text-amber-400">
+                          ${(parseFloat(featProd.promo_price || featProd.price) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </span>
+                        ${featProd.promo_price ? `<span class="text-sm text-stone-400 line-through">${(parseFloat(featProd.price) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>` : ''}
+                      </div>
+                    </div>
+                    ${featProd.image ? `
+                      <div class="relative z-10 w-44 h-44 sm:w-56 sm:h-56 rounded-3xl overflow-hidden shadow-2xl border-2 border-white/20">
+                        <img src="${featProd.image}" alt="${featProd.name}" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
+                      </div>
+                    ` : ''}
+                  </div>
+                </section>
+              `;
+            } else {
+              heroBanner.classList.add('hidden');
+            }
+          }
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDynamicStoreData();
       initTheme();
       renderCategoryPills();
-      renderProducts(STORE_DATA.categories[activeCategoryIndex]);
+      if (STORE_DATA.categories && STORE_DATA.categories.length > 0) {
+        renderProducts(STORE_DATA.categories[activeCategoryIndex] || STORE_DATA.categories[0]);
+      }
       renderCart();
     });
 
@@ -2928,7 +3055,7 @@
       if (orderMode === 'pickup') modeLabel = "🏪 Retirada no Balcão";
       if (orderMode === 'dine_in') modeLabel = `🍽️ Consumir no Local${tableNumber ? ` (Mesa: ${tableNumber})` : ''}`;
 
-      let msg = `*🍔 NOVO PEDIDO - SÃO JOSÉ BURGUER*\n`;
+      let msg = `*🍔 NOVO PEDIDO - ${((STORE_DATA && STORE_DATA.store && STORE_DATA.store.name) ? STORE_DATA.store.name : 'ESTABELECIMENTO').toUpperCase()}*\n`;
       msg += `------------------------------------------\n\n`;
       msg += `*👤 CLIENTE:* ${name}\n`;
       msg += `*📱 WHATSAPP:* ${phone}\n\n`;
@@ -2943,7 +3070,7 @@
         if (reference) msg += `• *Referência:* ${reference}\n`;
         if (complement) msg += `• *Complemento:* ${complement}\n\n`;
       } else if (orderMode === 'pickup') {
-        msg += `*📍 RETIRADA:* Avenida Mariano Lisboa, 1370 - Engenho, Pedreiras\n\n`;
+        msg += `*📍 RETIRADA:* ${ (STORE_DATA && STORE_DATA.store && STORE_DATA.store.address) ? STORE_DATA.store.address : 'Retirada no Balcão' }\n\n`;
       } else if (orderMode === 'dine_in') {
         msg += `*📍 SALÃO:* Consumo no Local${tableNumber ? ` • *Mesa:* ${tableNumber}` : ''}\n\n`;
       }
@@ -3055,8 +3182,9 @@
     }
 
     function contactWhatsApp() {
-      const whatsappNumber = "5599991040222";
-      window.open(`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido%20ou%20tirar%20uma%20d%C3%BAvida%20sobre%20o%20S%C3%A3o%20Jos%C3%A9%20Burguer.`, '_blank');
+      const whatsappNumber = (STORE_DATA && STORE_DATA.store && STORE_DATA.store.whatsapp) ? STORE_DATA.store.whatsapp : "5599991040222";
+      const storeName = (STORE_DATA && STORE_DATA.store && STORE_DATA.store.name) ? STORE_DATA.store.name : "Restaurante";
+      window.open(`https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent('Olá! Gostaria de fazer um pedido ou tirar uma dúvida sobre o cardápio do ' + storeName + '.')}`, '_blank');
     }
 
     let toastTimeout = null;
