@@ -18,24 +18,8 @@ const DEFAULT_PLATFORM_CONFIG = {
   defaultTrialDays: 7
 };
 
-// Lojas Iniciais Padrão (Seed Oficial)
-const INITIAL_TENANTS = [
-  {
-    id: "tenant-sao-jose-001",
-    slug: "sao-jose",
-    name: "São José Burguer",
-    segment: "Hamburgueria",
-    owner_name: "Thiago Siqueira",
-    owner_phone: "5599991040222",
-    plan: "pro",
-    monthly_fee: 119.00,
-    status: "active",
-    due_day: 10,
-    trial_ends_at: null,
-    created_at: new Date().toISOString(),
-    notes: "Restaurante Oficial Modelo • Cardápio & Delivery Ativo"
-  }
-];
+// Lojas Iniciais Padrão (Inicia limpo para novas empresas cadastradas)
+const INITIAL_TENANTS = [];
 
 let TENANTS = [];
 let PLATFORM_CONFIG = DEFAULT_PLATFORM_CONFIG;

@@ -6,16 +6,15 @@
   <meta name="theme-color" content="#080504">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>São José Burguer • Cardápio & Pedidos Online</title>
-  <meta name="description" content="Peça os melhores hambúrgueres artesanais, combos e batatas crocantes do São José Burguer direto pelo WhatsApp!">
+  <title id="page-title">Cardápio Digital • PedidoVale</title>
+  <meta name="description" content="Faça seu pedido online de forma rápida e prática!">
 
   <!-- PWA & Web App Manifest -->
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="São José Burguer">
-  <link rel="apple-touch-icon" href="assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.webp">
+  <meta name="apple-mobile-web-app-title" content="Cardápio Digital">
 
   <!-- Favicon Oficial -->
   <link rel="icon" type="image/png" href="assets/e8392808a1c7659c_favicon.png">
@@ -418,183 +417,9 @@
     </section>
 
     <!-- ========================================================================= -->
-    <!-- CONTAINER DE DESTAQUES & OFERTAS (RECOLHE AUTOMATICAMENTE EM OUTRAS CATEGORIAS) -->
+    <!-- CONTAINER DE DESTAQUES & OFERTAS (DINÂMICO PELO PAINEL DA LOJA) -->
     <!-- ========================================================================= -->
-    <div id="hero-featured-banners-section" class="space-y-8 transition-all duration-300">
-
-      <!-- 3. HERO FEATURED BANNER (OFERTA DO DIA / DESTAQUE PROMOÇÃO) -->
-      <section onclick="openProductById('6a8f2939efa864ebad3960cf')" class="star-border-container star-border-dark electric-card cursor-pointer group rounded-3xl overflow-hidden shadow-2xl">
-      <div class="border-gradient-bottom"></div>
-      <div class="border-gradient-top"></div>
-
-      <div class="inner-content p-6 sm:p-8 lg:p-10 relative overflow-hidden text-white flex flex-col-reverse md:flex-row items-center justify-between gap-6">
-        <div class="absolute inset-0 bg-gradient-to-r from-red-950/70 via-[#140E0A]/95 to-amber-950/60 pointer-events-none"></div>
-
-        <!-- TEXTOS E BOTÃO DO HERO (LADO ESQUERDO) -->
-        <div class="relative z-10 flex-1 max-w-xl space-y-3.5 text-left w-full">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 bg-brand-orange text-white text-[10px] sm:text-xs font-anton tracking-wider uppercase px-3 py-1 rounded-full shadow-md">
-              🔥 OFERTA DO DIA • MAIS PEDIDO
-            </span>
-            <span class="text-xs text-amber-400 font-poppins font-bold flex items-center gap-1">
-              ★ 4.9 (500+ pedidos)
-            </span>
-          </div>
-
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-anton leading-none tracking-wide text-white drop-shadow">
-            BURGUER <span class="text-brand-orange">SÃO JOSÉ</span>
-          </h2>
-
-          <p class="text-xs sm:text-sm text-stone-300 font-poppins font-normal leading-relaxed max-w-md">
-            Pão Brioche artesanal selado, 3 suculentos blends bovinos de 100g grelhados no fogo, 2 camadas de cheddar duplo, cebola caramelizada, catupiry cremoso e bacon crocante.
-          </p>
-
-          <div class="pt-1 flex flex-wrap items-center gap-3">
-            <button 
-              class="bg-gradient-to-r from-orange-500 to-orange-600 group-hover:brightness-110 text-white text-xs sm:text-sm font-poppins font-bold px-6 py-3 rounded-full inline-flex items-center gap-2 shadow-orange-glow active:scale-95 transition-all border-t border-white/20"
-            >
-              <span>Pedir Agora</span>
-              <span class="font-anton text-base ml-1">(R$ 33,00)</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-            </button>
-
-            <span class="text-[11px] sm:text-xs text-stone-400 font-poppins flex items-center gap-1">
-              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-              Entrega rápida em Pedreiras & Trizidela
-            </span>
-          </div>
-        </div>
-
-        <!-- FOTO DO HAMBÚRGUER (LADO DIREITO - NUNCA COBRE AS LETRAS) -->
-        <div class="relative z-10 w-full md:w-[42%] lg:w-[45%] flex items-center justify-center flex-shrink-0">
-          <div class="w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 relative">
-            <img 
-              src="assets/e982e903924b9f51_-1751323111578blob.jpg" 
-              alt="Burguer São José" 
-              class="w-full h-full object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transform group-hover:scale-106 transition-transform duration-500 ease-out"
-              onerror="this.src='assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'"
-            />
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ========================================================================= -->
-    <!-- 4. MAIS PEDIDOS DA SEMANA (CARROSSEL / GRID DE DESTAQUES) -->
-    <!-- ========================================================================= -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-xl sm:text-2xl font-anton text-white tracking-wider flex items-center gap-2">
-            <span class="w-2.5 h-5 bg-brand-orange rounded-full"></span>
-            MAIS PEDIDOS DA SEMANA
-          </h3>
-          <p class="text-xs text-stone-400 font-poppins mt-0.5">Os favoritos da galera que todo mundo ama</p>
-        </div>
-        <span class="text-xs text-amber-400 font-poppins font-semibold hidden sm:block">Recomendados pelo Chef ⭐</span>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-        
-        <!-- 1. Burguer São José -->
-        <div onclick="openProductById('6a8f2939efa864ebad3960cf')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
-          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
-            <img src="assets/e982e903924b9f51_-1751323111578blob.jpg" alt="Burguer São José" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
-            <span class="absolute top-2 left-2 bg-brand-orange text-white text-[9px] font-anton px-2 py-0.5 rounded-full shadow">TOP 1</span>
-          </div>
-          <div class="p-3.5 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">BURGUER SÃO JOSÉ</h4>
-              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">3 Blends 100g, cheddar duplo, catupiry e bacon.</p>
-            </div>
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
-              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 33,00</span>
-              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Brioche Prime -->
-        <div onclick="openProductDetail('Brioche Prime', 17.00, 'Pão brioche, Blend Bovino De 100 Gramas - Cream cheese, cebola caramelizada, queijo coalho, Maionese Caseira e molho barbecue', 'assets/3218ef457e3140d1_-1781817483869blob.jpg')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
-          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
-            <img src="assets/3218ef457e3140d1_-1781817483869blob.jpg" alt="Brioche Prime" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
-            <span class="absolute top-2 left-2 bg-amber-500 text-black text-[9px] font-anton px-2 py-0.5 rounded-full shadow">PREMIUM</span>
-          </div>
-          <div class="p-3.5 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">BRIOCHE PRIME</h4>
-              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">Cream cheese, cebola caramelizada e queijo coalho.</p>
-            </div>
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
-              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 17,00</span>
-              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Supremo Duplo -->
-        <div onclick="openProductDetail('Supremo Duplo', 22.00, 'Pão brioche, 2 blends de 100gramas cada, queijo coalho, cebola caramelizada, maionese caseira e molho especial são josé', 'assets/d01c24cc0387395c_-1782242426840blob.jpg')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
-          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
-            <img src="assets/d01c24cc0387395c_-1782242426840blob.jpg" alt="Supremo Duplo" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
-            <span class="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] font-anton px-2 py-0.5 rounded-full shadow">DUPLO</span>
-          </div>
-          <div class="p-3.5 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">SUPREMO DUPLO</h4>
-              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">2 blends 100g, queijo coalho e molho São José.</p>
-            </div>
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
-              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 22,00</span>
-              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. Combo Kids -->
-        <div onclick="openProductDetail('Combo Kids', 19.00, '1 burguer tradicional + 1 porção de fritas tradicional + 1 mini refrigerante', 'assets/15dfa4dcc6ebc4c5_-1780090896913blob.jpg')" class="bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex flex-col justify-between">
-          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
-            <img src="assets/15dfa4dcc6ebc4c5_-1780090896913blob.jpg" alt="Combo Kids" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
-            <span class="absolute top-2 left-2 bg-brand-orange text-white text-[9px] font-anton px-2 py-0.5 rounded-full shadow">COMBO</span>
-          </div>
-          <div class="p-3.5 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">COMBO KIDS</h4>
-              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">1 burguer tradicional + 1 porção de batata frita.</p>
-            </div>
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
-              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 19,00</span>
-              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Combo Lucca -->
-        <div onclick="openProductDetail('Combo Lucca', 24.50, '1 Burger do Lucca + 1 Porção De Batata Frita Tradicional', 'assets/9c2b8a8b4c07438a_-1732476706087blob.png')" class="hidden lg:flex bg-[#120D0A] border border-white/10 hover:border-brand-orange/60 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-card-dark flex-col justify-between">
-          <div class="w-full aspect-[4/3] sm:h-36 relative overflow-hidden bg-black/40">
-            <img src="assets/9c2b8a8b4c07438a_-1732476706087blob.png" alt="Combo Lucca" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
-            <span class="absolute top-2 left-2 bg-amber-500 text-black text-[9px] font-anton px-2 py-0.5 rounded-full shadow">PROMO</span>
-          </div>
-          <div class="p-3.5 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs sm:text-sm font-anton text-white truncate group-hover:text-brand-orange transition-colors">COMBO LUCCA</h4>
-              <p class="text-[10px] text-stone-400 line-clamp-2 mt-0.5">1 Burger do Lucca + 1 Porção de Batata Frita.</p>
-            </div>
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
-              <span class="text-xs sm:text-sm font-anton text-brand-orange">R$ 24,50</span>
-              <span class="text-[10px] font-poppins text-brand-orange font-bold flex items-center gap-0.5">Pedir +</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-    </div>
+    <div id="hero-featured-banners-section" class="space-y-8 transition-all duration-300"></div>
 
     <!-- ========================================================================= -->
     <!-- 5. CATÁLOGO PRINCIPAL DE PRODUTOS (GRID RESPONSIVO) -->
@@ -1603,7 +1428,18 @@
   <!-- SCRIPT LOGIC & STORE DATA -->
   <!-- ========================================================================= -->
   <script>
-    const STORE_DATA = {"store":{"name":"São José Burguer","whatsapp":"5599991040222","minOrder":6,"logo":"assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg","favicon":"assets/e8392808a1c7659c_favicon.png"},"categories":[{"name":"Burgers","items":[{"id":"6a8f2939efa864ebad3960ba","title":"Brioche Prime","price":17,"description":"Pão brioche, Blend Bovino De 100 Gramas - Cream chesse, cebola caramelizada, queijo coalho, Maionese Caseira e molho barbecue","image":"assets/3218ef457e3140d1_-1781817483869blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bb","title":"SUPREMO DUPLO","price":22,"description":"Pão brioche, 2 blends de 100gramas cada, queijo coalho duplo, cebola caramelizada,  Maionese Caseira e barbecue","image":"assets/d01c24cc0387395c_-1782242426840blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bc","title":"Burguer Cheddar Duplo","price":22,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Camadas De Cheddar - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/a72f39878e035cf9_-1732476623587blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bd","title":"Burguer Da Laika","price":16.5,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Queijo Coalho - Salsicha E Ovo - Alface Americano  e  Tomate - Molho Da Casa E Maionese Caseira","image":"assets/5abe8f6bd98e273e_-1771044026200blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960be","title":"Burguer Do Lucca","price":16,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Salsicha - Queijo Coalho - Cebola Caramelizada - Alface Americano E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/233ca9f421828a95_-1765087473053blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960bf","title":"Burguer Caramelo","price":14.5,"description":"Pão brioche - Blend De 100 Gramas - Cebola Caramelizada - Queijo Coalho - Alface Americano E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/915cb7ef803d7c03_-1765088067003blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c0","title":"Burguer Picante","price":19,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Calabresa - Ovo - Molho Picante - Queijo Coalho - Maionese Caseira","image":"assets/49ca683ae2d34fbc_-1752185473373blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c1","title":"Burguer Bacon","price":19,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Queijo Coalho - Bacon - Alface Americana E Tomate - Molho Da Casa - Maionese Caseira","image":"assets/b3f61889cbea07fc_-1732477229543blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c2","title":"Duplo Calabresa","price":23.5,"description":"Pão De Brioche Selado - 2 Blend's De 100 Gramas - Queijo Coalho - Calabresa - Cebola Refogada - Molho Barbecue - Maionese Caseira","image":"assets/3ef7a49c5004399a_-1771044129110blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c3","title":"Burguer Carne Seca","price":18.5,"description":"Pão brioche - Blend 100 Gramas - Queijo Coalho - Carne Seca Desfiada - Cebola Refogada - Catupiry - Molho Barbecue - Maionese Caseira","image":"assets/burguer_carne_seca.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c4","title":"Burguer Cheddar Melt","price":16.5,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Cheddar - Cebola Caramelizada -  Molho Barbecue - Maionese Caseira","image":"assets/635f2e88437415a3_-1765087501175blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960c5","title":"Burguer Cheddar Bacon","price":20,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Cheddar - Bacon - Queijo Coalho - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/9b25e54b4c3d6ee0_-1767120154154blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c6","title":"Burguer Cheddar","price":14,"description":"Pão brioche - Blend De 100 Gramas - Cheddar - Queijo Coalho - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/79fc064c5a104258_-1771044439577blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c7","title":"Burguer Tradicional","price":12.5,"description":"Pão brioche ,blend 100gr, queijo coalho,molho barbecue e maionese caseira.","image":"assets/39f2d8b06ff4196d_-1771044509714blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c8","title":"Burguer Ovo","price":15.5,"description":"Pão brioche ,Blend De 100 Gramas - Queijo Coalho - Ovo - Alface Americana E Tomate - Molho Da Casa - Maionese Caseira","image":"assets/a36ced0bf8f9e2bb_-1765088093946blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960c9","title":"Burguer Blend Duplo","price":19,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Queijo Coalho - MOLHO ESPECIAL SÃO JOSÉ - Molho Barbecue","image":"assets/01d4d5c874352f98_-1771045033619blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ca","title":"Burguer Calabresa","price":18,"description":"Pão brioche - Blend 100 Gramas - Queijo Coalho - Calabresa  - Alface Americano E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/af610b7a642fe2b9_-1755517549671blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cb","title":"Burguer 195","price":21,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Queijo Coalho - Cebola Caramelizada - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/1414dcc3ffbe6af7_-1771045409109blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cc","title":"Burguer Tudo","price":22,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Ovo - Bacon - Calabresa  Salsicha - Alface Americana E Tomate - Molho Da Casa - Maionese Caseira","image":"assets/1fae780699df9a71_-1771045514950blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cd","title":"Burgão","price":27,"description":"Pão De Brioche Selado - Blend De 100 Gramas - Queijo Coalho - Ovo, Salsicha, Calabresa, Bacon - Frango Desfiado, Cheddar - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/a411eb4f8bc509f5_-1771045598469blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ce","title":"Burguer Duplo Bacon","price":24.5,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - 2 Queijo Coalho - 2 Camadas De Bacon - Maionese Caseira - Molho Barbecue","image":"assets/1927b4e760b3a7bf_-1771045553837blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960cf","title":"Burguer São José","price":33,"description":"Pão Brioche,3 blends de 100gramas cada, 2 camadas de cheddar,cebola caramelizada,1 camada de catupiry,bacon,maionese caseira e molho especial são josé","image":"assets/e982e903924b9f51_-1751323111578blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960d0","title":"Burguer Do Cheff","price":29,"description":"Pão De Brioche Selado - 2 Blend´s De 100 Gramas Cada - Ovo, Calabresa, Bacon, Cheddar - Queijo Coalho - Molho Picante - Alface Americana E Tomate - Molho Da Casa E Maionese Caseira","image":"assets/94eea273eb6be8b9_-1752185597804blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d1","title":"melt Duplo","price":23,"description":"PÃO DE BRIOCHE , 2 blends de 100 gramas cada,2 camadas de cheddar,cebola caramelizada, molho especial sao jose e molho barbecue","image":"assets/38c207f4af7e56ee_-1751323152050blob.png","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960d2","title":"Clássico","price":13,"description":"Pão brioche, blend de 100gramas,  queijo coalho, Alface americano, tomate, molho da casa e maionese caseira","image":"assets/b8072f3ea6a53e19_-1770009534471blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d3","title":"Burguer Frango","price":18,"description":"Pao brioche , blend bovino de 100gramas, queijo coalho, frango desfiado, catupiry, Alface americano,  tomate , molho da casa e maionese caseira","image":"assets/burguer_frango_catupiry.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d4","title":"Simples","price":13.5,"description":"Pão brioche,  blend de 100gramas , cebola refogada , queijo coalho , Alface Americana, tomate ,Maionese caseira e molho da casa","image":"assets/b8072f3ea6a53e19_-1770009534471blob.jpg","isPromo":false,"isBestseller":false}]},{"name":"Combos","items":[{"id":"6a8f2939efa864ebad3960d6","title":"Combo Kids","price":19,"description":"1 burguer tradicional + 1 Porção de fritas tradicional","image":"assets/15dfa4dcc6ebc4c5_-1780090896913blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960d7","title":"Combo Lucca","price":24.5,"description":"1 Burger Do Lucca - 1 Porção De Batata Frita Tradicional","image":"assets/9c2b8a8b4c07438a_-1732476706087blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d8","title":"Combo Laika","price":25.5,"description":"1 Burger Da Laika - 1 Porção De Batata Frita Tradicional","image":"assets/6d002fb23256ab05_-1780090878920blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960d9","title":"Combo Caramelo","price":38,"description":"2 Burger Caramelo - Fritas Com Cheddar e calabresa","image":"assets/824cd1524acdd50a_-1771042863284blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960da","title":"Triplo Caramelo","price":52,"description":"3 burguer caramelo + batata com cheddar e Calabresa","image":"assets/18b66bd23edd7f6d_-1785167022808blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960db","title":"COMBO CASAL","price":44,"description":"2 BURGUERES OVO + FRITAS COM Cheddar, calabresa e bacon","image":"assets/4bc7ec367b8dcea8_-1742006872169blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960dc","title":"Combo MELT","price":47,"description":"2 burgueres cheddar melt + Fritas Com cheddar e calabresa","image":"assets/724bdd606dbcd75d_-1771045858794blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960dd","title":"Combo Triplo","price":54,"description":"3 Burger Ovo - + Fritas Com Cheddar, bacon e calabresa","image":"assets/9dd9d6134e601915_-1771042111612blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960de","title":"Combo Família","price":65,"description":"4 Burger Ovo - + Fritas Com Cheddar, calabresa e bacon","image":"assets/cee13c8498cae824_-1771042738763blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960df","title":"Combo Calabresa + 1 Lata","price":29.5,"description":"1 Burger Calabresa - 1 Porção De Batata Frita Tradicional - 1 Lata De 350ml \n\nCOLOQUE O SABOR DA LATA NA OBSERVAÇÃO DO PEDIDO","image":"assets/99cf23ecf004b75e_-1780090922380blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e0","title":"Combo Bacon + 1 Lata","price":31.5,"description":"1 Burger Bacon - 1 Porção De Batata Frita Tradicional - 1 Lata De 350ml\n\nCOLOQUE O SABOR DA LATA NA OBSERVAÇÃO DO PEDIDO","image":"assets/bbcc77f0724db47b_-1780090943821blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e1","title":"Combo Barca","price":33,"description":"1 Burger Cheddar Melt - 1 Porção De Batata Frita Com Cheddar E bacon(montado Na Barca)","image":"assets/01b72e55d2e8a412_-1732476782445blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e2","title":"Combo CHEDDAR MELT + Fritas + 1 lata refri","price":34,"description":"1 burguer cheddar melt\n+ 1 Porção de Fritas tradicional \n+ 1 refri de 350ml lata\n\n\nOBS: COLOQUE O SABOR DA LATA NA OBSERVAÇÃO","image":"assets/98ce72e64126881f_-1780090969176blob.jpg","isPromo":false,"isBestseller":true},{"id":"6a8f2939efa864ebad3960e3","title":"Combo Calabresa PROMOÇÃO","price":36,"description":"2 burguer calabresa","image":"assets/99cf23ecf004b75e_-1780090922380blob.jpg","isPromo":true,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e4","title":"COMBO MELT PROMO","price":19.99,"description":"2 burguer Cheddar melt","image":"assets/724bdd606dbcd75d_-1771045858794blob.jpg","isPromo":true,"isBestseller":true},{"id":"6a8f2939efa864ebad3960e5","title":"Combo Duplo PROMO","price":19.99,"description":"1 burguer calabresa. + 1 burguer cheddar melt","image":"assets/4bc7ec367b8dcea8_-1742006872169blob.jpg","isPromo":true,"isBestseller":false}]},{"name":"Batata Frita","items":[{"id":"6a8f2939efa864ebad3960e8","title":"Batata Frita Tradicional - M","price":13.5,"description":"","image":"assets/2c0ca85cf38ed0ca_-1734884797247blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960e9","title":"Batata Frita Simples - G","price":16.5,"description":"","image":"assets/2c0ca85cf38ed0ca_-1734884797247blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ea","title":"Batata Frita Com Cheddar e Bacon - M","price":16.5,"description":"","image":"assets/b88df38abb6b247b_-1734884825155blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960eb","title":"Batata Frita com Cheddar e  Calabresa - M","price":16,"description":"","image":"assets/940e32e8d66a6723_-1734884936446blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ec","title":"Batata Frita com Cheddar e Calabresa - G","price":20.5,"description":"","image":"assets/940e32e8d66a6723_-1734884936446blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ed","title":"Batata Frita Com Queijo coalho (M)","price":15,"description":"Batata com queijo coalho ralado (Média)","image":"assets/3019e21821302b16_-1780091500287blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ee","title":"Batata Frita Mista - M","price":20,"description":"Com Cheddar ,calabresa e bacon","image":"assets/f2bb32092b5388c5_-1734884961544blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ef","title":"Batata Frita Com cheddar e Bacon - G","price":21,"description":"","image":"assets/355739a59cbafe94_-1734884840284blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f0","title":"Batata Frita Mista - G","price":23,"description":"Batata com Calabresa bacon e Cheddar","image":"assets/60cde6395454a13d_-1734885011825blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f1","title":"Batata Frita Com Queijo Coalho ( G)","price":18,"description":"Batata Frita Com Queijo ralado (Grande)","image":"assets/3019e21821302b16_-1780091500287blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f2","title":"Batata Frita Suprema GG","price":29,"description":"Com  catupiry cheddar e bacon e calabresa","image":"assets/7a46c49dc2198538_-1774548907089blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f3","title":"Batata Frita Especial - Montada na Caixa de Pizza P","price":39,"description":"Com bacon,calabresa e catupiry","image":"assets/aa6cbdfa5fe96e50_-1771045816305blob.jpg","isPromo":false,"isBestseller":false}]},{"name":"Bebidas","items":[{"id":"6a8f2939efa864ebad3960fa","title":"lata 350ml coca cola","price":6,"description":"","image":"assets/coca_cola_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960fb","title":"Suco de Maracujá 300ml","price":7,"description":"","image":"assets/suco_natural_gelado.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960fc","title":"Água sem Gás 500ml","price":3,"description":"","image":"assets/agua mineral.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960fe","title":"Lata 350ml COCA ZERO","price":6,"description":"","image":"assets/coca_zero_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960ff","title":"lata refrigerante 350ml LARANJA","price":6,"description":"","image":"assets/fanta_laranja_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396100","title":"COCA ZERO 1 LITRO","price":12,"description":"1 litro coca ZERO","image":"assets/coca zero 1 litro.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396101","title":"Lata 350ml kuat","price":6,"description":"","image":"assets/guarana_lata_gelada.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396102","title":"LATA JESUS 350ML","price":6,"description":"","image":"assets/guarana_jesus_lata.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396104","title":"Guaraná lata 350ml Zero","price":6,"description":"Lata350ml","image":"assets/guarana_lata_gelada.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396106","title":"1 litro GUARANÁ","price":11,"description":"1litro","image":"assets/guarana 1 litro.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396107","title":"Coca cola 1litro","price":12,"description":"Coca cola 1litro","image":"assets/coca zero 1 litro.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad396108","title":"1 litro GUARANÁ ZERO","price":11,"description":"1 litro guaraná zero","image":"assets/guarana 1 litro.png","isPromo":false,"isBestseller":false}]},{"name":"Molhos","items":[{"id":"6a8f2939efa864ebad3960f5","title":"Molho Maionese Caseira","price":2,"description":"","image":"assets/1b9f6212cbd9d7cf_-1772816597312blob.jpg","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f6","title":"Molho Barbecue","price":3,"description":"","image":"assets/b41b477d3c9f1dbd_-1733343492281blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f7","title":"Molho Picante","price":2.5,"description":"","image":"assets/6e1b5fa15565548f_-1733344420241blob.png","isPromo":false,"isBestseller":false},{"id":"6a8f2939efa864ebad3960f8","title":"Baconese","price":3,"description":"Maionese de bacon 🥓","image":"assets/molho_baconese.jpg","isPromo":false,"isBestseller":false}]}],"adicionais":[{"id":"6a8f2939efa864ebad3960a4","title":"Blend Bovino 100g","price":6.5,"image":"assets/01d4d5c874352f98_-1771045033619blob.jpg"},{"id":"6a8f2939efa864ebad3960a5","title":"Carne Seca","price":4.5,"image":"assets/burguer_carne_seca.jpg"},{"id":"6a8f2939efa864ebad3960a6","title":"Cebola Caramelizada","price":3,"image":"assets/915cb7ef803d7c03_-1765088067003blob.jpg"},{"id":"6a8f2939efa864ebad3960a7","title":"Calabresa","price":4.5,"image":"assets/af610b7a642fe2b9_-1755517549671blob.jpg"},{"id":"6a8f2939efa864ebad3960a8","title":"Bacon","price":4.5,"image":"assets/b3f61889cbea07fc_-1732477229543blob.png"},{"id":"6a8f2939efa864ebad3960a9","title":"Cebola Refogada","price":2.5,"image":"assets/3ef7a49c5004399a_-1771044129110blob.jpg"},{"id":"6a8f2939efa864ebad3960aa","title":"Salsicha","price":2.5,"image":"assets/233ca9f421828a95_-1765087473053blob.jpg"},{"id":"6a8f2939efa864ebad3960ab","title":"Frango Desfiado","price":4,"image":"assets/burguer_frango_catupiry.jpg"},{"id":"6a8f2939efa864ebad3960ac","title":"Salada","price":2,"image":"assets/b8072f3ea6a53e19_-1770009534471blob.jpg"},{"id":"6a8f2939efa864ebad3960ad","title":"Queijo Coalho","price":2,"image":"assets/3019e21821302b16_-1780091500287blob.jpg"},{"id":"6a8f2939efa864ebad3960ae","title":"Catupiry","price":3,"image":"assets/e982e903924b9f51_-1751323111578blob.jpg"},{"id":"6a8f2939efa864ebad3960af","title":"Ovo","price":2.5,"image":"assets/a36ced0bf8f9e2bb_-1765088093946blob.jpg"},{"id":"6a8f2939efa864ebad3960b0","title":"Cheddar","price":3.5,"image":"assets/635f2e88437415a3_-1765087501175blob.jpg"}]};
+    const STORE_DATA = {
+      store: {
+        name: "Meu Estabelecimento",
+        whatsapp: "",
+        minOrder: 0,
+        address: "Atendimento Online",
+        logo: "assets/e8392808a1c7659c_favicon.png",
+        favicon: "assets/e8392808a1c7659c_favicon.png"
+      },
+      categories: [],
+      adicionais: []
+    };
 
     const CATEGORY_SVGS = {
       'Burgers': '<svg class="w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16a1 1 0 0 0 1-1C21 6.5 17 4 12 4S3 6.5 3 10a1 1 0 0 0 1 1z"/><path d="M3 15h18"/><path d="M4 19h16a2 2 0 0 0 2-2H2a2 2 0 0 0 2 2z"/></svg>',
@@ -2026,8 +1862,8 @@
       currentSelectedProduct = {
         title,
         price: parseFloat(price),
-        desc: desc || 'Pão artesanal selado na manteiga, blend especial nobre grelhado no fogo e queijos selecionados.',
-        image: image || 'assets/906da31e40b234ed_s_C3_A3o_20jose_20burguer17365.jpg'
+        desc: desc || '',
+        image: image || 'assets/e8392808a1c7659c_favicon.png'
       };
 
       modalQuantity = 1;

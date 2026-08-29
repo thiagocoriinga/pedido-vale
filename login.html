@@ -160,17 +160,10 @@
         if (saved) tenants = JSON.parse(saved);
       } catch (err) {}
 
-      // Se for a loja padrão "sao-jose"
-      if (rawInput === 'sao-jose' || rawInput === '5599991040222' || rawInput === '99991040222') {
-        sessionStorage.setItem('CURRENT_LOGGED_STORE', 'sao-jose');
-        window.location.href = 'admin.html?store=sao-jose';
-        return;
-      }
-
-      // Procurar nos tenants
+      // Procurar nos tenants cadastrados
       const found = tenants.find(t => 
         t.slug === rawInput || 
-        t.owner_phone.replace(/\D/g, '') === identifier || 
+        (t.owner_phone && t.owner_phone.replace(/\D/g, '') === identifier) || 
         t.owner_phone === rawInput
       );
 
