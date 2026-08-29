@@ -54,6 +54,13 @@ let currentUploadedProductImage = "";
 // -------------------------------------------------------------------------
 function initStoreAdmin() {
   loadStoreData();
+  // Garante que as categorias iniciais fiquem salvas no LocalStorage para o cardápio público
+  if (!localStorage.getItem(getStoreKey('CATEGORIES'))) {
+    saveCategories();
+  }
+  if (!localStorage.getItem(getStoreKey('CONFIG'))) {
+    saveStoreConfig();
+  }
   renderStoreTopbar();
   renderTrialInfo();
   renderCategorySelects();
