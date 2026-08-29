@@ -924,8 +924,30 @@ function saveStoreGeneralSettingsForm(e) {
   STORE_DATA.hours = document.getElementById('store-hours-input').value.trim();
 
   saveStoreConfig();
+
+  // Sincronizar também no Super Admin Tenants se existir
+  try {
+    const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
+    const savedTenants = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
+    if (savedTenants) {
+      const tenants = JSON.parse(savedTenants);
+      const idx = tenants.findIndex(t => t.slug === STORE_DATA.slug);
+      if (idx !== -1) {
+        tenants[idx].name = STORE_DATA.name;
+        tenants[idx].owner_phone = STORE_DATA.whatsapp;
+        tenants[idx].city = STORE_DATA.address;
+        localStorage.setItem(SUPERADMIN_TENANTS_KEY, JSON.stringify(tenants));
+      }
+    }
+  } catch (err) {}
+
   renderStoreTopbar();
-  showToast("⚙️ Dados do restaurante atualizados!");
+  showToast("⚙️ Dados do restaurante atualizados com sucesso!");
+}
+
+function logoutStoreAdmin() {
+  sessionStorage.removeItem('CURRENT_LOGGED_STORE');
+  window.location.href = 'login.html';
 }
 
 // -------------------------------------------------------------------------
