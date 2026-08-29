@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080504">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Gestão do Restaurante • Cardápio & Produtos | PedidoVale</title>
+  <meta name="description" content="Painel de controle do comerciante: cadastro de produtos, categorias, preços, taxas de entrega e pedidos em tempo real.">
+
+  <!-- Google Fonts: Anton & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FBF5ED',
+              creamDark: '#F2E8DA',
+              orange: '#FF5E1E',
+              orangeHover: '#E54A0D',
+              orangeLight: '#FFF0EA',
+              amber: '#FF9E1B',
+              dark: '#080504',
+              darkSurface: '#120D0A',
+              darkCard: '#18120E',
+              darkBorder: '#29211C',
+              cardDark: '#1E1713',
+              textMuted: '#8C827A',
+              textDark: '#2B211B',
+              surface: '#FFFFFF',
+              border: '#EFE6DB',
+            }
+          },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          boxShadow: {
+            'card-dark': '0 10px 30px -10px rgba(0, 0, 0, 0.7)',
+            'electric': '0 0 35px rgba(249, 115, 22, 0.3), inset 0 0 20px rgba(249, 115, 22, 0.08)',
+            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      background-color: #080504;
+      color: #F3EBE1;
+    }
+
+    h1, h2, h3, h4, .font-anton, .title-anton {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+
+    .font-poppins, p, span, input, textarea, button, label {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .stars {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+      background-size: 200px 200px;
+    }
+
+    .grid-bg-dark {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @media screen and (max-width: 768px) {
+      input, select, textarea {
+        font-size: 16px !important;
+        line-height: 1.4 !important;
+        transform: translateZ(0);
+        touch-action: manipulation;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col relative overflow-x-hidden stars">
+
+  <!-- AURA BACKGROUND GLOW -->
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="grid-bg-dark absolute inset-0"></div>
+    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/10 blur-[150px] rounded-full"></div>
+    <div class="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[140px] rounded-full"></div>
+  </div>
+
+  <!-- TOP BAR DO RESTAURANTE -->
+  <header class="sticky top-0 z-40 bg-[#0E0A08]/95 backdrop-blur-2xl border-b border-brand-darkBorder px-4 sm:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-xl shadow-orange-glow border border-white/20 shrink-0">
+        🍔
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 id="topbar-store-name" class="font-anton text-base sm:text-lg text-white tracking-wider leading-none">SÃO JOSÉ BURGUER</h1>
+          <button id="store-status-btn" onclick="toggleStoreOpenStatus()" class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1.5 transition-all">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="store-status-text">LOJA ABERTA</span>
+          </button>
+        </div>
+        <span class="text-[10px] text-brand-textMuted font-mono" id="topbar-store-slug">pedidovale.com.br/sao-jose</span>
+      </div>
+    </div>
+
+    <!-- AÇÕES RÁPIDAS TOPBAR -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a href="index-sj.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-brand-orange/15 hover:bg-brand-orange text-brand-orange hover:text-white border border-brand-orange/30 font-anton text-xs tracking-wider flex items-center gap-1.5 transition-all">
+        <span>🌐</span>
+        <span class="hidden sm:inline">VER CARDÁPIO ONLINE</span>
+      </a>
+      <button onclick="copyStoreMenuLink()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-colors" title="Copiar Link do Cardápio">
+        <span>🔗</span>
+        <span class="hidden md:inline">Copiar Link</span>
+      </button>
+      <a href="index.html" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-colors" title="Voltar ao Super Admin Master">
+        <span>👑</span>
+        <span class="hidden lg:inline">Super Admin</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO DE ABAS DO RESTAURANTE -->
+  <div class="bg-[#120D0A]/90 border-b border-brand-darkBorder px-4 sm:px-8 py-2 sticky top-[65px] z-30 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <button onclick="switchStoreTab('products')" id="tab-btn-products" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider bg-brand-orange text-white shadow-orange-glow transition-all shrink-0 flex items-center gap-2">
+        <span>🍔</span>
+        <span>PRODUTOS & CARDÁPIO</span>
+      </button>
+      <button onclick="switchStoreTab('categories')" id="tab-btn-categories" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>📂</span>
+        <span>CATEGORIAS</span>
+      </button>
+      <button onclick="switchStoreTab('orders')" id="tab-btn-orders" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>🔔</span>
+        <span>PEDIDOS AO VIVO</span>
+        <span id="badge-orders-count" class="w-4 h-4 rounded-full bg-brand-orange text-white text-[9px] font-bold flex items-center justify-center">0</span>
+      </button>
+      <button onclick="switchStoreTab('delivery')" id="tab-btn-delivery" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>🛵</span>
+        <span>ENTREGA & BAIRROS</span>
+      </button>
+      <button onclick="switchStoreTab('payments')" id="tab-btn-payments" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>🔑</span>
+        <span>PAGAMENTO & PIX</span>
+      </button>
+      <button onclick="switchStoreTab('settings')" id="tab-btn-settings" class="store-nav-btn px-4 py-2.5 rounded-xl font-anton text-xs tracking-wider text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>⚙️</span>
+        <span>DADOS DA LOJA</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full relative z-10 space-y-6">
+
+    <!-- ========================================================================= -->
+    <!-- ABA 1: PRODUTOS & CARDÁPIO -->
+    <!-- ========================================================================= -->
+    <div id="store-view-products" class="store-tab-pane space-y-6">
+      
+      <!-- CABEÇALHO PRODUTOS & AÇÕES -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+        <div>
+          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
+            ITENS & PRODUTOS DO CARDÁPIO
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Cadastre, edite preços, pause itens esgotados e adicione complementos</p>
+        </div>
+
+        <button onclick="openCreateProductModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 self-start sm:self-auto">
+          <span class="text-sm">+</span>
+          <span>CADASTRAR NOVO PRODUTO</span>
+        </button>
+      </div>
+
+      <!-- FILTRO & BUSCA DE PRODUTOS -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input 
+          type="text" 
+          id="product-search-input"
+          oninput="renderProductsList()"
+          placeholder="Buscar produto por nome ou ingrediente..." 
+          class="bg-[#120D0A] border border-brand-darkBorder rounded-2xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange"
+        />
+        <select id="product-category-filter" onchange="renderProductsList()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-brand-orange">
+          <option value="all">Todas as Categorias</option>
+        </select>
+        <select id="product-status-filter" onchange="renderProductsList()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-brand-orange">
+          <option value="all">Todos os Status</option>
+          <option value="active">🟢 Disponíveis (No Cardápio)</option>
+          <option value="paused">⏸️ Pausados (Esgotados)</option>
+        </select>
+      </div>
+
+      <!-- LISTA / GRID DE PRODUTOS -->
+      <div id="products-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Injetado via JavaScript -->
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 2: CATEGORIAS DO CARDÁPIO -->
+    <!-- ========================================================================= -->
+    <div id="store-view-categories" class="store-tab-pane hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+        <div>
+          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
+            CATEGORIAS DO CARDÁPIO
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Organize as seções que os clientes verão no cardápio online</p>
+        </div>
+
+        <button onclick="openCreateCategoryModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 self-start sm:self-auto">
+          <span class="text-sm">+</span>
+          <span>NOVA CATEGORIA</span>
+        </button>
+      </div>
+
+      <div id="categories-list-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Injetado via JavaScript -->
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 3: PEDIDOS AO VIVO (GESTOR DE PEDIDOS) -->
+    <!-- ========================================================================= -->
+    <div id="store-view-orders" class="store-tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+        <div>
+          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
+            GESTOR DE PEDIDOS EM TEMPO REAL
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Acompanhe novos pedidos recebidos via WhatsApp / Cardápio</p>
+        </div>
+        <button onclick="clearCompletedOrders()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold border border-white/10 transition-colors">
+          Limpar Concluídos
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Coluna: Novos Pedidos -->
+        <div class="bg-[#120D0A]/90 border border-brand-orange/30 rounded-3xl p-4 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-brand-darkBorder">
+            <h3 class="font-anton text-sm text-brand-orange tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
+              NOVOS PEDIDOS
+            </h3>
+            <span id="count-new-orders" class="font-anton text-xs text-stone-400">0</span>
+          </div>
+          <div id="orders-column-new" class="space-y-3 min-h-[250px]">
+            <!-- Injetado via JS -->
+          </div>
+        </div>
+
+        <!-- Coluna: Em Preparo / Cozinha -->
+        <div class="bg-[#120D0A]/90 border border-amber-500/30 rounded-3xl p-4 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-brand-darkBorder">
+            <h3 class="font-anton text-sm text-amber-400 tracking-wider flex items-center gap-2">
+              <span>🍳</span>
+              EM PREPARO
+            </h3>
+            <span id="count-prep-orders" class="font-anton text-xs text-stone-400">0</span>
+          </div>
+          <div id="orders-column-prep" class="space-y-3 min-h-[250px]">
+            <!-- Injetado via JS -->
+          </div>
+        </div>
+
+        <!-- Coluna: Saiu p/ Entrega / Finalizados -->
+        <div class="bg-[#120D0A]/90 border border-emerald-500/30 rounded-3xl p-4 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-brand-darkBorder">
+            <h3 class="font-anton text-sm text-emerald-400 tracking-wider flex items-center gap-2">
+              <span>🛵</span>
+              SAIU P/ ENTREGA / PRONTO
+            </h3>
+            <span id="count-delivery-orders" class="font-anton text-xs text-stone-400">0</span>
+          </div>
+          <div id="orders-column-delivery" class="space-y-3 min-h-[250px]">
+            <!-- Injetado via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 4: ENTREGA & BAIRROS -->
+    <!-- ========================================================================= -->
+    <div id="store-view-delivery" class="store-tab-pane hidden space-y-6">
+      <div class="max-w-2xl bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-5">
+        <div>
+          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
+            CONFIGURAÇÕES DE ENTREGA & RETIRADA
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Defina tempo estimado, pedido mínimo e taxas de entrega</p>
+        </div>
+
+        <form onsubmit="saveDeliverySettingsForm(event)" class="space-y-4 text-xs font-poppins">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Taxa de Entrega Padrão (R$):</label>
+              <input type="number" step="0.5" id="setting-delivery-fee" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-anton text-sm text-amber-400 focus:outline-none focus:border-brand-orange" required />
+            </div>
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Tempo Estimado de Entrega:</label>
+              <input type="text" id="setting-delivery-time" placeholder="Ex: 35 - 50 min" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Valor Mínimo do Pedido (R$):</label>
+              <input type="number" step="1" id="setting-min-order" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+            </div>
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Permitir Retirada no Balcão?</label>
+              <select id="setting-allow-pickup" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange">
+                <option value="true">Sim, permitir Retirada Grátis</option>
+                <option value="false">Não, somente Delivery</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
+            SALVAR CONFIGURAÇÕES DE ENTREGA
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 5: PAGAMENTO & CHAVE PIX DO RESTAURANTE -->
+    <!-- ========================================================================= -->
+    <div id="store-view-payments" class="store-tab-pane hidden space-y-6">
+      <div class="max-w-2xl bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-5">
+        <div>
+          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
+            CHAVE PIX & FORMAS DE PAGAMENTO DO RESTAURANTE
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Seus clientes pagarão diretamente para sua conta via Pix ou no ato da entrega</p>
+        </div>
+
+        <form onsubmit="savePaymentSettingsForm(event)" class="space-y-4 text-xs font-poppins">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Sua Chave PIX (Para receber dos clientes):</label>
+            <input type="text" id="store-pix-key" placeholder="Telefone, CNPJ, CPF ou E-mail" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" required />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Tipo de Chave:</label>
+              <select id="store-pix-type" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange">
+                <option value="phone">Telefone</option>
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+                <option value="email">E-mail</option>
+                <option value="random">Chave Aleatória</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Nome do Titular da Chave PIX:</label>
+              <input type="text" id="store-pix-name" placeholder="Ex: Thiago Silva" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-brand-darkBorder">
+            <span class="block text-stone-300 font-semibold mb-1">Formas de Pagamento Aceitas:</span>
+            <label class="flex items-center gap-2.5 text-stone-300 cursor-pointer">
+              <input type="checkbox" id="pay-accept-pix" checked class="rounded accent-brand-orange" />
+              <span>PIX Instantâneo com QR Code</span>
+            </label>
+            <label class="flex items-center gap-2.5 text-stone-300 cursor-pointer">
+              <input type="checkbox" id="pay-accept-card" checked class="rounded accent-brand-orange" />
+              <span>Cartão de Crédito / Débito na Maquininha</span>
+            </label>
+            <label class="flex items-center gap-2.5 text-stone-300 cursor-pointer">
+              <input type="checkbox" id="pay-accept-cash" checked class="rounded accent-brand-orange" />
+              <span>Dinheiro (com opção de solicitar troco)</span>
+            </label>
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
+            SALVAR DADOS DE PAGAMENTO
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA 6: DADOS DA LOJA & HORÁRIOS -->
+    <!-- ========================================================================= -->
+    <div id="store-view-settings" class="store-tab-pane hidden space-y-6">
+      <div class="max-w-2xl bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-5">
+        <div>
+          <h2 class="text-2xl font-anton text-white tracking-wider flex items-center gap-2">
+            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
+            DADOS DO RESTAURANTE & WHATSAPP
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Informações que aparecem no cabeçalho do cardápio e onde chegam os pedidos</p>
+        </div>
+
+        <form onsubmit="saveStoreGeneralSettingsForm(event)" class="space-y-4 text-xs font-poppins">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete:</label>
+            <input type="text" id="store-name-input" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp para Receber os Pedidos:</label>
+              <input type="text" id="store-whatsapp-input" placeholder="Ex: 5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-mono focus:outline-none focus:border-brand-orange" required />
+            </div>
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Endereço / Cidade:</label>
+              <input type="text" id="store-address-input" placeholder="Ex: Av. Principal, 100 - Centro" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Horário de Atendimento:</label>
+            <input type="text" id="store-hours-input" placeholder="Ex: Terça a Domingo das 18h às 23h30" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
+            SALVAR DADOS DO RESTAURANTE
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: CADASTRAR / EDITAR PRODUTO -->
+  <!-- ========================================================================= -->
+  <div id="product-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-lg w-full max-h-[92vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
+      <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
+        <h3 id="modal-product-title" class="font-anton text-lg text-white tracking-wide">CADASTRAR PRODUTO</h3>
+        <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+
+      <form id="form-product" onsubmit="saveProductForm(event)" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs no-scrollbar">
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Produto *</label>
+          <input type="text" id="prod-name" placeholder="Ex: Smash Salad Duplo" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Categoria *</label>
+            <select id="prod-category" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required>
+              <!-- Preenchido dinamicamente -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Preço (R$) *</label>
+            <input type="number" step="0.5" id="prod-price" placeholder="32.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-anton text-sm text-amber-400 focus:outline-none focus:border-brand-orange" required />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Descrição / Ingredientes</label>
+          <textarea id="prod-desc" rows="2.5" placeholder="Ex: Pão brioche tostado na manteiga, 2x smash burger 90g, queijo cheddar derretido, alface, tomate e maionese especial..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3.5 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Disponibilidade</label>
+            <select id="prod-status" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange">
+              <option value="active">🟢 Disponível no Cardápio</option>
+              <option value="paused">⏸️ Pausado (Esgotado)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Destaque</label>
+            <select id="prod-badge" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange">
+              <option value="">Nenhum</option>
+              <option value="Mais Pedido">🔥 Mais Pedido</option>
+              <option value="Novidade">✨ Novidade</option>
+              <option value="Promoção">🏷️ Promoção</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ADICIONAIS / COMPLEMENTOS -->
+        <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-anton text-xs text-brand-orange tracking-wide">ADICIONAIS / COMPLEMENTOS</span>
+            <span class="text-[10px] text-stone-400">Opcionais para o cliente turbinar</span>
+          </div>
+          <div id="product-extras-container" class="space-y-2">
+            <!-- Injetado dinamicamente -->
+          </div>
+          <button type="button" onclick="addProductExtraRow()" class="text-xs text-emerald-400 hover:underline font-semibold flex items-center gap-1 pt-1">
+            <span>+ Adicionar Opção Extra</span>
+          </button>
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs mt-2">
+          SALVAR PRODUTO NO CARDÁPIO
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: CADASTRAR / EDITAR CATEGORIA -->
+  <!-- ========================================================================= -->
+  <div id="category-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col font-poppins">
+      <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
+        <h3 id="modal-category-title" class="font-anton text-lg text-white tracking-wide">NOVA CATEGORIA</h3>
+        <button onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+
+      <form id="form-category" onsubmit="saveCategoryForm(event)" class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Nome da Categoria *</label>
+          <input type="text" id="cat-name" placeholder="Ex: Burgers Artesanais, Bebidas..." class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+        </div>
+
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Ícone Emoji</label>
+          <input type="text" id="cat-icon" placeholder="Ex: 🍔, 🥤, 🍟, 🍰" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
+          SALVAR CATEGORIA
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="admin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] bg-[#120D0A] text-white text-xs font-poppins font-semibold px-5 py-3.5 rounded-2xl shadow-2xl border border-brand-orange/30 flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+    <span id="admin-toast-text">Ação executada!</span>
+  </div>
+
+  <!-- Script do Painel do Restaurante -->
+  <script src="admin.js"></script>
+
+</body>
+</html>

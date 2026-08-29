@@ -221,9 +221,12 @@ function renderDashboardGrid() {
         </div>
 
         <div class="flex items-center gap-2 pt-1">
-          <a href="index-sj.html" target="_blank" class="flex-1 bg-brand-orange/15 hover:bg-brand-orange text-brand-orange hover:text-white border border-brand-orange/30 py-2.5 rounded-xl font-anton text-xs tracking-wider flex items-center justify-center gap-1.5 transition-all">
-            <span>🍔</span>
-            <span>VER APP</span>
+          <a href="admin.html?store=${t.slug}" target="_blank" class="flex-1 bg-brand-orange hover:bg-brand-orangeHover text-white py-2.5 rounded-xl font-anton text-xs tracking-wider flex items-center justify-center gap-1.5 shadow-orange-glow transition-all">
+            <span>⚙️</span>
+            <span>GERENCIAR PRODUTOS</span>
+          </a>
+          <a href="index-sj.html?store=${t.slug}" target="_blank" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-brand-orange border border-brand-orange/30 text-xs transition-all" title="Ver Cardápio do Cliente">
+            🍔
           </a>
           <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs transition-all" title="Cobrar no WhatsApp">
             💬
@@ -309,8 +312,11 @@ function renderTenantsTable() {
           ${statusBadge}
         </td>
         <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
-          <a href="index-sj.html" target="_blank" class="p-2 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-xs inline-block" title="Ver Cardápio do Cliente">
-            🍔
+          <a href="admin.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-white/10 hover:bg-brand-orange hover:text-white text-stone-200 text-xs inline-block" title="Painel do Restaurante (Cadastrar Produtos)">
+            ⚙️ Produtos
+          </a>
+          <a href="index-sj.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-xs inline-block" title="Ver Cardápio do Cliente">
+            🍔 Cardápio
           </a>
           <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs" title="Cobrar / Enviar Pix no WhatsApp">
             💬
