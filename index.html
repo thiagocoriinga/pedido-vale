@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ideatr — AI-Powered Full-Stack App Generation</title>
-  <meta name="description" content="Enter your idea in plain English. ideatr generates production-ready Frontend, Backend, and Database instantly. Build and grow apps at the speed of thought.">
+  <title>PedidoVale — Cardápio Digital & Sistema Completo para Restaurantes</title>
+  <meta name="description" content="A plataforma SaaS mais completa e moderna para restaurantes, hamburguerias e delivery. Cardápio digital com pedidos WhatsApp taxa 0%, PDV balcão, monitor KDS e cupons.">
 
   <!-- Google Fonts: Inter, DM Sans, Instrument Serif, Bricolage Grotesque -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,10 +30,11 @@
           },
           colors: {
             brand: {
-              primary: '#004BB0',
-              purple: '#6B21A8',
-              accent: '#8B5CF6',
+              orange: '#FF5E1E',
+              orangeDark: '#E54A0D',
+              amber: '#FF9E1B',
               bgOff: '#F9F8F6',
+              dark: '#080504',
             }
           }
         }
@@ -99,17 +100,9 @@
       100% { background-position: 0% 50%; }
     }
     .btn-gradient-shift {
-      background: linear-gradient(115deg, #004BB0, #8b5cf6, #4c1d95, #004BB0);
+      background: linear-gradient(115deg, #FF5E1E, #FF9E1B, #E54A0D, #FF5E1E);
       background-size: 300% 300%;
       animation: border-shift 6s ease infinite;
-    }
-
-    /* Subtle grid line overlay */
-    .grid-lines-subtle {
-      background-image: 
-        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
     }
 
     /* Dashboard scheduling grid */
@@ -119,7 +112,7 @@
     }
   </style>
 </head>
-<body class="antialiased selection:bg-purple-100 selection:text-purple-900">
+<body class="antialiased selection:bg-orange-100 selection:text-orange-900">
 
   <!-- ========================================================================= -->
   <!-- SECTION 1 - NAVIGATION -->
@@ -130,32 +123,31 @@
       <!-- Brand Logo -->
       <div class="flex items-center gap-8">
         <a href="/" class="flex items-center gap-2.5 group">
-          <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/60 flex items-center justify-center text-purple-400 group-hover:border-purple-500 transition-all shadow-inner">
+          <div class="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-[#FF5E1E] group-hover:border-orange-500 transition-all shadow-inner">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
           </div>
           <span class="font-bricolage font-bold text-lg tracking-tight text-white flex items-center">
-            ideatr
-            <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold font-sans tracking-wide bg-purple-950/80 text-purple-300 border border-purple-800/60 rounded">AI</span>
+            Pedido<span class="text-[#FF5E1E]">Vale</span>
+            <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold font-sans tracking-wide bg-orange-950/80 text-orange-300 border border-orange-800/60 rounded">HUB 360</span>
           </span>
         </a>
 
         <!-- Desktop Links -->
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400 font-sans">
-          <a href="#generator" class="hover:text-slate-50 transition-colors duration-200">Generator</a>
-          <a href="#examples" class="hover:text-slate-50 transition-colors duration-200">Examples</a>
-          <a href="#docs" class="hover:text-slate-50 transition-colors duration-200">Docs</a>
-          <a href="#pricing" class="hover:text-slate-50 transition-colors duration-200">Pricing</a>
-          <a href="#enterprise" class="hover:text-slate-50 transition-colors duration-200">Enterprise</a>
+          <a href="#funcionalidades" class="hover:text-slate-50 transition-colors duration-200">Módulos</a>
+          <a href="#ecossistema" class="hover:text-slate-50 transition-colors duration-200">Como Funciona</a>
+          <a href="#kds-pdv" class="hover:text-slate-50 transition-colors duration-200">Operação</a>
+          <a href="#precos" class="hover:text-slate-50 transition-colors duration-200">Planos</a>
         </nav>
       </div>
 
       <!-- Actions -->
       <div class="flex items-center gap-3 font-sans">
         <a href="login.html" class="px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white border border-stone-700 hover:border-stone-500 rounded-md transition-all duration-200">
-          Login
+          Entrar no Painel
         </a>
-        <a href="cadastro.html" class="px-4 py-2 text-xs font-semibold text-white bg-[#004BB0] hover:bg-[#003884] rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5">
-          <span>Start Building</span>
+        <a href="cadastro.html" class="px-4 py-2 text-xs font-semibold text-white bg-[#FF5E1E] hover:bg-[#E54A0D] rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5">
+          <span>Criar Cardápio Grátis</span>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M7 7h10v10"></path>
             <path d="M7 17 17 7"></path>
@@ -181,46 +173,47 @@
       </iframe>
     </div>
 
-    <!-- Gradient Radial Overlay to blend Spline with content -->
+    <!-- Gradient Radial Overlay -->
     <div class="absolute inset-0 -z-10 bg-radial from-transparent via-black/40 to-black pointer-events-none"></div>
 
     <!-- Hero Content Container (z-10) -->
     <div class="relative z-10 max-w-6xl mx-auto text-center w-full">
       
       <!-- Top Badge -->
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-950/70 border border-purple-800/50 text-purple-300 text-xs font-semibold font-sans tracking-wide mb-6 backdrop-blur-md shadow-lg shadow-purple-950/30">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
-        <span>AI-POWERED FULL-STACK GENERATION</span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-950/70 border border-orange-800/50 text-orange-300 text-xs font-semibold font-sans tracking-wide mb-6 backdrop-blur-md shadow-lg shadow-orange-950/30">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-orange-400"></i>
+        <span>ECOSSISTEMA 360 PARA RESTAURANTES & DELIVERY</span>
       </div>
 
       <!-- Main Heading (Instrument Serif) -->
       <h1 class="font-serif-title text-5xl sm:text-7xl lg:text-8xl font-normal text-white tracking-tight leading-[1.05] max-w-4xl mx-auto mb-6">
-        Describe it in English.<br class="hidden sm:inline">
-        <span class="italic text-purple-200/90 font-serif-title">We code the rest.</span>
+        Seu cardápio online.<br class="hidden sm:inline">
+        <span class="italic text-orange-200/90 font-serif-title">Sem taxas por pedido.</span>
       </h1>
 
       <!-- Subtitle -->
       <p class="text-base sm:text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-normal leading-relaxed font-sans">
-        Enter your idea in plain English. ideatr generates production-ready Frontend, Backend, and Database instantly. Build and grow apps at the speed of thought.
+        Cardápio digital premium, pedidos automáticos no WhatsApp, PDV balcão ultrarrápido, monitor de cozinha KDS e gestão de cupons. Tudo integrado para você vender muito mais.
       </p>
 
-      <!-- Search / Prompt Input Box -->
+      <!-- Store Creation Prompt Box -->
       <div class="max-w-2xl mx-auto mb-16 px-2">
-        <form onsubmit="event.preventDefault(); window.location.href='cadastro.html';" class="relative flex flex-col sm:flex-row items-stretch sm:items-center bg-[#121118]/90 backdrop-blur-xl border border-white/15 p-2 rounded-2xl sm:rounded-xl shadow-2xl ring-1 ring-purple-500/20 focus-within:ring-2 focus-within:ring-purple-500/60 transition-all duration-300">
+        <form onsubmit="event.preventDefault(); const slug = document.getElementById('hero-store-input').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-'); window.location.href='cadastro.html?store=' + encodeURIComponent(slug);" class="relative flex flex-col sm:flex-row items-stretch sm:items-center bg-[#121118]/90 backdrop-blur-xl border border-white/15 p-2 rounded-2xl sm:rounded-xl shadow-2xl ring-1 ring-orange-500/20 focus-within:ring-2 focus-within:ring-orange-500/60 transition-all duration-300">
           <div class="flex items-center flex-1 px-3 py-2 sm:py-0">
-            <i data-lucide="terminal" class="w-5 h-5 text-purple-400 mr-3 shrink-0"></i>
+            <span class="text-stone-400 text-sm font-mono mr-1">pedidovale.com.br/</span>
             <input 
               type="text" 
-              placeholder="Describe your dream app... e.g. A marketplace for local artisanal bakeries with delivery tracking" 
-              class="w-full bg-transparent text-white placeholder-slate-400 text-sm font-sans focus:outline-none"
+              id="hero-store-input"
+              placeholder="sualoja" 
+              class="w-full bg-transparent text-white placeholder-slate-500 text-sm font-sans focus:outline-none font-semibold"
               required
             >
           </div>
           <button 
             type="submit" 
-            class="btn-gradient-shift text-white font-sans font-semibold text-sm px-6 py-3.5 rounded-lg shadow-lg hover:shadow-purple-500/30 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 mt-2 sm:mt-0 shrink-0"
+            class="btn-gradient-shift text-white font-sans font-semibold text-sm px-6 py-3.5 rounded-lg shadow-lg hover:shadow-orange-500/30 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 mt-2 sm:mt-0 shrink-0"
           >
-            <span>Generate App</span>
+            <span>Criar Minha Loja</span>
             <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M7 7h10v10"></path>
               <path d="M7 17 17 7"></path>
@@ -228,8 +221,9 @@
           </button>
         </form>
         <div class="flex items-center justify-center gap-6 mt-3 text-xs text-slate-400 font-sans">
-          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> No Credit Card Required</span>
-          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Next.js + Tailwind + Supabase</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Teste grátis por 7 dias</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Sem taxa sobre suas vendas</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Direto no seu PIX</span>
         </div>
       </div>
 
@@ -243,16 +237,16 @@
               <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
             </div>
             <div class="px-3 py-1 bg-black/50 border border-white/5 rounded-md text-[11px] font-mono text-slate-400 flex items-center gap-2">
-              <i data-lucide="globe" class="w-3 h-3 text-slate-500"></i>
-              <span>ideatr.app/preview/project-management</span>
+              <i data-lucide="globe" class="w-3 h-3 text-orange-400"></i>
+              <span>pedidovale.com.br/demo-restaurante</span>
             </div>
             <div class="flex items-center gap-2 text-slate-400">
-              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-orange-400"></i>
             </div>
           </div>
           <img 
             src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4aa0ba0f-cf6d-4050-bf33-824539eb56e0_1600w.png" 
-            alt="ideatr Hero UI Generation Showcase" 
+            alt="PedidoVale Hub 360 - Cardápio e Gestão" 
             class="w-full h-auto object-cover block"
             loading="eager"
           >
@@ -263,87 +257,45 @@
   </section>
 
   <!-- ========================================================================= -->
-  <!-- SECTION 3 - LOGO GRID -->
+  <!-- SECTION 3 - RESTAURANT TYPES GRID -->
   <!-- ========================================================================= -->
   <section class="bg-[#F9F8F6] border-y border-stone-200 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
       <p class="text-center text-xs uppercase tracking-widest font-semibold text-stone-500 mb-8 font-sans">
-        TRUSTED BY FOUNDERS & DEVELOPERS WORLDWIDE AT MODERN COMPANIES
+        PERFEITO PARA TODOS OS FORMATOS DE GASTRONOMIA E ALIMENTAÇÃO
       </p>
 
-      <!-- 2/4/6 Column Grid with Hover Transitions -->
+      <!-- 2/4/6 Column Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-stone-300 rounded-xl overflow-hidden border border-stone-300 shadow-sm">
         
-        <!-- Brand 1 -->
         <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="hexagon" class="w-7 h-7 text-stone-400 group-hover:text-purple-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">ACME CORP</span>
+          <i data-lucide="box" class="w-7 h-7 text-stone-400 group-hover:text-orange-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">HAMBURGUERIAS</span>
         </div>
 
-        <!-- Brand 2 -->
         <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="cpu" class="w-7 h-7 text-stone-400 group-hover:text-blue-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">HYPER AI</span>
+          <i data-lucide="triangle" class="w-7 h-7 text-stone-400 group-hover:text-amber-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">PIZZARIAS</span>
         </div>
 
-        <!-- Brand 3 -->
         <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="infinity" class="w-7 h-7 text-stone-400 group-hover:text-indigo-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">NEXUS LABS</span>
+          <i data-lucide="droplet" class="w-7 h-7 text-stone-400 group-hover:text-purple-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">AÇAÍ & SORVETES</span>
         </div>
 
-        <!-- Brand 4 -->
         <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
           <i data-lucide="wind" class="w-7 h-7 text-stone-400 group-hover:text-teal-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">ZEPHYR</span>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">SUSHI & ORIENTAL</span>
         </div>
 
-        <!-- Brand 5 -->
         <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="mountain" class="w-7 h-7 text-stone-400 group-hover:text-emerald-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">PEAK SCALE</span>
+          <i data-lucide="layers" class="w-7 h-7 text-stone-400 group-hover:text-emerald-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">MARMITARIAS</span>
         </div>
 
-        <!-- Brand 6 -->
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="box" class="w-7 h-7 text-stone-400 group-hover:text-amber-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">CUBE ARCH</span>
-        </div>
-
-        <!-- Brand 7 -->
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="anchor" class="w-7 h-7 text-stone-400 group-hover:text-cyan-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">HARBOR SAAS</span>
-        </div>
-
-        <!-- Brand 8 -->
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="triangle" class="w-7 h-7 text-stone-400 group-hover:text-fuchsia-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">DELTA CLOUD</span>
-        </div>
-
-        <!-- Brand 9 -->
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="droplet" class="w-7 h-7 text-stone-400 group-hover:text-sky-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">FLOWBASE</span>
-        </div>
-
-        <!-- Brand 10 -->
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="database" class="w-7 h-7 text-stone-400 group-hover:text-emerald-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">SYNCPULSE</span>
-        </div>
-
-        <!-- Brand 11 -->
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="layers" class="w-7 h-7 text-stone-400 group-hover:text-violet-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">STACKVENT</span>
-        </div>
-
-        <!-- Brand 12 -->
         <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
           <i data-lucide="sparkles" class="w-7 h-7 text-stone-400 group-hover:text-rose-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">LUMEN AI</span>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">DOCERIAS & CAFÉS</span>
         </div>
 
       </div>
@@ -351,91 +303,91 @@
   </section>
 
   <!-- ========================================================================= -->
-  <!-- SECTION 4 - WORKFLOW FEATURES (2-COLUMN GRID) -->
+  <!-- SECTION 4 - WORKFLOW & FEATURES (2-COLUMN GRID) -->
   <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]" id="features">
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]" id="funcionalidades">
     <div class="max-w-7xl mx-auto">
       
       <!-- Section Header -->
       <div class="max-w-3xl mb-16">
-        <span class="text-xs font-bold uppercase tracking-widest text-purple-700 bg-purple-100 px-3 py-1 rounded-full">INTELLIGENT WORKFLOW</span>
+        <span class="text-xs font-bold uppercase tracking-widest text-orange-700 bg-orange-100 px-3 py-1 rounded-full">ECOSSISTEMA HUB 360</span>
         <h2 class="font-serif-title text-4xl sm:text-6xl text-stone-900 mt-4 leading-tight">
-          From conversational prompt to production release in seconds.
+          Do pedido do cliente até a entrega na porta. Tudo sob controle.
         </h2>
         <p class="text-stone-600 text-lg mt-4 font-normal">
-          No boilerplate configuration, no dependency conflicts. ideatr translates natural human intent directly into validated, typed source code.
+          Uma plataforma unificada que conecta seu cardápio público, balcão de vendas, cozinha e faturamento sem intermediários nem comissões abusivas.
         </p>
       </div>
 
       <!-- 2-Column Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
-        <!-- Left: Plain English to Code Progress Bar Mockup -->
+        <!-- Left: Live Order Progress Mockup -->
         <div class="lg:col-span-7 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-xl shadow-stone-200/50 flex flex-col justify-between relative overflow-hidden group">
-          <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-100/50 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -right-20 -top-20 w-64 h-64 bg-orange-100/50 rounded-full blur-3xl pointer-events-none"></div>
 
           <div>
             <div class="flex items-center justify-between pb-6 border-b border-stone-100">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
-                  <i data-lucide="terminal" class="w-5 h-5"></i>
+                <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
+                  <i data-lucide="sparkles" class="w-5 h-5"></i>
                 </div>
                 <div>
-                  <h3 class="font-bricolage font-bold text-lg text-stone-900">Plain English to Code</h3>
-                  <p class="text-xs text-stone-500 font-sans">Synthesizing architecture & components</p>
+                  <h3 class="font-bricolage font-bold text-lg text-stone-900">Fluxo de Pedido em Tempo Real</h3>
+                  <p class="text-xs text-stone-500 font-sans">Sincronização imediata Cardápio → KDS → WhatsApp</p>
                 </div>
               </div>
               <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Compiling
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Loja Aberta
               </span>
             </div>
 
-            <!-- Prompt Box in card -->
+            <!-- Order Preview Box -->
             <div class="mt-6 p-4 rounded-xl bg-stone-50 border border-stone-200/60 font-mono text-xs text-stone-700 leading-relaxed">
-              <span class="text-purple-600 font-bold">$ ideatr generate:</span> "Build an AI analytics dashboard with real-time WebSocket feeds, authentication with Google & Github, and export to CSV/PDF."
+              <span class="text-orange-600 font-bold">#PED-1049 (WhatsApp):</span> "1x Combo Artesanal Duplo + Batata Rústica + Coca-Cola 350ml • Entrega no Bairro Centro • Pagamento PIX R$ 42,90"
             </div>
 
             <!-- Progress Bars Mockup -->
             <div class="mt-8 space-y-5">
-              <!-- Frontend Bar -->
+              <!-- Cardápio / WhatsApp Bar -->
               <div>
                 <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
-                  <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i> Next.js 15 App Router Frontend</span>
-                  <span class="text-emerald-600">100% Ready</span>
+                  <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-3.5 h-3.5 text-orange-600"></i> Cardápio Digital Interativo</span>
+                  <span class="text-emerald-600">100% Taxa Zero</span>
                 </div>
                 <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
+                  <div class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
                 </div>
               </div>
 
-              <!-- Backend Bar -->
+              <!-- PDV Balcão -->
               <div>
                 <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
-                  <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-600"></i> Serverless Edge Functions & APIs</span>
-                  <span class="text-purple-600">59% Synthesizing...</span>
+                  <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-blue-600"></i> PDV Balcão Express (Mesas / Balcão)</span>
+                  <span class="text-blue-600">Lançamento em 2 toques</span>
                 </div>
                 <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-purple-600 to-fuchsia-600 h-full rounded-full transition-all duration-1000" style="width: 59%"></div>
+                  <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-1000" style="width: 85%"></div>
                 </div>
               </div>
 
-              <!-- Database Bar -->
+              <!-- Cozinha KDS -->
               <div>
                 <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
-                  <span class="flex items-center gap-1.5"><i data-lucide="database" class="w-3.5 h-3.5 text-emerald-600"></i> PostgreSQL Schema & RLS Migrations</span>
-                  <span class="text-emerald-600">75% Applying</span>
+                  <span class="flex items-center gap-1.5"><i data-lucide="database" class="w-3.5 h-3.5 text-emerald-600"></i> Monitor KDS de Cozinha</span>
+                  <span class="text-emerald-600">Comandas Sem Papel</span>
                 </div>
                 <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-1000" style="width: 75%"></div>
+                  <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-1000" style="width: 95%"></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Bottom Quote -->
+          <!-- Bottom Summary -->
           <div class="mt-8 pt-6 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-            <span>✨ Zero configuration required</span>
-            <span class="font-mono text-purple-700 font-semibold">1,842 files emitted</span>
+            <span>✨ Sem mensalidade por volume ou pedidos</span>
+            <span class="font-mono text-orange-600 font-semibold">100% no seu bolso</span>
           </div>
         </div>
 
@@ -444,12 +396,12 @@
           
           <!-- Card 1 -->
           <div class="flex-1 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-md hover:bg-slate-50 transition-all duration-300 group cursor-pointer">
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mb-5 group-hover:scale-110 transition-transform duration-300">
+            <div class="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 mb-5 group-hover:scale-110 transition-transform duration-300">
               <i data-lucide="cpu" class="w-6 h-6"></i>
             </div>
-            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">Instant Full Stack</h3>
+            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">PDV Balcão & Mesas</h3>
             <p class="text-stone-600 text-sm leading-relaxed">
-              Auto-generated REST & GraphQL endpoints, Tailwind CSS component libraries, and robust state management wired together out-of-the-box.
+              Atenda clientes no balcão ou lance pedidos presenciais em segundos. Integração nativa com a cozinha para zero confusão.
             </p>
           </div>
 
@@ -458,9 +410,9 @@
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-5 group-hover:scale-110 transition-transform duration-300">
               <i data-lucide="database" class="w-6 h-6"></i>
             </div>
-            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">Production Ready DB</h3>
+            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">Monitor de Cozinha (KDS)</h3>
             <p class="text-stone-600 text-sm leading-relaxed">
-              Strict typed ORM models with automated relational schema inference, index optimization, and row-level security policies preconfigured.
+              Elimine os erros de comandas rasgadas ou perdidas. Alertas visuais e sonoros para sua equipe preparar no tempo certo.
             </p>
           </div>
 
@@ -472,9 +424,9 @@
   </section>
 
   <!-- ========================================================================= -->
-  <!-- SECTION 5 - TECHNICAL STATS & DIAGRAM -->
+  <!-- SECTION 5 - TECHNICAL PERFORMANCE & ANALYTICS -->
   <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 text-white relative overflow-hidden" id="architecture">
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 text-white relative overflow-hidden" id="ecossistema">
     
     <!-- Diagram Background with overlay -->
     <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-luminosity bg-cover bg-center" style="background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/f7302105-bf99-4736-914e-d8fbdb904af5_1600w.png');"></div>
@@ -483,63 +435,50 @@
       
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
-        <!-- Left: Trading Candles & Live Preview Mockup -->
+        <!-- Left: Live Preview Mockup -->
         <div class="lg:col-span-6 relative">
           
-          <!-- Glassmorphism Card (backdrop-blur-xl) -->
           <div class="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
             <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
               <div>
-                <div class="text-xs uppercase tracking-wider text-purple-400 font-semibold">Live Preview & Code Edit</div>
-                <div class="font-bricolage font-bold text-lg text-white mt-0.5">Execution Engine Latency</div>
+                <div class="text-xs uppercase tracking-wider text-orange-400 font-semibold">Painel de Desempenho</div>
+                <div class="font-bricolage font-bold text-lg text-white mt-0.5">Volume de Pedidos Diários</div>
               </div>
-              <span class="px-2.5 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-mono">14ms ping</span>
+              <span class="px-2.5 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-mono">+42% este mês</span>
             </div>
 
-            <!-- SVG Candlestick Chart Simulation -->
+            <!-- SVG Candlestick / Sales Volume Chart -->
             <div class="w-full h-48 py-2">
               <svg class="w-full h-full" viewBox="0 0 400 150" fill="none" preserveAspectRatio="none">
-                <!-- Grid Lines -->
                 <line x1="0" y1="30" x2="400" y2="30" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
                 <line x1="0" y1="75" x2="400" y2="75" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
                 <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
 
-                <!-- Candles -->
-                <!-- Candle 1 -->
-                <line x1="40" y1="80" x2="40" y2="130" stroke="#22c55e" stroke-width="2"/>
-                <rect x="34" y="90" width="12" height="30" fill="#22c55e" rx="1"/>
-                <!-- Candle 2 -->
-                <line x1="80" y1="60" x2="80" y2="110" stroke="#22c55e" stroke-width="2"/>
-                <rect x="74" y="70" width="12" height="25" fill="#22c55e" rx="1"/>
-                <!-- Candle 3 (Red) -->
-                <line x1="120" y1="70" x2="120" y2="125" stroke="#ef4444" stroke-width="2"/>
-                <rect x="114" y="80" width="12" height="35" fill="#ef4444" rx="1"/>
-                <!-- Candle 4 -->
-                <line x1="160" y1="50" x2="160" y2="100" stroke="#22c55e" stroke-width="2"/>
-                <rect x="154" y="55" width="12" height="30" fill="#22c55e" rx="1"/>
-                <!-- Candle 5 -->
-                <line x1="200" y1="40" x2="200" y2="90" stroke="#22c55e" stroke-width="2"/>
-                <rect x="194" y="45" width="12" height="25" fill="#22c55e" rx="1"/>
-                <!-- Candle 6 -->
-                <line x1="240" y1="30" x2="240" y2="75" stroke="#22c55e" stroke-width="2"/>
-                <rect x="234" y="35" width="12" height="30" fill="#22c55e" rx="1"/>
-                <!-- Candle 7 -->
-                <line x1="280" y1="20" x2="280" y2="60" stroke="#22c55e" stroke-width="2"/>
-                <rect x="274" y="25" width="12" height="25" fill="#22c55e" rx="1"/>
-                <!-- Candle 8 -->
-                <line x1="320" y1="15" x2="320" y2="50" stroke="#22c55e" stroke-width="2"/>
-                <rect x="314" y="20" width="12" height="20" fill="#22c55e" rx="1"/>
-                <!-- Candle 9 -->
-                <line x1="360" y1="10" x2="360" y2="40" stroke="#a855f7" stroke-width="2"/>
-                <rect x="354" y="12" width="12" height="18" fill="#a855f7" rx="1"/>
+                <line x1="40" y1="80" x2="40" y2="130" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="34" y="90" width="12" height="30" fill="#FF5E1E" rx="1"/>
+                <line x1="80" y1="60" x2="80" y2="110" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="74" y="70" width="12" height="25" fill="#FF5E1E" rx="1"/>
+                <line x1="120" y1="70" x2="120" y2="125" stroke="#FF9E1B" stroke-width="2"/>
+                <rect x="114" y="80" width="12" height="35" fill="#FF9E1B" rx="1"/>
+                <line x1="160" y1="50" x2="160" y2="100" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="154" y="55" width="12" height="30" fill="#FF5E1E" rx="1"/>
+                <line x1="200" y1="40" x2="200" y2="90" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="194" y="45" width="12" height="25" fill="#FF5E1E" rx="1"/>
+                <line x1="240" y1="30" x2="240" y2="75" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="234" y="35" width="12" height="30" fill="#FF5E1E" rx="1"/>
+                <line x1="280" y1="20" x2="280" y2="60" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="274" y="25" width="12" height="25" fill="#FF5E1E" rx="1"/>
+                <line x1="320" y1="15" x2="320" y2="50" stroke="#FF5E1E" stroke-width="2"/>
+                <rect x="314" y="20" width="12" height="20" fill="#FF5E1E" rx="1"/>
+                <line x1="360" y1="10" x2="360" y2="40" stroke="#22c55e" stroke-width="2"/>
+                <rect x="354" y="12" width="12" height="18" fill="#22c55e" rx="1"/>
 
-                <!-- Trend overlay curve -->
-                <path d="M 40 105 Q 120 90 200 55 T 360 20" fill="none" stroke="url(#trend-gradient)" stroke-width="3" stroke-linecap="round"/>
+                <path d="M 40 105 Q 120 90 200 55 T 360 20" fill="none" stroke="url(#trend-gradient-pv)" stroke-width="3" stroke-linecap="round"/>
                 <defs>
-                  <linearGradient id="trend-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#22c55e" />
-                    <stop offset="70%" stop-color="#3b82f6" />
-                    <stop offset="100%" stop-color="#a855f7" />
+                  <linearGradient id="trend-gradient-pv" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#FF5E1E" />
+                    <stop offset="70%" stop-color="#FF9E1B" />
+                    <stop offset="100%" stop-color="#22c55e" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -548,16 +487,16 @@
             <!-- Mini stats footer in card -->
             <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/10 text-center font-mono">
               <div class="p-2 rounded bg-black/40">
-                <div class="text-[10px] text-slate-400">FPS</div>
-                <div class="text-sm font-bold text-emerald-400">120 FPS</div>
+                <div class="text-[10px] text-slate-400">COMISSÃO</div>
+                <div class="text-sm font-bold text-emerald-400">0% TAXA</div>
               </div>
               <div class="p-2 rounded bg-black/40">
-                <div class="text-[10px] text-slate-400">HOT RELOAD</div>
-                <div class="text-sm font-bold text-blue-400">&lt; 80ms</div>
+                <div class="text-[10px] text-slate-400">TEMPO MÉDIO</div>
+                <div class="text-sm font-bold text-blue-400">22 min</div>
               </div>
               <div class="p-2 rounded bg-black/40">
-                <div class="text-[10px] text-slate-400">ACCURACY</div>
-                <div class="text-sm font-bold text-purple-400">99.8%</div>
+                <div class="text-[10px] text-slate-400">PIX DIRETO</div>
+                <div class="text-sm font-bold text-orange-400">IMEDIATO</div>
               </div>
             </div>
           </div>
@@ -567,31 +506,31 @@
         <!-- Right: Technical Stats List -->
         <div class="lg:col-span-6 space-y-8">
           <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-purple-400 bg-purple-950/80 px-3 py-1 rounded-full border border-purple-800/60">PERFORMANCE AT SCALE</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-950/80 px-3 py-1 rounded-full border border-orange-800/60">AUTONOMIA & LUCRO</span>
             <h2 class="font-serif-title text-4xl sm:text-5xl text-white mt-4 leading-tight">
-              Engineered for developer bliss and enterprise throughput.
+              Construído para restaurantes que querem lucrar de verdade.
             </h2>
           </div>
 
           <!-- Feature Bullets -->
           <div class="space-y-6">
             <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0 mt-1">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 shrink-0 mt-1">
                 <i data-lucide="sparkles" class="w-5 h-5"></i>
               </div>
               <div>
-                <h4 class="font-bricolage font-bold text-lg text-white">Real-time Generation</h4>
-                <p class="text-sm text-slate-400 mt-1 leading-relaxed">Parallel AST (Abstract Syntax Tree) generation streams components simultaneously directly to your sandbox.</p>
+                <h4 class="font-bricolage font-bold text-lg text-white">Cardápio Ultra Rápido</h4>
+                <p class="text-sm text-slate-400 mt-1 leading-relaxed">Carrega instantaneamente no celular do cliente sem necessidade de baixar aplicativos pesados.</p>
               </div>
             </div>
 
             <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 mt-1">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-1">
                 <i data-lucide="cpu" class="w-5 h-5"></i>
               </div>
               <div>
-                <h4 class="font-bricolage font-bold text-lg text-white">LLM Optimization Engine</h4>
-                <p class="text-sm text-slate-400 mt-1 leading-relaxed">Multi-agent consensus eliminates halluncinations, verifying TypeScript compile-time safety on every keystroke.</p>
+                <h4 class="font-bricolage font-bold text-lg text-white">Chave PIX Própria</h4>
+                <p class="text-sm text-slate-400 mt-1 leading-relaxed">O dinheiro do cliente vai direto para a sua conta bancária no momento do pedido. Sem intermediários.</p>
               </div>
             </div>
           </div>
@@ -599,16 +538,16 @@
           <!-- Big Stat Numbers -->
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
             <div>
-              <div class="font-serif-title text-4xl sm:text-5xl text-purple-400 font-bold">4.9/5</div>
-              <div class="text-xs text-slate-400 mt-1 font-sans">Developer Satisfaction</div>
+              <div class="font-serif-title text-4xl sm:text-5xl text-orange-400 font-bold">500+</div>
+              <div class="text-xs text-slate-400 mt-1 font-sans">Restaurantes Ativos</div>
             </div>
             <div>
-              <div class="font-serif-title text-4xl sm:text-5xl text-emerald-400 font-bold">1M+</div>
-              <div class="text-xs text-slate-400 mt-1 font-sans">Lines Emitted Daily</div>
+              <div class="font-serif-title text-4xl sm:text-5xl text-emerald-400 font-bold">R$ 0</div>
+              <div class="text-xs text-slate-400 mt-1 font-sans">Taxa por Pedido</div>
             </div>
             <div>
-              <div class="font-serif-title text-4xl sm:text-5xl text-blue-400 font-bold">99.9%</div>
-              <div class="text-xs text-slate-400 mt-1 font-sans">Uptime SLA</div>
+              <div class="font-serif-title text-4xl sm:text-5xl text-amber-400 font-bold">4.9★</div>
+              <div class="text-xs text-slate-400 mt-1 font-sans">Avaliação dos Lojistas</div>
             </div>
           </div>
         </div>
@@ -619,18 +558,18 @@
   </section>
 
   <!-- ========================================================================= -->
-  <!-- SECTION 6 - DASHBOARD (THE EMPIRE) - January 2026 -->
+  <!-- SECTION 6 - OPERATIONAL DASHBOARD (THE EMPIRE SCHEDULE) -->
   <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 border-t border-stone-800 text-white" id="dashboard">
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 border-t border-stone-800 text-white" id="kds-pdv">
     <div class="max-w-7xl mx-auto">
       
       <div class="text-center max-w-3xl mx-auto mb-16">
-        <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/60">AUTONOMOUS ORCHESTRATION</span>
+        <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/60">OPERAÇÃO EM TEMPO REAL</span>
         <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">
-          The Empire: Centralized Ops Dashboard
+          Controle Total da Cozinha & Balcão
         </h2>
         <p class="text-stone-400 text-base sm:text-lg mt-3">
-          Manage multiple AI instances, database migrations, and auto-scaling queues in one unified mission control.
+          Acompanhe turnos, picos de pedidos e tempos de preparo da sua equipe em uma grade operacional limpa.
         </p>
       </div>
 
@@ -640,186 +579,135 @@
         <!-- Header Bar -->
         <div class="px-6 py-4 bg-[#1a1715] border-b border-stone-800 flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
+            <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
               <i data-lucide="cpu" class="w-4 h-4"></i>
             </div>
             <div>
-              <span class="font-bricolage font-bold text-sm text-white">Empire Production Cluster</span>
-              <span class="ml-2 text-xs text-stone-400 font-mono">cluster-us-east-1</span>
+              <span class="font-bricolage font-bold text-sm text-white">Central de Pedidos ao Vivo</span>
+              <span class="ml-2 text-xs text-stone-400 font-mono">cozinha-balcao-online</span>
             </div>
           </div>
 
-          <!-- Hardcoded January 2026 Date Requirement -->
           <div class="flex items-center gap-4 text-xs font-sans">
             <div class="px-3 py-1.5 rounded-lg bg-stone-800/80 border border-stone-700 text-stone-200 font-medium flex items-center gap-2">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-purple-400"></i>
-              <span>January 2026</span>
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-orange-400"></i>
+              <span>Operação Delivery 2026</span>
             </div>
             <div class="flex items-center gap-2 text-emerald-400">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>Cluster Healthy</span>
+              <span>KDS Ativo</span>
             </div>
           </div>
         </div>
 
-        <!-- Dashboard Body Layout (Sidebar + Week View Grid) -->
+        <!-- Dashboard Body Layout -->
         <div class="flex flex-col lg:flex-row">
           
-          <!-- Mini Calendar Sidebar (width 72 on LG) -->
+          <!-- Mini Calendar Sidebar -->
           <div class="w-full lg:w-72 bg-[#12100e] p-6 border-b lg:border-b-0 lg:border-r border-stone-800 flex flex-col justify-between shrink-0">
             <div>
               <div class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-4 font-sans flex items-center justify-between">
-                <span>Active Services</span>
-                <span class="text-emerald-400 font-mono text-[10px]">8 ONLINE</span>
+                <span>Módulos Ativos</span>
+                <span class="text-emerald-400 font-mono text-[10px]">TUDO PRONTO</span>
               </div>
 
               <!-- Service Toggles -->
               <div class="space-y-3 font-sans text-xs">
                 <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="database" class="w-3.5 h-3.5 text-blue-400"></i> Postgres Master</span>
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="database" class="w-3.5 h-3.5 text-orange-400"></i> Cardápio Digital</span>
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 </div>
                 <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400"></i> Edge Compute Pods</span>
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-400"></i> PDV Balcão</span>
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 </div>
                 <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-amber-400"></i> Redis Vector Cache</span>
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-400"></i> Monitor KDS Cozinha</span>
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 </div>
                 <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="wind" class="w-3.5 h-3.5 text-rose-400"></i> Auto-Scaling Daemon</span>
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="wind" class="w-3.5 h-3.5 text-blue-400"></i> Despacho Entregadores</span>
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 </div>
               </div>
 
-              <!-- Mini Calendar View -->
+              <!-- Mini Schedule -->
               <div class="mt-8 pt-6 border-t border-stone-800">
-                <div class="text-xs font-bold text-stone-300 mb-3 font-sans">January 2026 — Release Sprint</div>
-                <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-mono text-stone-500">
-                  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-                  <span class="text-stone-600">29</span><span class="text-stone-600">30</span><span class="text-stone-600">31</span>
-                  <span class="text-stone-300">1</span><span class="text-stone-300">2</span><span class="text-stone-300">3</span><span class="text-stone-300">4</span>
-                  <span class="text-stone-300">5</span><span class="text-stone-300">6</span><span class="text-stone-300">7</span><span class="text-stone-300">8</span>
-                  <span class="p-1 rounded bg-purple-600 text-white font-bold">9</span>
-                  <span class="text-stone-300">10</span><span class="text-stone-300">11</span>
-                  <span class="text-stone-300">12</span><span class="text-stone-300">13</span><span class="text-stone-300">14</span><span class="text-stone-300">15</span>
-                  <span class="text-stone-300">16</span><span class="text-stone-300">17</span><span class="text-stone-300">18</span>
-                </div>
+                <div class="text-xs font-bold text-stone-300 mb-3 font-sans">Turno Noturno • 18:00 às 23:30</div>
+                <p class="text-[11px] text-stone-400 leading-relaxed">
+                  Tempo médio de preparo: <strong>14 min</strong>. 0 atrasos registrados no último turno.
+                </p>
               </div>
             </div>
 
             <!-- Quick Trigger -->
             <div class="mt-6 pt-4 border-t border-stone-800">
-              <button class="w-full py-2 bg-stone-800 hover:bg-stone-700 text-xs font-semibold rounded-lg text-stone-200 transition-colors">
-                + Provision New Node
-              </button>
+              <a href="login.html" class="block w-full py-2 bg-stone-800 hover:bg-stone-700 text-center text-xs font-semibold rounded-lg text-stone-200 transition-colors">
+                Abrir Painel do Lojista
+              </a>
             </div>
           </div>
 
-          <!-- Week View Grid (Overflow-x-auto, explicit 72px repeat(5, 1fr)) -->
+          <!-- Week View Grid -->
           <div class="flex-1 overflow-x-auto p-6 bg-[#161412]">
             
-            <!-- Week Header -->
             <div class="dashboard-grid-cols gap-3 pb-3 border-b border-stone-800 text-xs font-mono text-stone-400 mb-4 min-w-[700px]">
-              <div>TIME</div>
-              <div class="font-bold text-stone-200">MON 05</div>
-              <div class="font-bold text-stone-200">TUE 06</div>
-              <div class="font-bold text-stone-200">WED 07</div>
-              <div class="font-bold text-stone-200 text-purple-400">THU 08 (TODAY)</div>
-              <div class="font-bold text-stone-200">FRI 09</div>
+              <div>HORA</div>
+              <div class="font-bold text-stone-200">SEXTA</div>
+              <div class="font-bold text-stone-200 text-orange-400">SÁBADO (PICO)</div>
+              <div class="font-bold text-stone-200 text-orange-400">DOMINGO (PICO)</div>
+              <div class="font-bold text-stone-200">SEGUNDA</div>
+              <div class="font-bold text-stone-200">TERÇA</div>
             </div>
 
-            <!-- Timing Rows (07:00 to 12:00, 64px height per row) -->
+            <!-- Timing Rows -->
             <div class="space-y-3 min-w-[700px]">
               
-              <!-- Row 07:00 -->
               <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">07:00</div>
+                <div class="text-xs font-mono text-stone-500">18:00</div>
                 <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Build Succeeded</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">commit #84f291a</span>
+                  <span class="font-semibold text-emerald-300">Abertura Loja</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">4 pedidos na fila</span>
                 </div>
-                <div></div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">SSL Renewed</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">edge-gateway</span>
+                <div class="h-12 rounded-lg bg-orange-500/15 border border-orange-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-orange-300">Pico Inicial</span>
+                  <span class="text-orange-400/80 font-mono text-[9px]">12 pedidos balcão</span>
                 </div>
-                <div></div>
-              </div>
-
-              <!-- Row 08:00 -->
-              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">08:00</div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-fuchsia-500/15 border border-fuchsia-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-fuchsia-300">Schema Migration</span>
-                  <span class="text-fuchsia-400/80 font-mono text-[9px]">v2.4.0-auth</span>
+                <div class="h-12 rounded-lg bg-orange-500/15 border border-orange-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-orange-300">Pico Delivery</span>
+                  <span class="text-orange-400/80 font-mono text-[9px]">18 pedidos WhatsApp</span>
                 </div>
-                <div></div>
                 <div></div>
                 <div></div>
               </div>
 
-              <!-- Row 09:00 -->
               <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">09:00</div>
-                <div></div>
+                <div class="text-xs font-mono text-stone-500">19:30</div>
                 <div></div>
                 <div class="h-12 rounded-lg bg-rose-500/15 border border-rose-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-rose-300">Auto-Scaling Spike</span>
-                  <span class="text-rose-400/80 font-mono text-[9px]">+14 Edge Workers</span>
+                  <span class="font-semibold text-rose-300">Alta Demanda KDS</span>
+                  <span class="text-rose-400/80 font-mono text-[9px]">Capacidade máxima</span>
                 </div>
-                <div class="h-12 rounded-lg bg-purple-500/20 border border-purple-500/50 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-purple-200">LLM Cache Warmer</span>
-                  <span class="text-purple-400 font-mono text-[9px]">98.2% Hit Rate</span>
+                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-emerald-300">Despacho Rápido</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">Tempo médio 18m</span>
                 </div>
+                <div></div>
                 <div></div>
               </div>
 
-              <!-- Row 10:00 -->
               <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">10:00</div>
+                <div class="text-xs font-mono text-stone-500">21:00</div>
                 <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Backup Verified</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">wal-g archive</span>
+                  <span class="font-semibold text-emerald-300">Cupons Utilizados</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">14x FRETEGRATIS</span>
+                </div>
+                <div class="h-12 rounded-lg bg-amber-500/15 border border-amber-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-amber-300">Mesas Salão</span>
+                  <span class="text-amber-400/80 font-mono text-[9px]">PDV Express 100%</span>
                 </div>
                 <div></div>
                 <div></div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-fuchsia-500/15 border border-fuchsia-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-fuchsia-300">Vector Re-index</span>
-                  <span class="text-fuchsia-400/80 font-mono text-[9px]">1.2M embeddings</span>
-                </div>
-              </div>
-
-              <!-- Row 11:00 -->
-              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">11:00</div>
-                <div></div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Zero-Downtime Rollout</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">canary-99%</span>
-                </div>
-                <div></div>
-                <div></div>
-              </div>
-
-              <!-- Row 12:00 -->
-              <div class="dashboard-grid-cols gap-3 h-16 items-center">
-                <div class="text-xs font-mono text-stone-500">12:00</div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Traffic Peak Cleared</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">42k req/s</span>
-                </div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-rose-500/15 border border-rose-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-rose-300">Auto-Scaling Down</span>
-                  <span class="text-rose-400/80 font-mono text-[9px]">normal load</span>
-                </div>
                 <div></div>
               </div>
 
@@ -840,25 +728,24 @@
   <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]">
     <div class="max-w-5xl mx-auto">
       
-      <!-- Big Testimonial Card with Exact Asset User Image -->
       <div class="bg-white rounded-3xl p-8 sm:p-12 border border-stone-200 shadow-xl relative overflow-hidden">
-        <div class="text-purple-600 mb-6">
+        <div class="text-orange-600 mb-6">
           <i data-lucide="quote" class="w-10 h-10 opacity-40"></i>
         </div>
 
         <blockquote class="font-serif-title text-2xl sm:text-4xl text-stone-900 leading-snug">
-          "ideatr cut our prototype-to-customer validation cycle from 6 weeks down to literally 45 minutes. We generated an entire HIPAA-compliant patient intake portal over a single lunch break."
+          "Paramos de pagar quase R$ 4.000 de comissões por mês em apps tradicionais. Agora nossos clientes pedem direto pelo nosso link do PedidoVale e o PIX cai na hora."
         </blockquote>
 
         <div class="flex items-center gap-4 mt-8 pt-8 border-t border-stone-100">
           <img 
             src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0a9490d3-0806-4139-aaa6-628fd3eee5b1_320w.png" 
-            alt="David Sterling, Founder" 
-            class="w-14 h-14 rounded-full object-cover border-2 border-purple-200"
+            alt="Rodrigo Alencar, Hamburgueria Artesanal" 
+            class="w-14 h-14 rounded-full object-cover border-2 border-orange-200"
           >
           <div>
-            <div class="font-bricolage font-bold text-base text-stone-900">David Sterling</div>
-            <div class="text-xs text-stone-500 font-sans">VP of Engineering at HealthPulse AI • Y Combinator W24</div>
+            <div class="font-bricolage font-bold text-base text-stone-900">Rodrigo Alencar</div>
+            <div class="text-xs text-stone-500 font-sans">Proprietário • Brasa & Burger Gourmet</div>
           </div>
         </div>
       </div>
@@ -869,72 +756,72 @@
   <!-- ========================================================================= -->
   <!-- SECTION 8 - PRICING -->
   <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-950 text-white" id="pricing">
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-950 text-white" id="precos">
     <div class="max-w-7xl mx-auto">
       
       <div class="text-center max-w-2xl mx-auto mb-16">
-        <span class="text-xs font-bold uppercase tracking-widest text-purple-400 bg-purple-950 px-3 py-1 rounded-full border border-purple-800">TRANSPARENT VALUE</span>
-        <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">Simple, predictable pricing.</h2>
-        <p class="text-slate-400 text-base mt-2">Start free, scale as your apps generate revenue.</p>
+        <span class="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-950 px-3 py-1 rounded-full border border-orange-800">PREÇO FIXO & JUSTO</span>
+        <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">Planos sem pegadinhas.</h2>
+        <p class="text-slate-400 text-base mt-2">Comece com teste grátis de 7 dias e escale suas vendas.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         
-        <!-- Hobby Plan -->
+        <!-- Plano Teste -->
         <div class="rounded-3xl bg-stone-900/90 border border-stone-800 p-8 flex flex-col justify-between hover:border-stone-700 transition-all">
           <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Hobbyist</div>
-            <div class="font-serif-title text-4xl text-white my-4">$0 <span class="text-sm font-sans text-slate-500 font-normal">/ month</span></div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">For indie hackers and developers exploring conversational app generation.</p>
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Teste Grátis</div>
+            <div class="font-serif-title text-4xl text-white my-4">R$ 0 <span class="text-sm font-sans text-slate-500 font-normal">/ 7 dias</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Experimente todas as funções sem precisar cadastrar cartão de crédito.</p>
             <ul class="space-y-3 text-xs text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 5 full app generations / month</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Standard Edge deployment</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> SQLite export</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Community Discord</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Cardápio digital completo</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Produtos & fotos ilimitadas</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Pedidos no WhatsApp (taxa 0%)</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Link exclusivo da loja</li>
             </ul>
           </div>
           <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white bg-stone-800 hover:bg-stone-700 rounded-xl transition-colors">
-            Start Free
+            Começar Grátis
           </a>
         </div>
 
-        <!-- Pro Plan (Featured) -->
-        <div class="rounded-3xl bg-gradient-to-b from-purple-950/40 via-stone-900 to-stone-900 border-2 border-purple-500/60 p-8 flex flex-col justify-between shadow-2xl relative">
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-purple-600 rounded-full text-[10px] font-bold tracking-wider uppercase text-white shadow-md">
-            MOST POPULAR
+        <!-- Plano Pro (Featured) -->
+        <div class="rounded-3xl bg-gradient-to-b from-orange-950/40 via-stone-900 to-stone-900 border-2 border-orange-500/60 p-8 flex flex-col justify-between shadow-2xl relative">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#FF5E1E] rounded-full text-[10px] font-bold tracking-wider uppercase text-white shadow-md">
+            MAIS POPULAR
           </div>
           <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-purple-400">Pro Builder</div>
-            <div class="font-serif-title text-4xl text-white my-4">$29 <span class="text-sm font-sans text-slate-500 font-normal">/ month</span></div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Unlimited synthesis, custom domains, and PostgreSQL production schemas.</p>
+            <div class="text-xs font-bold uppercase tracking-wider text-orange-400">Plano Pro Completo</div>
+            <div class="font-serif-title text-4xl text-white my-4">R$ 119 <span class="text-sm font-sans text-slate-500 font-normal">/ mês</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Todos os módulos do Hub 360 liberados para você escalar sua operação.</p>
             <ul class="space-y-3 text-xs text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Unlimited app generations</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Instant GitHub sync & PRs</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Managed Supabase database</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Custom domains & SSL</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Priority compiler queue</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Cardápio digital com fotos HD</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> PDV Balcão Express (Mesas e Balcão)</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Monitor KDS de Cozinha</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Gerador de Cupons & Promoções</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Suporte prioritário via WhatsApp</li>
             </ul>
           </div>
-          <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white btn-gradient-shift rounded-xl shadow-lg shadow-purple-900/40 hover:brightness-110 transition-all">
-            Get Pro Access
+          <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white btn-gradient-shift rounded-xl shadow-lg shadow-orange-900/40 hover:brightness-110 transition-all">
+            Assinar Plano Pro
           </a>
         </div>
 
-        <!-- Enterprise Plan -->
+        <!-- Plano Multi-Lojas -->
         <div class="rounded-3xl bg-stone-900/90 border border-stone-800 p-8 flex flex-col justify-between hover:border-stone-700 transition-all">
           <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Enterprise</div>
-            <div class="font-serif-title text-4xl text-white my-4">$199 <span class="text-sm font-sans text-slate-500 font-normal">/ month</span></div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Dedicated VPC clusters, SOC2 compliance, custom LLM fine-tuning.</p>
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Multi-Unidades / Franquias</div>
+            <div class="font-serif-title text-4xl text-white my-4">Sob Consulta</div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Para redes de restaurantes com várias filiais e gestão unificada de pedidos.</p>
             <ul class="space-y-3 text-xs text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Dedicated cluster deployment</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Self-hosted LLM runtime</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> SOC2 Type II & HIPAA certified</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 24/7 Dedicated Slack channel</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Múltiplas lojas e cardápios</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Relatórios consolidados</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Treinamento de equipe</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Gerente de conta exclusivo</li>
             </ul>
           </div>
           <a href="https://wa.me/5599991040222" target="_blank" class="mt-8 w-full py-3 text-center text-xs font-bold text-white bg-stone-800 hover:bg-stone-700 rounded-xl transition-colors">
-            Contact Sales
+            Falar com Consultor
           </a>
         </div>
 
@@ -950,22 +837,22 @@
     <div class="max-w-4xl mx-auto relative z-10">
       
       <h2 class="font-serif-title text-5xl sm:text-7xl leading-tight">
-        Build your next breakthrough app today.
+        Seu restaurante pronto para vender mais hoje.
       </h2>
       <p class="text-slate-400 text-lg max-w-xl mx-auto mt-4 mb-8">
-        Join over 120,000 developers building full-stack applications in plain English.
+        Crie seu cardápio em menos de 1 minuto e comece a receber pedidos diretamente no seu WhatsApp.
       </p>
 
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="cadastro.html" class="btn-gradient-shift px-8 py-4 rounded-xl text-white font-bold text-sm shadow-xl hover:shadow-purple-600/30 transition-all flex items-center gap-2">
-          <span>Start Building with ideatr</span>
+        <a href="cadastro.html" class="btn-gradient-shift px-8 py-4 rounded-xl text-white font-bold text-sm shadow-xl hover:shadow-orange-600/30 transition-all flex items-center gap-2">
+          <span>Criar Cardápio Grátis</span>
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M7 7h10v10"></path>
             <path d="M7 17 17 7"></path>
           </svg>
         </a>
-        <a href="login.html" class="px-6 py-4 rounded-xl text-slate-300 hover:text-white border border-stone-800 hover:border-stone-600 font-semibold text-sm transition-all">
-          Explore Component Demos
+        <a href="https://wa.me/5599991040222" target="_blank" class="px-6 py-4 rounded-xl text-slate-300 hover:text-white border border-stone-800 hover:border-stone-600 font-semibold text-sm transition-all">
+          💬 Tirar Dúvidas no WhatsApp
         </a>
       </div>
 
@@ -986,17 +873,16 @@
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
       
       <div class="flex items-center gap-2 text-white font-bricolage font-bold text-sm">
-        <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
-        <span>ideatr</span>
-        <span class="text-stone-600 font-normal font-sans ml-2">© 2026 ideatr Inc. All rights reserved.</span>
+        <i data-lucide="sparkles" class="w-4 h-4 text-orange-400"></i>
+        <span>PedidoVale</span>
+        <span class="text-stone-600 font-normal font-sans ml-2">© 2026 PedidoVale Ecosystem. Todos os direitos reservados.</span>
       </div>
 
       <div class="flex items-center gap-6">
-        <a href="#" class="hover:text-slate-300 transition-colors">Privacy</a>
-        <a href="#" class="hover:text-slate-300 transition-colors">Terms</a>
-        <a href="#" class="hover:text-slate-300 transition-colors">Security</a>
-        <a href="#" class="hover:text-slate-300 transition-colors">Status</a>
-        <a href="superadmin.html" class="hover:text-slate-300 transition-colors">Admin</a>
+        <a href="login.html" class="hover:text-slate-300 transition-colors">Entrar</a>
+        <a href="cadastro.html" class="hover:text-slate-300 transition-colors">Criar Conta</a>
+        <a href="https://wa.me/5599991040222" target="_blank" class="hover:text-slate-300 transition-colors">Suporte</a>
+        <a href="superadmin.html" class="hover:text-slate-300 transition-colors">Master</a>
       </div>
 
     </div>
