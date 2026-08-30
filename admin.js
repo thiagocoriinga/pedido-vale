@@ -69,244 +69,6 @@ function initStoreAdmin() {
   populateSettingsInputs();
 }
 
-function getSampleMenuData() {
-  return [
-    {
-      id: "prod-1",
-      name: "Combo Smash Duplo Turbinado 🔥",
-      price: 34.90,
-      originalPrice: 38.90,
-      categoryId: "cat-combos",
-      description: "1x Smash Bacon Duplo (2 carnes 90g, queijo cheddar e bacon) + 1x Batata Rústica Individual + 1x Coca-Cola Lata 350ml + Molho Especial da Casa.",
-      image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      badge: "Mais Vendido",
-      optionGroups: [
-        {
-          id: "opt-refri",
-          name: "Escolha seu Refrigerante",
-          min: 1,
-          max: 1,
-          options: [
-            { id: "r1", name: "Coca-Cola Original 350ml", price: 0 },
-            { id: "r2", name: "Coca-Cola Sem Açúcar 350ml", price: 0 },
-            { id: "r3", name: "Guaraná Antarctica 350ml", price: 0 },
-            { id: "r4", name: "Fanta Laranja 350ml", price: 0 }
-          ]
-        },
-        {
-          id: "opt-ponto",
-          name: "Ponto da Carne",
-          min: 1,
-          max: 1,
-          options: [
-            { id: "p1", name: "Ao Ponto (Rosadinho e Suculento)", price: 0 },
-            { id: "p2", name: "Bem Passado", price: 0 }
-          ]
-        }
-      ]
-    },
-    {
-      id: "prod-2",
-      name: "Combo Família Burger Show (4 Pessoas)",
-      price: 98.00,
-      originalPrice: 110.00,
-      categoryId: "cat-combos",
-      description: "4x Burgers Artesanais com Queijo Cheddar + 2x Porções Grandes de Batata Frita Crocante + 1x Coca-Cola 2 Litros.",
-      image: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      badge: "Super Promoção",
-      optionGroups: []
-    },
-    {
-      id: "prod-3",
-      name: "Combo Individual Smash Bacon",
-      price: 29.90,
-      originalPrice: 32.90,
-      categoryId: "cat-combos",
-      description: "1x Smash Burger com Bacon Crocante + 1x Batata Frita Pequena + 1x Refrigerante Lata 350ml.",
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-4",
-      name: "Smash Bacon Clássico 👑",
-      price: 26.90,
-      originalPrice: 0,
-      categoryId: "cat-burgers",
-      description: "Pão brioche selado na manteiga, 2x smash bovinos 90g com crostinha crocante, queijo cheddar derretido, fatias generosas de bacon e maionese artesanal da casa.",
-      image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      badge: "Favorito da Casa",
-      optionGroups: [
-        {
-          id: "opt-adds",
-          name: "Adicionais Especiais",
-          min: 0,
-          max: 3,
-          options: [
-            { id: "a1", name: "Bacon Crocante Extra (+4 fatias)", price: 4.50 },
-            { id: "a2", name: "Cheddar Cremoso Extra", price: 3.50 },
-            { id: "a3", name: "Cebola Caramelizada", price: 3.00 },
-            { id: "a4", name: "Ovo Frito na Manteiga", price: 2.50 }
-          ]
-        }
-      ]
-    },
-    {
-      id: "prod-5",
-      name: "Monster Cheddar Melt",
-      price: 34.00,
-      originalPrice: 0,
-      categoryId: "cat-burgers",
-      description: "Pão australiano fofinho, 2x carnes artesanais de 150g, cebola salteada na manteiga e uma verdadeira piscina de creme de queijo cheddar.",
-      image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-6",
-      name: "Chicken Crispy Crocante",
-      price: 24.50,
-      originalPrice: 0,
-      categoryId: "cat-burgers",
-      description: "Pão brioche, sobrecoxa de frango desossada e empanada super suculenta, alface americana fresca, picles agridoce e maionese verde de ervas.",
-      image: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-7",
-      name: "Smash Salada Gourmet",
-      price: 25.00,
-      originalPrice: 0,
-      categoryId: "cat-burgers",
-      description: "Pão brioche, 2x smash 90g, queijo prato derretido, rodelas de tomate maduro, alface crocante e molho especial da casa.",
-      image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-8",
-      name: "Batata Rústica com Alecrim & Páprica",
-      price: 18.90,
-      originalPrice: 0,
-      categoryId: "cat-porcoes",
-      description: "Batatas rústicas cortadas à mão com casca, temperadas com alecrim fresco e páprica defumada. Acompanha pote de maionese de alho.",
-      image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-9",
-      name: "Batata Suprema com Cheddar & Bacon 🍟",
-      price: 28.00,
-      originalPrice: 0,
-      categoryId: "cat-porcoes",
-      description: "Porção grande (400g) de batata frita sequinha coberta com molho cremoso de queijo cheddar quente e muita farofa de bacon crocante.",
-      image: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      badge: "Serve 2 Pessoas",
-      optionGroups: []
-    },
-    {
-      id: "prod-10",
-      name: "Onion Rings Crocantes (12 unid)",
-      price: 22.00,
-      originalPrice: 0,
-      categoryId: "cat-porcoes",
-      description: "Anéis de cebola dourados e ultra crocantes. Acompanha pote de molho barbecue defumado.",
-      image: "https://images.unsplash.com/photo-1639024471285-05c28591bd01?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-11",
-      name: "Coca-Cola Original 350ml",
-      price: 6.00,
-      originalPrice: 0,
-      categoryId: "cat-bebidas",
-      description: "Lata 350ml trincando de gelada.",
-      image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-12",
-      name: "Guaraná Antarctica 350ml",
-      price: 6.00,
-      originalPrice: 0,
-      categoryId: "cat-bebidas",
-      description: "Lata 350ml gelada.",
-      image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-13",
-      name: "Suco Natural de Laranja 500ml",
-      price: 10.00,
-      originalPrice: 0,
-      categoryId: "cat-bebidas",
-      description: "Suco 100% natural espremido na hora com laranjas selecionadas, sem conservantes.",
-      image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-14",
-      name: "Milkshake Ninho com Nutella 400ml 🍨",
-      price: 18.00,
-      originalPrice: 0,
-      categoryId: "cat-sobremesas",
-      description: "Sorvete artesanal batido com leite Ninho, borda generosa de Nutella pura na taça e chantilly no topo.",
-      image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    },
-    {
-      id: "prod-15",
-      name: "Brownie de Chocolate com Sorvete",
-      price: 16.00,
-      originalPrice: 0,
-      categoryId: "cat-sobremesas",
-      description: "Brownie de chocolate meio amargo servido quentinho acompanhado de 1 bola de sorvete de creme e calda de chocolate.",
-      image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80",
-      available: true,
-      optionGroups: []
-    }
-  ];
-}
-
-function importSampleMenu() {
-  CATEGORIES = [
-    { id: "cat-combos", name: "COMBO", icon: "🔥", desc: "Combos especiais com hambúrguer, batata e refrigerante", visible: true },
-    { id: "cat-burgers", name: "HAMBÚRGUERES ARTESANAIS", icon: "🍔", desc: "Smash burgers e artesanais preparados na hora", visible: true },
-    { id: "cat-porcoes", name: "PORÇÕES & ENTRADAS", icon: "🍟", desc: "Batatas rústicas, anéis de cebola e petiscos crocantes", visible: true },
-    { id: "cat-bebidas", name: "BEBIDAS & REFRIGERANTES", icon: "🥤", desc: "Sucos, refrigerantes em lata e cervejas", visible: true },
-    { id: "cat-sobremesas", name: "SOBREMESAS", icon: "🍨", desc: "Milkshakes e brownies especiais", visible: true }
-  ];
-  saveCategories();
-
-  PRODUCTS = getSampleMenuData();
-  saveProducts();
-
-  if (CURRENT_STORE_SLUG === 'demo-burger' || !STORE_DATA.name || STORE_DATA.name === 'Meu Estabelecimento') {
-    STORE_DATA.name = "Rei do Burger & Smash 🍔";
-    STORE_DATA.whatsapp = "11999999999";
-    STORE_DATA.address = "São Paulo - SP";
-    STORE_DATA.pixKey = "11999999999";
-    STORE_DATA.pixName = "Rei do Burger";
-    saveStoreConfig();
-  }
-
-  renderStoreTopbar();
-  renderCategorySelects();
-  renderCategoryAccordionList();
-  showToast("✅ Catálogo completo de exemplo carregado com sucesso!");
-}
-
 function loadStoreData() {
   try {
     // 1. Tentar sincronizar do Super Admin Tenants
@@ -325,39 +87,22 @@ function loadStoreData() {
       }
     }
 
-    if (CURRENT_STORE_SLUG === 'demo-burger') {
-      STORE_DATA.name = STORE_DATA.name || "Rei do Burger & Smash 🍔";
-      STORE_DATA.whatsapp = STORE_DATA.whatsapp || "11999999999";
-      STORE_DATA.address = STORE_DATA.address || "São Paulo - SP";
-      STORE_DATA.pixKey = STORE_DATA.pixKey || "11999999999";
-      STORE_DATA.pixName = STORE_DATA.pixName || "Rei do Burger";
-    }
-
     // 2. Carregar dados específicos da loja
     const savedConfig = localStorage.getItem(getStoreKey('CONFIG'));
     if (savedConfig) STORE_DATA = { ...STORE_DATA, ...JSON.parse(savedConfig) };
 
     const savedCats = localStorage.getItem(getStoreKey('CATEGORIES'));
-    if (savedCats && JSON.parse(savedCats).length > 0) {
+    if (savedCats) {
       CATEGORIES = JSON.parse(savedCats);
     } else {
-      CATEGORIES = [
-        { id: "cat-combos", name: "COMBO", icon: "🔥", desc: "Combos especiais com hambúrguer, batata e refrigerante", visible: true },
-        { id: "cat-burgers", name: "HAMBÚRGUERES ARTESANAIS", icon: "🍔", desc: "Smash burgers e artesanais preparados na hora", visible: true },
-        { id: "cat-porcoes", name: "PORÇÕES & ENTRADAS", icon: "🍟", desc: "Batatas rústicas, anéis de cebola e petiscos crocantes", visible: true },
-        { id: "cat-bebidas", name: "BEBIDAS & REFRIGERANTES", icon: "🥤", desc: "Sucos, refrigerantes em lata e cervejas", visible: true },
-        { id: "cat-sobremesas", name: "SOBREMESAS", icon: "🍨", desc: "Milkshakes e brownies especiais", visible: true }
-      ];
-      saveCategories();
+      CATEGORIES = [];
     }
 
     const savedProds = localStorage.getItem(getStoreKey('PRODUCTS'));
-    if (savedProds && JSON.parse(savedProds).length > 0) {
+    if (savedProds) {
       PRODUCTS = JSON.parse(savedProds);
     } else {
-      // Se estiver vazio, popula automaticamente os 15 itens
-      PRODUCTS = getSampleMenuData();
-      saveProducts();
+      PRODUCTS = [];
     }
 
     const savedOrders = localStorage.getItem(getStoreKey('ORDERS'));
