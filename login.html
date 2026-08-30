@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#05080A">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
   <title>Acesso do Lojista • PedidoVale</title>
   <meta name="description" content="Acesse o painel administrativo do seu restaurante para gerenciar cardápio, produtos, PDV e pedidos em tempo real.">
 
@@ -14,10 +15,10 @@
     }
   </script>
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Iconify Icons CDN -->
   <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
@@ -31,8 +32,8 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            geist: ['Inter', 'system-ui', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            geist: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
             mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
           colors: {
@@ -49,7 +50,7 @@
 
   <style>
     html {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
       color-scheme: dark;
       background-color: #05080A;
     }
@@ -120,13 +121,13 @@
       <div class="w-8 h-8 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] shadow-[0_0_12px_rgba(198,249,31,0.25)] group-hover:scale-105 transition-transform">
         <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="text-xl"></iconify-icon>
       </div>
-      <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5 font-geist">
+      <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5">
         Pedido<span class="text-[#c6f91f]">Vale</span>
         <span class="px-1.5 py-0.5 text-[9px] font-mono font-medium bg-[#c6f91f]/10 text-[#c6f91f] border border-[#c6f91f]/20 rounded">LOGIN</span>
       </span>
     </a>
 
-    <a href="/" class="text-xs text-white/60 hover:text-white transition-colors font-geist">
+    <a href="/" class="text-xs text-white/60 hover:text-white transition-colors font-medium">
       ← Voltar para o Site
     </a>
   </header>
@@ -140,30 +141,40 @@
         Painel do Restaurante
       </div>
 
-      <h1 class="text-3xl font-light tracking-tighter text-white font-geist">
+      <h1 class="text-3xl font-bold tracking-tight text-white">
         Acesse sua conta
       </h1>
-      <p class="text-xs text-white/50 font-geist">
+      <p class="text-xs text-white/50 font-normal">
         Gerencie seu cardápio, produtos, PDV e pedidos em tempo real.
       </p>
+    </div>
+
+    <!-- Alerta de Bloqueio por Tentativas -->
+    <div id="lockout-alert" class="hidden mb-4 p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3">
+      <span class="text-lg">🔒</span>
+      <div>
+        <strong class="block font-bold text-white mb-0.5">Acesso Temporariamente Bloqueado</strong>
+        <p id="lockout-timer-text">Você atingiu o limite de 3 tentativas incorretas. Por segurança, tente novamente em alguns instantes.</p>
+      </div>
     </div>
 
     <!-- Card Form -->
     <div class="bg-[#0B0F12] border border-white/10 rounded-2xl p-6 sm:p-8 form-card-shadow relative flashlight-target">
       <div class="flashlight-content space-y-5">
         
-        <form onsubmit="handleRestaurantLogin(event)" class="space-y-4 text-xs font-geist">
+        <form id="restaurant-login-form" onsubmit="handleRestaurantLogin(event)" class="space-y-4 text-xs">
           
           <div>
-            <label class="block text-white/70 font-medium mb-1.5">
-              Link da Loja (Slug) ou WhatsApp *
+            <label class="block text-white/70 font-semibold mb-1.5">
+              Link da Loja ou WhatsApp *
             </label>
             <div class="relative">
               <input 
                 type="text" 
                 id="login-identifier" 
-                placeholder="ex: demo-burger ou seu WhatsApp" 
-                class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] focus:ring-1 focus:ring-[#c6f91f]/50 transition-all font-mono"
+                autocomplete="username"
+                placeholder="Digite o link da sua loja ou seu WhatsApp" 
+                class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] focus:ring-1 focus:ring-[#c6f91f]/50 transition-all"
                 required 
                 autofocus
               />
@@ -171,13 +182,17 @@
           </div>
 
           <div>
-            <label class="block text-white/70 font-medium mb-1.5">
-              Senha de Acesso *
-            </label>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-white/70 font-semibold">
+                Senha de Acesso *
+              </label>
+              <span id="attempts-badge" class="text-[10px] text-stone-400 font-mono hidden">Tentativas: <span id="attempts-left-count" class="text-amber-400 font-bold">3/3</span></span>
+            </div>
             <div class="relative">
               <input 
                 type="password" 
                 id="login-password" 
+                autocomplete="current-password"
                 placeholder="Digite sua senha" 
                 class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] focus:ring-1 focus:ring-[#c6f91f]/50 transition-all font-mono"
                 required 
@@ -188,7 +203,8 @@
           <!-- Submit Button -->
           <button 
             type="submit" 
-            class="w-full h-12 mt-2 bg-[#c6f91f] hover:bg-[#aade17] text-black font-bold text-sm rounded-xl shadow-[0_0_25px_rgba(198,249,31,0.3)] transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+            id="login-submit-btn"
+            class="w-full h-12 mt-2 bg-[#c6f91f] hover:bg-[#aade17] text-black font-bold text-sm rounded-xl shadow-[0_0_25px_rgba(198,249,31,0.3)] transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>Entrar no Painel</span>
             <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon>
@@ -196,32 +212,7 @@
 
         </form>
 
-        <!-- Quick Demo Fill Box -->
-        <div class="pt-4 border-t border-white/10 space-y-2.5">
-          <div class="text-[11px] font-mono text-white/40 flex items-center justify-between">
-            <span>Credenciais de Teste:</span>
-            <span class="text-[#c6f91f] font-semibold">1-Clique</span>
-          </div>
-
-          <button 
-            type="button" 
-            onclick="fillDemoAccount()" 
-            class="w-full py-2.5 px-3 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-[#c6f91f]/40 rounded-xl text-xs font-mono text-white/80 transition-all flex items-center justify-between group cursor-pointer"
-          >
-            <div class="flex items-center gap-2 text-left">
-              <span class="text-base">🍔</span>
-              <div>
-                <div class="font-bold text-white group-hover:text-[#c6f91f] transition-colors">demo-burger</div>
-                <div class="text-[10px] text-white/40">senha: 123456</div>
-              </div>
-            </div>
-            <span class="text-[10px] font-sans font-semibold text-[#c6f91f] bg-[#c6f91f]/10 border border-[#c6f91f]/20 px-2 py-1 rounded">
-              Preencher Dados
-            </span>
-          </button>
-        </div>
-
-        <div class="text-center pt-2 text-xs text-white/40 font-geist">
+        <div class="text-center pt-3 border-t border-white/10 text-xs text-white/50">
           Ainda não tem cardápio digital? 
           <a href="cadastro.html" class="text-[#c6f91f] font-semibold hover:underline ml-1">Criar Loja Grátis →</a>
         </div>
@@ -236,8 +227,14 @@
     © 2026 PedidoVale • Todos os direitos reservados.
   </footer>
 
-  <!-- SCRIPT -->
+  <!-- SCRIPT SEGURO E PROTEÇÃO ANTI-FORÇA BRUTA -->
   <script>
+    // Configurações de Segurança e Limite de Tentativas
+    const MAX_LOGIN_ATTEMPTS = 3;
+    const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutos de bloqueio
+    const ATTEMPTS_STORAGE_KEY = 'PV_SEC_LOGIN_ATTEMPTS';
+    const LOCKOUT_STORAGE_KEY = 'PV_SEC_LOCKOUT_UNTIL';
+
     // Flashlight mouse follow
     document.querySelectorAll('.flashlight-target').forEach(card => {
       card.addEventListener('mousemove', e => {
@@ -249,50 +246,73 @@
       });
     });
 
-    // Seed Demo Tenant if missing
-    function ensureDemoTenantExists() {
-      const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
-      let tenants = [];
-      try {
-        const saved = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
-        if (saved) tenants = JSON.parse(saved);
-      } catch (e) {}
+    function checkLockoutStatus() {
+      const lockoutUntil = parseInt(localStorage.getItem(LOCKOUT_STORAGE_KEY) || '0', 10);
+      const now = Date.now();
+      const alertBox = document.getElementById('lockout-alert');
+      const timerText = document.getElementById('lockout-timer-text');
+      const submitBtn = document.getElementById('login-submit-btn');
 
-      if (!tenants.some(t => t.slug === 'demo-burger')) {
-        const trialEnds = new Date();
-        trialEnds.setDate(trialEnds.getDate() + 30);
+      if (lockoutUntil && now < lockoutUntil) {
+        const remainingSeconds = Math.ceil((lockoutUntil - now) / 1000);
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        
+        if (alertBox) alertBox.classList.remove('hidden');
+        if (timerText) timerText.innerText = `Você atingiu o limite de 3 tentativas incorretas. Tente novamente em ${mins}m ${secs < 10 ? '0' : ''}${secs}s.`;
+        if (submitBtn) submitBtn.disabled = true;
 
-        tenants.push({
-          id: 'tenant-demo',
-          slug: 'demo-burger',
-          name: 'Rei do Burger & Smash 🍔',
-          segment: 'hamburgueria',
-          owner_name: 'Thiago Dono',
-          owner_phone: '11999999999',
-          city: 'São Paulo - SP',
-          password: '123456',
-          plan: 'pro',
-          monthly_fee: 119.00,
-          status: 'active',
-          trial_ends_at: trialEnds.toISOString(),
-          created_at: new Date().toISOString()
-        });
-        localStorage.setItem(SUPERADMIN_TENANTS_KEY, JSON.stringify(tenants));
+        setTimeout(checkLockoutStatus, 1000);
+        return true;
+      } else {
+        if (lockoutUntil && now >= lockoutUntil) {
+          localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+          localStorage.removeItem(ATTEMPTS_STORAGE_KEY);
+        }
+        if (alertBox) alertBox.classList.add('hidden');
+        if (submitBtn) submitBtn.disabled = false;
+        return false;
       }
     }
-    ensureDemoTenantExists();
 
-    function fillDemoAccount() {
-      document.getElementById('login-identifier').value = 'demo-burger';
-      document.getElementById('login-password').value = '123456';
+    function recordFailedAttempt() {
+      let attempts = parseInt(localStorage.getItem(ATTEMPTS_STORAGE_KEY) || '0', 10) + 1;
+      localStorage.setItem(ATTEMPTS_STORAGE_KEY, attempts.toString());
+
+      const attemptsBadge = document.getElementById('attempts-badge');
+      const attemptsCount = document.getElementById('attempts-left-count');
+      
+      const remaining = Math.max(0, MAX_LOGIN_ATTEMPTS - attempts);
+      if (attemptsBadge) attemptsBadge.classList.remove('hidden');
+      if (attemptsCount) attemptsCount.innerText = `${remaining}/${MAX_LOGIN_ATTEMPTS}`;
+
+      if (attempts >= MAX_LOGIN_ATTEMPTS) {
+        const lockoutTime = Date.now() + LOCKOUT_DURATION_MS;
+        localStorage.setItem(LOCKOUT_STORAGE_KEY, lockoutTime.toString());
+        checkLockoutStatus();
+      }
+    }
+
+    function resetLoginAttempts() {
+      localStorage.removeItem(ATTEMPTS_STORAGE_KEY);
+      localStorage.removeItem(LOCKOUT_STORAGE_KEY);
     }
 
     function handleRestaurantLogin(e) {
       e.preventDefault();
 
-      const rawInput = document.getElementById('login-identifier').value.trim().toLowerCase();
+      if (checkLockoutStatus()) {
+        return;
+      }
+
+      const rawInput = (document.getElementById('login-identifier').value || '').trim().toLowerCase();
       const identifierPhone = rawInput.replace(/\D/g, '');
-      const password = document.getElementById('login-password').value;
+      const password = (document.getElementById('login-password').value || '').trim();
+
+      if (!rawInput || !password) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
 
       const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
       let tenants = [];
@@ -301,33 +321,40 @@
         if (saved) tenants = JSON.parse(saved);
       } catch (err) {}
 
-      // Procurar nos tenants cadastrados
+      // Busca segura do restaurante
       const found = tenants.find(t => 
-        t.slug === rawInput || 
+        (t.slug && t.slug.toLowerCase() === rawInput) || 
         (t.owner_phone && t.owner_phone.replace(/\D/g, '') === identifierPhone && identifierPhone.length > 5) || 
-        t.owner_phone === rawInput
+        (t.owner_phone && t.owner_phone.trim() === rawInput)
       );
 
       if (found) {
-        if (!found.password || found.password === password) {
+        // Validação de senha
+        if (found.password === password) {
+          resetLoginAttempts();
           sessionStorage.setItem('CURRENT_LOGGED_STORE', found.slug);
-          window.location.href = `admin.html?store=${found.slug}`;
+          window.location.href = `admin.html?store=${encodeURIComponent(found.slug)}`;
         } else {
-          alert('Senha incorreta! Por favor verifique sua senha de acesso.');
+          recordFailedAttempt();
+          const currentAttempts = parseInt(localStorage.getItem(ATTEMPTS_STORAGE_KEY) || '1', 10);
+          const left = Math.max(0, MAX_LOGIN_ATTEMPTS - currentAttempts);
+          if (left > 0) {
+            alert(`Senha incorreta! Você tem mais ${left} tentativa(s) antes do bloqueio temporário.`);
+          }
         }
       } else {
-        // Se for o slug de teste direto
-        if (rawInput === 'demo-burger' || rawInput === 'demo' || rawInput === 'reidoburger') {
-          sessionStorage.setItem('CURRENT_LOGGED_STORE', rawInput);
-          window.location.href = `admin.html?store=${rawInput}`;
-          return;
-        }
-
-        if (confirm(`Restaurante "${rawInput}" não encontrado. Deseja criar sua loja agora?`)) {
-          window.location.href = `cadastro.html?store=${encodeURIComponent(rawInput)}`;
+        // Se a loja não for encontrada
+        recordFailedAttempt();
+        const currentAttempts = parseInt(localStorage.getItem(ATTEMPTS_STORAGE_KEY) || '1', 10);
+        const left = Math.max(0, MAX_LOGIN_ATTEMPTS - currentAttempts);
+        if (left > 0) {
+          alert(`Restaurante ou WhatsApp não encontrado. Você tem mais ${left} tentativa(s).`);
         }
       }
     }
+
+    // Inicializar verificação de bloqueio
+    document.addEventListener('DOMContentLoaded', checkLockoutStatus);
 
     // Canvas Background
     (function () {
