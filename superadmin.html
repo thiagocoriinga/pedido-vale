@@ -8,6 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>PedidoVale • Super Admin Master 👑</title>
   <meta name="description" content="Painel de Controle Central PedidoVale - Gestão de Restaurantes, Faturamento e Mensalidades.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
   <!-- Google Fonts: Inter, Anton & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -580,86 +583,117 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: CADASTRAR / EDITAR EMPRESA -->
+  <!-- MODAL: CADASTRAR / EDITAR EMPRESA COMPLETO -->
   <!-- ========================================================================= -->
-  <div id="tenant-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
+  <div id="tenant-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-xl w-full max-h-[92vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
       <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
-        <h3 id="modal-tenant-title" class="font-anton text-lg text-white tracking-wide">CADASTRAR EMPRESA</h3>
+        <div>
+          <h3 id="modal-tenant-title" class="font-anton text-lg text-white tracking-wide">CADASTRAR EMPRESA</h3>
+          <p class="text-[11px] text-brand-textMuted">Edite todos os dados, senha, plano e status da loja</p>
+        </div>
         <button onclick="closeTenantModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
       </div>
 
       <form id="form-tenant" onsubmit="saveTenantForm(event)" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs no-scrollbar">
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
-          <input type="text" id="tenant-name-input" placeholder="Ex: São José Burguer" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
+        
+        <!-- Dados Principais -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Slug / URL da Loja *</label>
-            <input type="text" id="tenant-slug-input" placeholder="ex: sao-jose" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+            <label class="block text-stone-300 font-semibold mb-1">Nome do Restaurante / Loja *</label>
+            <input type="text" id="tenant-name-input" placeholder="Ex: Rei do Burger" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Segmento *</label>
-            <select id="tenant-segment-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange">
+            <label class="block text-stone-300 font-semibold mb-1">Slug / Link Curto da Loja *</label>
+            <input type="text" id="tenant-slug-input" placeholder="ex: rei-combo" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-mono text-amber-400 focus:outline-none focus:border-brand-orange" required />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1">Segmento *</label>
+            <select id="tenant-segment-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange">
               <option value="Hamburgueria">Hamburgueria 🍔</option>
               <option value="Pizzaria">Pizzaria 🍕</option>
               <option value="Açaí">Açaí & Sorvetes 🍧</option>
               <option value="Sushi">Sushi & Japonês 🍣</option>
               <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
               <option value="Doceria">Doceria & Bolos 🍰</option>
+              <option value="Bebidas">Adega & Bebidas 🍾</option>
+              <option value="Outros">Outro Segmento 🍽️</option>
             </select>
           </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Dono / Contato *</label>
-            <input type="text" id="tenant-owner-name-input" placeholder="Ex: Thiago Silva" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD *</label>
-            <input type="text" id="tenant-owner-phone-input" placeholder="Ex: 5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+            <label class="block text-stone-300 font-semibold mb-1">Cidade / Endereço</label>
+            <input type="text" id="tenant-city-input" placeholder="Ex: Pedreiras - MA" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
+        <!-- Proprietário e Acesso -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Plano</label>
-            <select id="tenant-plan-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-2.5 py-3 text-white">
-              <option value="pro">Pro (R$ 119)</option>
+            <label class="block text-stone-300 font-semibold mb-1">Nome do Dono *</label>
+            <input type="text" id="tenant-owner-name-input" placeholder="Nome completo" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1">WhatsApp com DDD *</label>
+            <input type="text" id="tenant-owner-phone-input" placeholder="5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1">Senha de Acesso</label>
+            <input type="text" id="tenant-password-input" placeholder="Senha da loja" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-amber-300 font-bold focus:outline-none focus:border-brand-orange" />
+          </div>
+        </div>
+
+        <!-- Plano, Mensalidade e Vencimento -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1">Plano</label>
+            <select id="tenant-plan-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3 py-3 text-white">
+              <option value="pro">Profissional (R$ 119)</option>
               <option value="basic">Básico (R$ 79)</option>
-              <option value="vip">VIP (R$ 189)</option>
+              <option value="vip">VIP / Ilimitado (R$ 189)</option>
             </select>
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Mensalidade R$ *</label>
-            <input type="number" step="0.5" id="tenant-fee-input" placeholder="119.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" required />
+            <label class="block text-stone-300 font-semibold mb-1">Mensalidade R$ *</label>
+            <input type="number" step="0.5" id="tenant-fee-input" placeholder="119.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" required />
           </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Vencimento (Dia)</label>
-            <input type="number" min="1" max="31" id="tenant-due-day-input" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+            <label class="block text-stone-300 font-semibold mb-1">Dia Vencimento</label>
+            <input type="number" min="1" max="31" id="tenant-due-day-input" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required />
+          </div>
+        </div>
+
+        <!-- Status e Extensão do Trial -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1">Status da Loja</label>
+            <select id="tenant-status-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white font-bold">
+              <option value="active">🟢 Ativo (Assinante Pago)</option>
+              <option value="trial">⏳ Teste Grátis (Trial)</option>
+              <option value="blocked">🔴 Bloqueado (Inadimplência)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1">Chave PIX da Loja</label>
+            <input type="text" id="tenant-pix-key-input" placeholder="Chave Pix da loja" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" />
           </div>
         </div>
 
         <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Status da Loja</label>
-          <select id="tenant-status-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white">
-            <option value="active">🟢 Ativo (Assinante Pago)</option>
-            <option value="trial">⏳ Teste Grátis (7 Dias)</option>
-            <option value="blocked">🔴 Bloqueado (Inadimplente)</option>
-          </select>
+          <label class="block text-stone-300 font-semibold mb-1">Observações Internas (Super Admin)</label>
+          <textarea id="tenant-notes-input" rows="2" placeholder="Anotações internas sobre negociação, preferências, etc." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
         </div>
 
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Observações Internas</label>
-          <textarea id="tenant-notes-input" rows="2" placeholder="Ex: Fechou no plano anual, faturamento bom..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
+        <div class="flex items-center gap-2 pt-2">
+          <button type="button" onclick="closeTenantModal()" class="flex-1 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
+            SALVAR ALTERAÇÕES
+          </button>
         </div>
-
-        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs mt-2">
-          SALVAR RESTAURANTE
-        </button>
       </form>
     </div>
   </div>
@@ -671,7 +705,7 @@
   </div>
 
   <!-- Script do Super Admin -->
-  <script src="superadmin.js"></script>
+  <script src="superadmin.js?v=20260830_V15"></script>
 
 </body>
 </html>

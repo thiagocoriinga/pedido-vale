@@ -238,7 +238,9 @@ function renderTenantsTable() {
   const filtered = TENANTS.filter(t => {
     const matchesSearch = t.name.toLowerCase().includes(search) || 
                           t.slug.toLowerCase().includes(search) || 
-                          (t.owner_name && t.owner_name.toLowerCase().includes(search));
+                          (t.owner_name && t.owner_name.toLowerCase().includes(search)) ||
+                          (t.city && t.city.toLowerCase().includes(search)) ||
+                          (t.owner_phone && t.owner_phone.includes(search));
     const matchesSegment = filterSegment === 'all' || t.segment === filterSegment;
     const matchesStatus = filterStatus === 'all' || t.status === filterStatus;
     return matchesSearch && matchesSegment && matchesStatus;
@@ -248,7 +250,7 @@ function renderTenantsTable() {
     tbody.innerHTML = `
       <tr>
         <td colspan="5" class="p-8 text-center text-brand-textMuted font-poppins text-xs">
-          Nenhuma empresa encontrada com os filtros selecionados.
+          Nenhuma empresa encontrada. Cadastre uma nova loja acima ou aguarde novos cadastros pelo site.
         </td>
       </tr>
     `;
@@ -272,18 +274,23 @@ function renderTenantsTable() {
       <tr class="border-b border-white/5 hover:bg-white/5 transition-colors font-poppins text-xs">
         <td class="p-4">
           <div class="flex items-center gap-2.5">
-            <span class="text-base">${segmentIcon}</span>
+            <span class="text-xl">${segmentIcon}</span>
             <div>
               <div class="font-anton text-sm text-white tracking-wide">${t.name}</div>
-              <div class="text-[10px] text-brand-orange font-mono">/${t.slug} • <span class="text-stone-400">${t.segment || 'Geral'}</span></div>
+              <div class="text-[11px] text-brand-orange font-mono">pedidovale.com.br/${t.slug}</div>
+              <div class="text-[10px] text-stone-400 mt-0.5">
+                <span>${t.segment || 'Hamburgueria'}</span>
+                ${t.city ? ` • <span class="text-stone-300">📍 ${t.city}</span>` : ''}
+              </div>
             </div>
           </div>
         </td>
         <td class="p-4">
-          <div class="text-white font-medium">${t.owner_name}</div>
-          <a href="https://wa.me/${cleanPhone(t.owner_phone)}" target="_blank" class="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 mt-0.5">
-            <span>📱 ${t.owner_phone}</span>
+          <div class="text-white font-bold">${t.owner_name}</div>
+          <a href="https://wa.me/${cleanPhone(t.owner_phone)}" target="_blank" class="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 mt-0.5 font-semibold">
+            <span>💬 WhatsApp: ${t.owner_phone}</span>
           </a>
+          ${t.password ? `<div class="text-[10px] text-amber-300/90 font-mono mt-0.5">🔑 Senha: <span class="bg-black/40 px-1.5 py-0.5 rounded text-amber-400 font-bold select-all">${t.password}</span></div>` : ''}
         </td>
         <td class="p-4">
           <div class="flex items-center gap-2">
@@ -296,22 +303,22 @@ function renderTenantsTable() {
           ${statusBadge}
         </td>
         <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
-          <a href="admin.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-white/10 hover:bg-brand-orange hover:text-white text-stone-200 text-xs inline-block" title="Painel do Restaurante (Cadastrar Produtos)">
-            ⚙️ Produtos
+          <a href="admin.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-white/10 hover:bg-brand-orange hover:text-white text-stone-200 text-xs inline-block font-semibold transition-all" title="Acessar Painel do Restaurante">
+            ⚙️ Painel
           </a>
-          <a href="index-sj.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-xs inline-block" title="Ver Cardápio do Cliente">
+          <a href="cardapio.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange text-xs inline-block font-semibold transition-all" title="Ver Cardápio do Cliente">
             🍔 Cardápio
           </a>
-          <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs" title="Cobrar / Enviar Pix no WhatsApp">
+          <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs transition-all" title="Cobrar / Enviar Pix no WhatsApp">
             💬
           </button>
-          <button onclick="toggleTenantStatus('${t.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs" title="${t.status === 'blocked' ? 'Desbloquear Loja' : 'Bloquear por Inadimplência'}">
+          <button onclick="toggleTenantStatus('${t.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs transition-all" title="${t.status === 'blocked' ? 'Desbloquear Loja' : 'Bloquear por Inadimplência'}">
             ${t.status === 'blocked' ? '🔓' : '🔒'}
           </button>
-          <button onclick="openEditTenantModal('${t.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 text-xs" title="Editar Loja">
-            ✏️
+          <button onclick="openEditTenantModal('${t.id}')" class="p-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 text-xs transition-all font-semibold" title="Editar Tudo da Loja">
+            ✏️ Editar
           </button>
-          <button onclick="deleteTenant('${t.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs" title="Excluir">
+          <button onclick="deleteTenant('${t.id}')" class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs transition-all" title="Excluir Loja">
             🗑️
           </button>
         </td>
@@ -321,7 +328,7 @@ function renderTenantsTable() {
 }
 
 // -------------------------------------------------------------------------
-// MODAL: CRIAR / EDITAR LOJA
+// MODAL: CRIAR / EDITAR LOJA COMPLETO
 // -------------------------------------------------------------------------
 let currentEditingTenantId = null;
 
@@ -346,12 +353,15 @@ function openEditTenantModal(id) {
   document.getElementById('tenant-name-input').value = tenant.name || '';
   document.getElementById('tenant-slug-input').value = tenant.slug || '';
   document.getElementById('tenant-segment-select').value = tenant.segment || 'Hamburgueria';
+  document.getElementById('tenant-city-input').value = tenant.city || '';
   document.getElementById('tenant-owner-name-input').value = tenant.owner_name || '';
   document.getElementById('tenant-owner-phone-input').value = tenant.owner_phone || '';
+  document.getElementById('tenant-password-input').value = tenant.password || '';
   document.getElementById('tenant-plan-select').value = tenant.plan || 'pro';
   document.getElementById('tenant-fee-input').value = tenant.monthly_fee || 119;
-  document.getElementById('tenant-status-select').value = tenant.status || 'active';
   document.getElementById('tenant-due-day-input').value = tenant.due_day || 10;
+  document.getElementById('tenant-status-select').value = tenant.status || 'active';
+  document.getElementById('tenant-pix-key-input').value = tenant.pixKey || tenant.owner_phone || '';
   document.getElementById('tenant-notes-input').value = tenant.notes || '';
 
   const modal = document.getElementById('tenant-modal');
@@ -368,12 +378,15 @@ function saveTenantForm(e) {
   const name = document.getElementById('tenant-name-input').value.trim();
   let slug = document.getElementById('tenant-slug-input').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
   const segment = document.getElementById('tenant-segment-select').value;
+  const city = document.getElementById('tenant-city-input').value.trim();
   const owner_name = document.getElementById('tenant-owner-name-input').value.trim();
   const owner_phone = document.getElementById('tenant-owner-phone-input').value.trim();
+  const password = document.getElementById('tenant-password-input').value.trim();
   const plan = document.getElementById('tenant-plan-select').value;
   const monthly_fee = parseFloat(document.getElementById('tenant-fee-input').value) || 0;
   const status = document.getElementById('tenant-status-select').value;
   const due_day = parseInt(document.getElementById('tenant-due-day-input').value) || 10;
+  const pixKey = document.getElementById('tenant-pix-key-input').value.trim();
   const notes = document.getElementById('tenant-notes-input').value.trim();
 
   if (!slug) {
@@ -385,20 +398,37 @@ function saveTenantForm(e) {
     if (idx !== -1) {
       TENANTS[idx] = {
         ...TENANTS[idx],
-        name, slug, segment, owner_name, owner_phone, plan, monthly_fee, status, due_day, notes,
+        name, slug, segment, city, owner_name, owner_phone, password, plan, monthly_fee, status, due_day, pixKey, notes,
         updated_at: new Date().toISOString()
       };
-      showSuperToast(`✅ Restaurante "${name}" atualizado!`);
+      showSuperToast(`✅ Restaurante "${name}" atualizado com sucesso!`);
     }
   } else {
     const newTenant = {
       id: `tenant-${Date.now()}`,
-      name, slug, segment, owner_name, owner_phone, plan, monthly_fee, status, due_day, notes,
+      name, slug, segment, city, owner_name, owner_phone, password, plan, monthly_fee, status, due_day, pixKey, notes,
       created_at: new Date().toISOString()
     };
     TENANTS.push(newTenant);
     showSuperToast(`🚀 Restaurante "${name}" cadastrado com sucesso!`);
   }
+
+  // Sincronizar dados diretamente na chave de configuração da loja
+  try {
+    const storeConfigKey = `STORE_${slug}_CONFIG`;
+    let storeConfig = {};
+    const existing = localStorage.getItem(storeConfigKey);
+    if (existing) storeConfig = JSON.parse(existing);
+
+    storeConfig.name = name;
+    storeConfig.slug = slug;
+    storeConfig.segment = segment;
+    storeConfig.address = city || storeConfig.address || "Atendimento Online";
+    storeConfig.whatsapp = owner_phone;
+    storeConfig.pixKey = pixKey || owner_phone;
+    storeConfig.pixName = owner_name;
+    localStorage.setItem(storeConfigKey, JSON.stringify(storeConfig));
+  } catch (err) {}
 
   saveTenantsToStorage();
   closeTenantModal();
@@ -427,11 +457,19 @@ function deleteTenant(id) {
   const tenant = TENANTS.find(t => t.id === id);
   if (!tenant) return;
 
-  if (confirm(`Tem certeza que deseja excluir permanentemente o restaurante "${tenant.name}"?`)) {
+  if (confirm(`⚠️ Tem certeza que deseja excluir permanentemente o restaurante "${tenant.name}" (/ ${tenant.slug})?\n\nIsso removerá o cadastro e os dados da loja.`)) {
+    // Limpar dados locais da loja
+    try {
+      localStorage.removeItem(`STORE_${tenant.slug}_CONFIG`);
+      localStorage.removeItem(`STORE_${tenant.slug}_PRODUCTS`);
+      localStorage.removeItem(`STORE_${tenant.slug}_ORDERS`);
+      localStorage.removeItem(`STORE_${tenant.slug}_CATEGORIES`);
+    } catch (e) {}
+
     TENANTS = TENANTS.filter(t => t.id !== id);
     saveTenantsToStorage();
     renderSuperAdminDashboard();
-    showSuperToast('🗑️ Restaurante removido.');
+    showSuperToast(`🗑️ Restaurante "${tenant.name}" excluído com sucesso.`);
     syncTenantWithSupabase();
   }
 }
