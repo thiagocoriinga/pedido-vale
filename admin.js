@@ -761,7 +761,14 @@ function openEditProductModal(id) {
   const extrasContainer = document.getElementById('product-extras-container');
   extrasContainer.innerHTML = '';
   if (prod.extras && prod.extras.length > 0) {
-    prod.extras.forEach(extra => addProductExtraRow(extra.name, extra.price));
+    prod.extras.forEach(extra => addProductExtraRow(extra.name, extra.price, extra.image || ''));
+  } else if (prod.optionGroups && prod.optionGroups.length > 0) {
+    // Converter de optionGroups se existir
+    prod.optionGroups.forEach(grp => {
+      if (grp.options) {
+        grp.options.forEach(opt => addProductExtraRow(opt.name, opt.price, opt.image || ''));
+      }
+    });
   }
 
   document.getElementById('btn-delete-current-product').classList.remove('hidden');
@@ -847,16 +854,116 @@ function showImagePreview(src) {
   }
 }
 
-function addProductExtraRow(name = '', price = '') {
+function addProductExtraRow(name = '', price = '', image = '') {
   const container = document.getElementById('product-extras-container');
   const div = document.createElement('div');
-  div.className = "flex items-center gap-2 extra-row";
+  div.className = "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 extra-row bg-white/[0.03] border border-white/10 rounded-2xl p-2.5 transition-all";
+  
+  const uniqueId = `extra-img-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+
   div.innerHTML = `
-    <input type="text" placeholder="Nome do Opcional (ex: Bacon Extra)" value="${name}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white extra-name" />
-    <input type="number" step="0.5" placeholder="Preço (R$)" value="${price}" class="w-24 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold extra-price" />
-    <button type="button" onclick="this.parentElement.remove()" class="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">✕</button>
+    <div class="flex items-center gap-2 flex-1">
+      <div class="relative w-10 h-10 rounded-xl overflow-hidden bg-black/40 border border-white/10 shrink-0 flex items-center justify-center group cursor-pointer" onclick="document.getElementById('${uniqueId}-file').click()">
+        <img src="${image}" class="w-full h-full object-cover extra-img-preview ${image ? '' : 'hidden'}" onerror="this.classList.add('hidden')" />
+        <span class="text-xs text-white/50 ${image ? 'hidden' : ''} extra-img-icon">📷</span>
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white transition-opacity font-bold">Foto</div>
+      </div>
+      <input type="file" id="${uniqueId}-file" accept="image/*" class="hidden" onchange="handleExtraImageUpload(event, this)" />
+
+      <input type="text" placeholder="Nome do Opcional (ex: Bacon Extra, Queijo...)" value="${name}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white extra-name focus:outline-none focus:border-brand-orange" />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div class="relative w-28">
+        <span class="absolute left-2.5 top-2 text-[10px] text-stone-500 font-mono">R$</span>
+        <input type="number" step="0.5" placeholder="0.00" value="${price}" class="w-full bg-white/5 border border-white/10 rounded-xl pl-7 pr-2.5 py-2 text-xs text-amber-400 font-bold extra-price focus:outline-none focus:border-brand-orange" />
+      </div>
+
+      <input type="hidden" value="${image}" class="extra-image-data" />
+      
+      <input type="url" placeholder="URL da foto (opcional)" value="${image && image.startsWith('http') ? image : ''}" oninput="handleExtraImageUrl(this)" class="hidden sm:block w-36 bg-white/5 border border-white/10 rounded-xl px-2.5 py-2 text-[11px] text-white/70 extra-image-url focus:outline-none focus:border-brand-orange" />
+
+      <button type="button" onclick="this.closest('.extra-row').remove()" class="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs transition-colors shrink-0" title="Remover Opcional">✕</button>
+    </div>
   `;
   container.appendChild(div);
+}
+
+function handleExtraImageUpload(e, inputEl) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const maxDim = 300;
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        }
+      } else {
+        if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressed = canvas.toDataURL('image/jpeg', 0.75);
+      const row = inputEl.closest('.extra-row');
+      if (row) {
+        const preview = row.querySelector('.extra-img-preview');
+        const icon = row.querySelector('.extra-img-icon');
+        const hiddenData = row.querySelector('.extra-image-data');
+        const urlInput = row.querySelector('.extra-image-url');
+
+        if (preview) {
+          preview.src = compressed;
+          preview.classList.remove('hidden');
+        }
+        if (icon) icon.classList.add('hidden');
+        if (hiddenData) hiddenData.value = compressed;
+        if (urlInput) urlInput.value = '';
+      }
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleExtraImageUrl(inputEl) {
+  const url = inputEl.value.trim();
+  const row = inputEl.closest('.extra-row');
+  if (row) {
+    const preview = row.querySelector('.extra-img-preview');
+    const icon = row.querySelector('.extra-img-icon');
+    const hiddenData = row.querySelector('.extra-image-data');
+
+    if (url) {
+      if (preview) {
+        preview.src = url;
+        preview.classList.remove('hidden');
+      }
+      if (icon) icon.classList.add('hidden');
+      if (hiddenData) hiddenData.value = url;
+    } else {
+      if (preview) {
+        preview.src = '';
+        preview.classList.add('hidden');
+      }
+      if (icon) icon.classList.remove('hidden');
+      if (hiddenData) hiddenData.value = '';
+    }
+  }
 }
 
 function saveProductForm(e) {
@@ -916,13 +1023,14 @@ function saveProductForm(e) {
   const is_new = document.getElementById('prod-new-switch')?.checked ?? false;
   const popular = document.getElementById('prod-popular-switch')?.checked ?? false;
 
-  // Extrair opcionais
+  // Extrair opcionais (com foto, nome e preço)
   const extraRows = document.querySelectorAll('#product-extras-container .extra-row');
   const extras = [];
   extraRows.forEach(row => {
     const extraName = row.querySelector('.extra-name')?.value.trim();
     const extraPrice = parseFloat(row.querySelector('.extra-price')?.value) || 0;
-    if (extraName) extras.push({ name: extraName, price: extraPrice });
+    const extraImage = row.querySelector('.extra-image-data')?.value || row.querySelector('.extra-image-url')?.value || '';
+    if (extraName) extras.push({ name: extraName, price: extraPrice, image: extraImage });
   });
 
   if (currentEditingProductId) {
@@ -1773,18 +1881,243 @@ function cleanPhone(phone) {
   return (phone || '').replace(/\D/g, '');
 }
 
-function showToast(msg) {
-  const toast = document.getElementById('admin-toast');
-  const text = document.getElementById('admin-toast-text');
-  if (toast && text) {
-    text.innerText = msg;
-    toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-    toast.classList.add('translate-y-0', 'opacity-100');
-    setTimeout(() => {
-      toast.classList.remove('translate-y-0', 'opacity-100');
-      toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-    }, 2800);
+// -------------------------------------------------------------------------
+// GESTÃO GLOBAL DE OPCIONAIS E ADICIONAIS (COM FOTOS)
+// -------------------------------------------------------------------------
+let currentGlobalOptImage = '';
+
+function openOptionalsModal() {
+  currentGlobalOptImage = '';
+  document.getElementById('global-opt-name').value = '';
+  document.getElementById('global-opt-price').value = '';
+  document.getElementById('global-opt-url').value = '';
+  
+  const preview = document.getElementById('global-opt-img-preview');
+  const icon = document.getElementById('global-opt-img-icon');
+  if (preview) { preview.src = ''; preview.classList.add('hidden'); }
+  if (icon) icon.classList.remove('hidden');
+
+  renderGlobalOptionalsList();
+  document.getElementById('optionals-modal').classList.remove('hidden');
+}
+
+function closeOptionalsModal() {
+  document.getElementById('optionals-modal').classList.add('hidden');
+}
+
+function handleGlobalOptUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const maxDim = 300;
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        }
+      } else {
+        if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      currentGlobalOptImage = canvas.toDataURL('image/jpeg', 0.75);
+      const preview = document.getElementById('global-opt-img-preview');
+      const icon = document.getElementById('global-opt-img-icon');
+      if (preview) {
+        preview.src = currentGlobalOptImage;
+        preview.classList.remove('hidden');
+      }
+      if (icon) icon.classList.add('hidden');
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleGlobalOptUrl(url) {
+  currentGlobalOptImage = url.trim();
+  const preview = document.getElementById('global-opt-img-preview');
+  const icon = document.getElementById('global-opt-img-icon');
+  if (url) {
+    if (preview) { preview.src = url; preview.classList.remove('hidden'); }
+    if (icon) icon.classList.add('hidden');
+  } else {
+    if (preview) { preview.src = ''; preview.classList.add('hidden'); }
+    if (icon) icon.classList.remove('hidden');
   }
+}
+
+function saveGlobalOptional() {
+  const name = document.getElementById('global-opt-name').value.trim();
+  const priceVal = document.getElementById('global-opt-price').value.trim();
+  const price = parseFloat(priceVal) || 0;
+
+  if (!name) {
+    showToast("⚠️ Informe o nome do adicional!");
+    return;
+  }
+
+  let additionals = [];
+  try {
+    const saved = localStorage.getItem(getStoreKey('ADICIONAIS'));
+    if (saved) additionals = JSON.parse(saved);
+  } catch (e) {}
+
+  additionals.push({
+    id: `add-${Date.now()}`,
+    title: name,
+    price: price,
+    image: currentGlobalOptImage || ''
+  });
+
+  localStorage.setItem(getStoreKey('ADICIONAIS'), JSON.stringify(additionals));
+
+  // Resetar campos
+  document.getElementById('global-opt-name').value = '';
+  document.getElementById('global-opt-price').value = '';
+  document.getElementById('global-opt-url').value = '';
+  currentGlobalOptImage = '';
+  const preview = document.getElementById('global-opt-img-preview');
+  const icon = document.getElementById('global-opt-img-icon');
+  if (preview) { preview.src = ''; preview.classList.add('hidden'); }
+  if (icon) icon.classList.remove('hidden');
+
+  renderGlobalOptionalsList();
+  showToast(`✅ Adicional "${name}" salvo com sucesso!`);
+}
+
+function renderGlobalOptionalsList() {
+  const container = document.getElementById('global-optionals-list');
+  if (!container) return;
+
+  let additionals = [];
+  try {
+    const saved = localStorage.getItem(getStoreKey('ADICIONAIS'));
+    if (saved) additionals = JSON.parse(saved);
+  } catch (e) {}
+
+  if (additionals.length === 0) {
+    container.innerHTML = `<div class="p-3 text-stone-500 text-xs text-center border border-dashed border-white/10 rounded-xl">Nenhum adicional cadastrado ainda.</div>`;
+    return;
+  }
+
+  container.innerHTML = additionals.map(add => {
+    const formattedPrice = add.price > 0 ? `R$ ${add.price.toFixed(2).replace('.', ',')}` : 'Grátis';
+    const imgHtml = add.image 
+      ? `<img src="${add.image}" class="w-full h-full object-cover" />`
+      : `<span class="text-xs">✨</span>`;
+
+    return `
+      <div class="flex items-center justify-between p-2.5 bg-white/5 border border-white/10 rounded-xl hover:border-white/20 transition-all">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg overflow-hidden bg-black/50 border border-white/10 flex items-center justify-center shrink-0">
+            ${imgHtml}
+          </div>
+          <div>
+            <span class="font-bold text-white text-xs block">${add.title}</span>
+            <span class="text-[11px] text-amber-400 font-semibold font-mono">${formattedPrice}</span>
+          </div>
+        </div>
+        <button type="button" onclick="deleteGlobalOptional('${add.id}')" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs transition-colors" title="Excluir">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function deleteGlobalOptional(id) {
+  let additionals = [];
+  try {
+    const saved = localStorage.getItem(getStoreKey('ADICIONAIS'));
+    if (saved) additionals = JSON.parse(saved);
+  } catch (e) {}
+
+  additionals = additionals.filter(a => a.id !== id);
+  localStorage.setItem(getStoreKey('ADICIONAIS'), JSON.stringify(additionals));
+  renderGlobalOptionalsList();
+  showToast("Adicional removido!");
+}
+
+// -------------------------------------------------------------------------
+// GESTÃO DE SABORES E VARIAÇÕES
+// -------------------------------------------------------------------------
+function openFlavorsModal() {
+  document.getElementById('new-flavor-name').value = '';
+  renderFlavorsList();
+  document.getElementById('flavors-modal').classList.remove('hidden');
+}
+
+function closeFlavorsModal() {
+  document.getElementById('flavors-modal').classList.add('hidden');
+}
+
+function addNewFlavor() {
+  const name = document.getElementById('new-flavor-name').value.trim();
+  if (!name) {
+    showToast("⚠️ Digite o nome do sabor!");
+    return;
+  }
+
+  let flavors = [];
+  try {
+    const saved = localStorage.getItem(getStoreKey('FLAVORS'));
+    if (saved) flavors = JSON.parse(saved);
+  } catch (e) {}
+
+  flavors.push({ id: `flv-${Date.now()}`, name: name });
+  localStorage.setItem(getStoreKey('FLAVORS'), JSON.stringify(flavors));
+  document.getElementById('new-flavor-name').value = '';
+  renderFlavorsList();
+  showToast(`✅ Sabor "${name}" adicionado!`);
+}
+
+function renderFlavorsList() {
+  const container = document.getElementById('flavors-list-container');
+  if (!container) return;
+
+  let flavors = [];
+  try {
+    const saved = localStorage.getItem(getStoreKey('FLAVORS'));
+    if (saved) flavors = JSON.parse(saved);
+  } catch (e) {}
+
+  if (flavors.length === 0) {
+    container.innerHTML = `<div class="p-3 text-stone-500 text-xs text-center border border-dashed border-white/10 rounded-xl">Nenhum sabor cadastrado ainda.</div>`;
+    return;
+  }
+
+  container.innerHTML = flavors.map(f => `
+    <div class="flex items-center justify-between p-2.5 bg-white/5 border border-white/10 rounded-xl">
+      <span class="text-xs font-semibold text-white">🍨 ${f.name}</span>
+      <button type="button" onclick="deleteFlavor('${f.id}')" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">✕</button>
+    </div>
+  `).join('');
+}
+
+function deleteFlavor(id) {
+  let flavors = [];
+  try {
+    const saved = localStorage.getItem(getStoreKey('FLAVORS'));
+    if (saved) flavors = JSON.parse(saved);
+  } catch (e) {}
+
+  flavors = flavors.filter(f => f.id !== id);
+  localStorage.setItem(getStoreKey('FLAVORS'), JSON.stringify(flavors));
+  renderFlavorsList();
+  showToast("Sabor removido!");
 }
 
 // -------------------------------------------------------------------------
