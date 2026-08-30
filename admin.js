@@ -212,29 +212,65 @@ function shareOnWhatsApp() {
 }
 
 // -------------------------------------------------------------------------
-// GERENCIADOR DE CARDÁPIO EM ACORDEÃO (IMAGEM 1 & 2 DE REFERÊNCIA)
+// GERENCIADOR DE CARDÁPIO
 // -------------------------------------------------------------------------
 function renderCategorySelects() {
-  const modalSelect = document.getElementById('prod-category');
-  if (modalSelect) {
-    modalSelect.innerHTML = CATEGORIES.map(c => `<option value="${c.id}">${c.icon || '📁'} ${c.name}</option>`).join('');
+  const sel = document.getElementById('prod-category');
+  if (!sel) return;
+  if (CATEGORIES.length === 0) {
+    sel.innerHTML = '<option value="">-- Crie uma categoria primeiro --</option>';
+    return;
   }
+  sel.innerHTML = CATEGORIES.map(c => `<option value="${c.id}">${c.icon || '📁'} ${c.name}</option>`).join('');
 }
 
 function renderCategoryAccordionList() {
   const container = document.getElementById('category-accordion-container');
   if (!container) return;
 
-  const search = (document.getElementById('menu-quick-search')?.value || '').toLowerCase();
+  const search = (document.getElementById('menu-quick-search')?.value || '').toLowerCase().trim();
+  
+  // Atualizar stats
+  const statsEl = document.getElementById('menu-stats');
+  const statCats = document.getElementById('stat-categories');
+  const statProds = document.getElementById('stat-products');
+  const guideBanner = document.getElementById('menu-guide-banner');
+
+  const totalProds = PRODUCTS.length;
+  const totalCats = CATEGORIES.length;
+
+  if (statsEl) {
+    if (totalCats > 0) {
+      statsEl.classList.remove('hidden');
+      statsEl.classList.add('flex');
+      if (statCats) statCats.textContent = `${totalCats} categoria${totalCats !== 1 ? 's' : ''}`;
+      if (statProds) statProds.textContent = `${totalProds} produto${totalProds !== 1 ? 's' : ''}`;
+    } else {
+      statsEl.classList.add('hidden');
+    }
+  }
+
+  // Mostrar guia quando vazio
+  if (guideBanner) {
+    if (totalCats === 0) {
+      guideBanner.classList.remove('hidden');
+    } else {
+      guideBanner.classList.add('hidden');
+    }
+  }
 
   if (CATEGORIES.length === 0) {
     container.innerHTML = `
-      <div class="p-12 text-center bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl text-brand-textMuted text-xs space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-white/5 mx-auto flex items-center justify-center text-2xl">📁</div>
-        <h3 class="font-bold text-sm text-stone-200">Cardápio vazio</h3>
-        <p>Comece criando categorias para organizar seus produtos.</p>
-        <button onclick="openCreateCategoryModal()" class="px-5 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs shadow-orange-glow active:scale-95 transition-all">
-          + Criar primeira categoria
+      <div class="p-10 text-center bg-[#120D0A] border border-brand-darkBorder border-dashed rounded-3xl space-y-4">
+        <div class="text-5xl">🍽️</div>
+        <div>
+          <h3 class="font-bold text-base text-white mb-1">Seu cardápio está vazio</h3>
+          <p class="text-xs text-stone-400 max-w-xs mx-auto">Comece criando uma categoria para organizar seus produtos. Ex: Lanches, Pizzas, Bebidas...</p>
+        </div>
+        <button onclick="openCreateCategoryModal()"
+          class="mx-auto px-6 py-3 rounded-2xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-sm shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 w-fit">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+          Criar Primeira Categoria
         </button>
       </div>
     `;
@@ -242,70 +278,58 @@ function renderCategoryAccordionList() {
   }
 
   container.innerHTML = CATEGORIES.map(cat => {
-    const prods = PRODUCTS.filter(p => p.category_id === cat.id);
-    const filteredProds = search 
-      ? prods.filter(p => p.name.toLowerCase().includes(search) || (p.description && p.description.toLowerCase().includes(search)))
-      : prods;
+    const allProds = PRODUCTS.filter(p => p.category_id === cat.id);
+    const filteredProds = search
+      ? allProds.filter(p => p.name.toLowerCase().includes(search) || (p.description && p.description.toLowerCase().includes(search)))
+      : allProds;
 
     const isVisible = cat.visible !== false;
+    const prodCount = allProds.length;
 
     return `
-      <!-- CARD DE CATEGORIA / ACORDEÃO -->
-      <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl overflow-hidden shadow-card-dark transition-all">
+      <div class="bg-[#0F0B08] border border-[#29211C] rounded-2xl overflow-hidden shadow-lg transition-all" id="cat-block-${cat.id}">
         
-        <!-- CABEÇALHO DA CATEGORIA (REFERÊNCIA IMAGEM 1) -->
-        <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-black/40 border-b border-brand-darkBorder/60">
-          
+        <!-- Cabeçalho da Categoria -->
+        <div class="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-[#29211C]">
           <div class="flex items-center gap-3">
-            <span class="text-xl">${cat.icon || '📁'}</span>
+            <span class="text-xl w-8 h-8 flex items-center justify-center bg-white/5 rounded-xl">${cat.icon || '📁'}</span>
             <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-bold text-sm sm:text-base text-white tracking-wide">${cat.name.toUpperCase()}</h3>
-                <span class="px-2 py-0.5 rounded-full bg-white/10 text-stone-300 text-[10px] font-bold">
-                  ${prods.length} ${prods.length === 1 ? 'item' : 'itens'}
-                </span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-sm text-white">${cat.name}</span>
+                <span class="px-2 py-0.5 rounded-full bg-white/10 text-stone-400 text-[10px] font-bold">${prodCount} ${prodCount === 1 ? 'item' : 'itens'}</span>
+                ${!isVisible ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold">👁 Oculta</span>' : ''}
               </div>
-              ${cat.desc ? `<p class="text-xs text-brand-textMuted mt-0.5 line-clamp-1">${cat.desc}</p>` : ''}
+              ${cat.desc ? `<p class="text-[11px] text-stone-500 mt-0.5 line-clamp-1">${cat.desc}</p>` : ''}
             </div>
           </div>
 
-          <!-- AÇÕES DA CATEGORIA -->
-          <div class="flex items-center gap-2 self-end sm:self-center">
-            <!-- Switch Visibilidade -->
-            <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-stone-400 font-medium mr-2" title="Visível no cardápio público">
-              <input type="checkbox" onchange="toggleCategoryVisibility('${cat.id}')" ${isVisible ? 'checked' : ''} class="w-4 h-4 rounded accent-brand-orange cursor-pointer" />
-              <span class="${isVisible ? 'text-emerald-400 font-bold' : 'text-stone-500'}">${isVisible ? 'Visível' : 'Oculta'}</span>
-            </label>
-
-            <button onclick="openEditCategoryModal('${cat.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-stone-300 hover:text-white border border-white/10 text-xs transition-colors" title="Editar Categoria">
-              ✏️
-            </button>
-            <button onclick="deleteCategory('${cat.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors" title="Excluir Categoria">
-              🗑️
-            </button>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openEditCategoryModal('${cat.id}')" 
+              class="p-2 rounded-lg bg-white/5 hover:bg-white/15 text-stone-300 hover:text-white text-xs transition-colors" 
+              title="Editar categoria">✏️</button>
+            <button onclick="deleteCategory('${cat.id}')" 
+              class="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors" 
+              title="Excluir categoria">🗑️</button>
           </div>
         </div>
 
-        <!-- CONTEÚDO / LISTA DE PRODUTOS DENTRO DA CATEGORIA -->
-        <div class="p-4 sm:p-5 space-y-3">
-          
-          ${filteredProds.length === 0 ? `
-            <div class="p-6 text-center text-brand-textMuted text-xs font-medium">
-              Nenhum produto nesta categoria.
-            </div>
-          ` : `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              ${filteredProds.map(prod => renderProductCard(prod)).join('')}
-            </div>
-          `}
+        <!-- Lista de Produtos -->
+        <div class="p-3 space-y-2">
+          ${filteredProds.length > 0 
+            ? filteredProds.map(prod => renderProductCard(prod)).join('')
+            : `<div class="py-5 text-center text-stone-500 text-xs">
+                <span class="text-2xl block mb-1">📭</span>
+                <span>Nenhum produto ainda nesta categoria.</span>
+               </div>`
+          }
 
-          <!-- BOTÃO ADICIONAR PRODUTO NA CATEGORIA (REFERÊNCIA IMAGEM 1) -->
-          <button onclick="openCreateProductModal('${cat.id}')" class="w-full py-3 rounded-2xl bg-emerald-600/15 hover:bg-emerald-600/25 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-all mt-2">
-            <span>+</span>
-            <span>Adicionar produto</span>
+          <!-- Botão Adicionar Produto na Categoria -->
+          <button onclick="openCreateProductModal('${cat.id}')"
+            class="w-full mt-1 py-2.5 rounded-xl border border-dashed border-emerald-500/30 hover:border-emerald-400/60 bg-emerald-600/5 hover:bg-emerald-600/10 text-emerald-400 hover:text-emerald-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.99]">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Adicionar produto em "${cat.name}"</span>
           </button>
         </div>
-
       </div>
     `;
   }).join('');
@@ -313,59 +337,74 @@ function renderCategoryAccordionList() {
 
 function renderProductCard(p) {
   const isPaused = p.status === 'paused';
+  const displayPrice = p.promo_price ? p.promo_price : p.price;
+  const hasPromo = !!p.promo_price;
 
-  // Badges
-  let badgesHtml = '';
-  if (p.featured) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[9px] font-bold">⭐ Destaque</span> ';
-  if (p.popular) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange text-[9px] font-bold">🔥 Popular</span> ';
-  if (p.is_new) badgesHtml += '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">✨ Novo</span> ';
-
-  // Imagem
-  const imageHtml = p.image 
-    ? `<img src="${p.image}" alt="${p.name}" class="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-black/40" />`
-    : `<div class="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl shrink-0">🍽️</div>`;
+  const badges = [];
+  if (p.featured) badges.push('<span class="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 text-[9px] font-bold">⭐ Destaque</span>');
+  if (p.popular) badges.push('<span class="px-1.5 py-0.5 rounded-md bg-orange-500/20 text-orange-400 text-[9px] font-bold">🔥 Popular</span>');
+  if (p.is_new) badges.push('<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">✨ Novo</span>');
 
   return `
-    <div class="bg-black/50 border ${isPaused ? 'border-white/5 opacity-60' : 'border-white/10 hover:border-brand-orange/40'} rounded-2xl p-3.5 flex items-start justify-between gap-3 transition-all">
-      <div class="flex items-start gap-3 flex-1">
-        ${imageHtml}
-        <div class="space-y-0.5 flex-1">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <h4 class="font-bold text-xs text-white leading-tight">${p.name}</h4>
-            ${badgesHtml}
-          </div>
-          <p class="text-[11px] text-brand-textMuted line-clamp-1">${p.description || 'Sem descrição.'}</p>
-          <div class="flex items-baseline gap-1.5 pt-0.5">
-            <span class="font-bold text-xs text-amber-400">${formatCurrency(p.promo_price || p.price)}</span>
-            ${p.promo_price ? `<span class="text-[10px] text-stone-500 line-through">${formatCurrency(p.price)}</span>` : ''}
-          </div>
+    <div class="flex items-center gap-3 p-3 rounded-xl border ${isPaused ? 'border-white/5 bg-black/20 opacity-50' : 'border-white/8 bg-white/[0.02] hover:border-white/15'} transition-all group">
+      <!-- Foto -->
+      <div class="w-14 h-14 rounded-xl overflow-hidden bg-black/40 border border-white/10 shrink-0 flex items-center justify-center">
+        ${p.image 
+          ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" /><span class="hidden w-full h-full items-center justify-center text-2xl">🍽️</span>`
+          : '<span class="text-2xl">🍽️</span>'
+        }
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="font-bold text-xs text-white truncate">${p.name}</span>
+          ${badges.join('')}
+        </div>
+        <p class="text-[11px] text-stone-500 mt-0.5 line-clamp-1">${p.description || ''}</p>
+        <div class="flex items-baseline gap-1.5 mt-1">
+          <span class="font-bold text-xs ${hasPromo ? 'text-emerald-400' : 'text-amber-400'}">${formatCurrency(displayPrice)}</span>
+          ${hasPromo ? `<span class="text-[10px] text-stone-600 line-through">${formatCurrency(p.price)}</span>` : ''}
         </div>
       </div>
 
-      <div class="flex items-center gap-1 shrink-0">
-        <button onclick="toggleProductStatus('${p.id}')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-[11px] text-stone-300" title="${isPaused ? 'Ativar' : 'Pausar'}">
-          ${isPaused ? '▶️' : '⏸️'}
+      <!-- Ações -->
+      <div class="flex items-center gap-1 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
+        <button onclick="toggleProductStatus('${p.id}')" 
+          class="p-1.5 rounded-lg ${isPaused ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'bg-white/5 text-stone-400 hover:bg-white/15'} text-[11px] transition-colors" 
+          title="${isPaused ? 'Ativar produto' : 'Pausar produto'}">
+          ${isPaused ? '▶' : '⏸'}
         </button>
-        <button onclick="openEditProductModal('${p.id}')" class="p-1.5 rounded-lg bg-brand-orange/20 hover:bg-brand-orange text-brand-orange hover:text-white text-[11px] font-bold" title="Editar">
-          ✏️
-        </button>
-        <button onclick="deleteProduct('${p.id}')" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-[11px]" title="Excluir">
-          🗑️
-        </button>
+        <button onclick="openEditProductModal('${p.id}')" 
+          class="p-1.5 rounded-lg bg-brand-orange/10 hover:bg-brand-orange text-brand-orange hover:text-white text-[11px] transition-colors" 
+          title="Editar produto">✏️</button>
+        <button onclick="deleteProduct('${p.id}')" 
+          class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-[11px] transition-colors" 
+          title="Excluir produto">🗑️</button>
       </div>
     </div>
   `;
 }
 
 // -------------------------------------------------------------------------
-// MODAL CATEGORIA (IMAGEM 2 REFERÊNCIA)
+// MODAL CATEGORIA
 // -------------------------------------------------------------------------
 function openCreateCategoryModal() {
   currentEditingCategoryId = null;
-  document.getElementById('modal-category-title').innerText = "Nova Categoria";
-  document.getElementById('form-category').reset();
-  document.getElementById('cat-visible-switch').checked = true;
-  document.getElementById('category-modal').classList.remove('hidden');
+  const titleEl = document.getElementById('modal-category-title');
+  const nameEl = document.getElementById('cat-name');
+  const iconEl = document.getElementById('cat-icon');
+  const descEl = document.getElementById('cat-desc');
+  const visibleEl = document.getElementById('cat-visible-switch');
+  
+  if (titleEl) titleEl.innerText = 'Nova Categoria';
+  if (nameEl) nameEl.value = '';
+  if (iconEl) iconEl.value = '';
+  if (descEl) descEl.value = '';
+  if (visibleEl) visibleEl.checked = true;
+  
+  document.getElementById('category-modal')?.classList.remove('hidden');
+  setTimeout(() => nameEl?.focus(), 100);
 }
 
 function openEditCategoryModal(id) {
@@ -373,7 +412,7 @@ function openEditCategoryModal(id) {
   if (!cat) return;
 
   currentEditingCategoryId = id;
-  document.getElementById('modal-category-title').innerText = "Editar Categoria";
+  document.getElementById('modal-category-title').innerText = 'Editar Categoria';
   document.getElementById('cat-name').value = cat.name || '';
   document.getElementById('cat-icon').value = cat.icon || '';
   document.getElementById('cat-desc').value = cat.desc || '';
@@ -382,19 +421,22 @@ function openEditCategoryModal(id) {
 }
 
 function closeCategoryModal() {
-  document.getElementById('category-modal').classList.add('hidden');
+  document.getElementById('category-modal')?.classList.add('hidden');
 }
 
 function saveCategoryForm(e) {
   if (e && e.preventDefault) e.preventDefault();
 
   const nameEl = document.getElementById('cat-name');
-  if (!nameEl) return false;
-  const name = nameEl.value.trim();
+  const name = nameEl ? nameEl.value.trim() : '';
 
   if (!name) {
-    showToast("⚠️ Por favor informe o Nome da categoria!");
-    nameEl.focus();
+    showToast('⚠️ Informe o nome da categoria!');
+    if (nameEl) {
+      nameEl.classList.add('border-rose-500');
+      nameEl.focus();
+      setTimeout(() => nameEl.classList.remove('border-rose-500'), 2000);
+    }
     return false;
   }
 
@@ -409,15 +451,8 @@ function saveCategoryForm(e) {
       showToast(`✅ Categoria "${name}" atualizada!`);
     }
   } else {
-    const newCat = {
-      id: `cat-${Date.now()}`,
-      name,
-      icon,
-      desc,
-      visible
-    };
-    CATEGORIES.push(newCat);
-    showToast(`📂 Categoria "${name}" criada com sucesso!`);
+    CATEGORIES.push({ id: `cat-${Date.now()}`, name, icon, desc, visible });
+    showToast(`📂 Categoria "${name}" criada!`);
   }
 
   saveCategories();
@@ -430,23 +465,27 @@ function saveCategoryForm(e) {
 function toggleCategoryVisibility(id) {
   const cat = CATEGORIES.find(c => c.id === id);
   if (!cat) return;
-
-  cat.visible = cat.visible === false ? true : false;
+  cat.visible = !cat.visible;
   saveCategories();
   renderCategoryAccordionList();
-  showToast(cat.visible ? `🟢 Categoria "${cat.name}" visível no cardápio.` : `⏸️ Categoria "${cat.name}" oculta.`);
+  showToast(cat.visible ? `🟢 "${cat.name}" visível no cardápio.` : `⏸️ "${cat.name}" oculta.`);
 }
 
 function deleteCategory(id) {
   const cat = CATEGORIES.find(c => c.id === id);
   if (!cat) return;
 
-  if (confirm(`Deseja excluir a categoria "${cat.name}"?`)) {
+  const prodsInCat = PRODUCTS.filter(p => p.category_id === id).length;
+  const msg = prodsInCat > 0
+    ? `Excluir a categoria "${cat.name}"? Os ${prodsInCat} produto(s) dela ficarão sem categoria.`
+    : `Excluir a categoria "${cat.name}"?`;
+
+  if (confirm(msg)) {
     CATEGORIES = CATEGORIES.filter(c => c.id !== id);
     saveCategories();
     renderCategorySelects();
     renderCategoryAccordionList();
-    showToast("🗑️ Categoria removida.");
+    showToast('🗑️ Categoria removida.');
   }
 }
 
@@ -703,113 +742,109 @@ function handleExtraImageUrl(inputEl) {
 
 function saveProductForm(e) {
   if (e && e.preventDefault) e.preventDefault();
+  if (e && e.stopPropagation) e.stopPropagation();
 
+  // ---- Coletar Campos ----
   const nameInput = document.getElementById('prod-name');
   const priceInput = document.getElementById('prod-price');
   const catSelect = document.getElementById('prod-category');
 
   const name = nameInput ? nameInput.value.trim() : '';
-  const priceVal = priceInput ? priceInput.value.trim() : '';
-  const price = parseFloat(priceVal);
+  const priceRaw = priceInput ? priceInput.value.trim() : '';
+  const price = parseFloat(priceRaw);
 
-  // Limpar estilos de erro anteriores
-  if (nameInput) nameInput.classList.remove('border-rose-500', 'bg-rose-500/10');
-  if (priceInput) priceInput.classList.remove('border-rose-500', 'bg-rose-500/10');
+  // Limpar erros anteriores
+  [nameInput, priceInput].forEach(el => {
+    if (el) el.classList.remove('border-rose-500', 'bg-rose-500/10');
+  });
 
-  // Validação explícita com foco e scroll automático
+  // ---- Validação ----
   if (!name) {
-    showToast("⚠️ Por favor, informe o Nome do produto!");
+    showToast('⚠️ Informe o nome do produto!');
     if (nameInput) {
       nameInput.classList.add('border-rose-500', 'bg-rose-500/10');
       nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
       nameInput.focus();
     }
-    return;
+    return false;
   }
 
-  if (isNaN(price) || price < 0 || priceVal === '') {
-    showToast("⚠️ Por favor, informe o Preço do produto!");
+  if (priceRaw === '' || isNaN(price) || price < 0) {
+    showToast('⚠️ Informe o preço do produto!');
     if (priceInput) {
       priceInput.classList.add('border-rose-500', 'bg-rose-500/10');
       priceInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
       priceInput.focus();
     }
-    return;
+    return false;
   }
 
+  // ---- Categoria ----
   let category_id = catSelect ? catSelect.value : '';
-  if (!category_id && CATEGORIES.length > 0) {
-    category_id = CATEGORIES[0].id;
-  } else if (!category_id) {
-    const defaultCat = { id: `cat-${Date.now()}`, name: "COMBO", icon: "🔥", desc: "Combos e ofertas especiais", visible: true };
-    CATEGORIES.push(defaultCat);
-    saveCategories();
-    renderCategorySelects();
-    category_id = defaultCat.id;
+  if (!category_id) {
+    if (CATEGORIES.length > 0) {
+      category_id = CATEGORIES[0].id;
+    } else {
+      showToast('⚠️ Crie uma categoria primeiro!');
+      closeProductModal();
+      openCreateCategoryModal();
+      return false;
+    }
   }
 
-  const promo_price_val = document.getElementById('prod-promo-price')?.value;
-  const promo_price = promo_price_val ? parseFloat(promo_price_val) : null;
+  // ---- Preço Promo ----
+  const promoPriceRaw = document.getElementById('prod-promo-price')?.value.trim() || '';
+  const promo_price = promoPriceRaw !== '' && parseFloat(promoPriceRaw) > 0 
+    ? parseFloat(promoPriceRaw) 
+    : null;
+
+  // ---- Outros campos ----
   const description = document.getElementById('prod-desc')?.value.trim() || '';
-  
   const isAvailable = document.getElementById('prod-available-switch')?.checked ?? true;
   const status = isAvailable ? 'active' : 'paused';
   const featured = document.getElementById('prod-featured-switch')?.checked ?? false;
   const is_new = document.getElementById('prod-new-switch')?.checked ?? false;
   const popular = document.getElementById('prod-popular-switch')?.checked ?? false;
 
-  // Extrair opcionais (com foto, nome e preço)
-  const extraRows = document.querySelectorAll('#product-extras-container .extra-row');
+  // ---- Opcionais ----
   const extras = [];
-  extraRows.forEach(row => {
+  document.querySelectorAll('#product-extras-container .extra-row').forEach(row => {
     const extraName = row.querySelector('.extra-name')?.value.trim();
+    if (!extraName) return;
     const extraPrice = parseFloat(row.querySelector('.extra-price')?.value) || 0;
-    const extraImage = row.querySelector('.extra-image-data')?.value || row.querySelector('.extra-image-url')?.value || '';
-    if (extraName) extras.push({ name: extraName, price: extraPrice, image: extraImage });
+    const extraImage = row.querySelector('.extra-image-data')?.value || '';
+    extras.push({ name: extraName, price: extraPrice, image: extraImage });
   });
 
+  // ---- Salvar ----
   if (currentEditingProductId) {
     const idx = PRODUCTS.findIndex(p => p.id === currentEditingProductId);
     if (idx !== -1) {
       PRODUCTS[idx] = {
         ...PRODUCTS[idx],
-        name,
-        category_id,
-        price,
-        promo_price,
-        description,
+        name, category_id, price, promo_price, description,
         image: currentUploadedProductImage || PRODUCTS[idx].image || '',
-        status,
-        featured,
-        is_new,
-        popular,
-        extras
+        status, featured, is_new, popular, extras,
+        updated_at: new Date().toISOString()
       };
-      showToast(`✅ Produto "${name}" atualizado com sucesso!`);
+      showToast(`✅ "${name}" atualizado!`);
     }
   } else {
-    const newProd = {
-      id: `prod-${Date.now()}`,
-      name,
-      category_id,
-      price,
-      promo_price,
-      description,
+    PRODUCTS.push({
+      id: `prod-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      name, category_id, price, promo_price, description,
       image: currentUploadedProductImage || '',
-      status,
-      featured,
-      is_new,
-      popular,
-      extras
-    };
-    PRODUCTS.push(newProd);
-    showToast(`🚀 Produto "${name}" cadastrado com sucesso!`);
+      status, featured, is_new, popular, extras,
+      created_at: new Date().toISOString()
+    });
+    showToast(`🚀 "${name}" adicionado ao cardápio!`);
   }
 
   saveProducts();
   closeProductModal();
   renderCategoryAccordionList();
   renderStoreTopbar();
+  return false;
 }
 
 function toggleProductStatus(id) {
