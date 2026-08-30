@@ -1,777 +1,1014 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#09090b">
-  <title>PedidoVale — Cardápio Digital & Gestão Completa para Restaurantes</title>
-  <meta name="description" content="Crie seu cardápio digital profissional em minutos. Sistema completo de pedidos, PDV, cozinha KDS e entregas. Teste grátis por 7 dias, sem cartão de crédito.">
-  <meta property="og:title" content="PedidoVale — Venda mais com seu cardápio digital">
-  <meta property="og:description" content="Sistema completo para restaurantes: cardápio digital, pedidos por WhatsApp, PDV, cozinha KDS e muito mais.">
+  <title>ideatr — AI-Powered Full-Stack App Generation</title>
+  <meta name="description" content="Enter your idea in plain English. ideatr generates production-ready Frontend, Backend, and Database instantly. Build and grow apps at the speed of thought.">
 
+  <!-- Google Fonts: Inter, DM Sans, Instrument Serif, Bricolage Grotesque -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+            serif: ['Instrument Serif', 'serif'],
+            display: ['Bricolage Grotesque', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#004BB0',
+              purple: '#6B21A8',
+              accent: '#8B5CF6',
+              bgOff: '#F9F8F6',
+            }
+          }
+        }
+      }
+    }
+  </script>
 
   <style>
-    :root {
-      --orange: #FF5E1E;
-      --orange-dark: #E54A0D;
-      --amber: #F59E0B;
-      --bg: #09090b;
-      --bg-card: #111113;
-      --bg-surface: #18181b;
-      --border: rgba(255,255,255,0.08);
-      --text: #fafafa;
-      --muted: #71717a;
-      --muted-light: #a1a1aa;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 20px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #cbd5e1;
+    }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background-color: #F9F8F6;
+      color: #0f172a;
       overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
+      font-family: 'DM Sans', 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    h1, h2, h3 { font-family: 'Sora', sans-serif; }
-
-    /* ── UTILS ── */
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 14px; border-radius: 100px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+    .font-serif-title {
+      font-family: 'Instrument Serif', Georgia, serif;
     }
-    .badge-orange { background: rgba(255,94,30,0.12); border: 1px solid rgba(255,94,30,0.3); color: var(--orange); }
-    .badge-green  { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
-    .badge-white  { background: rgba(255,255,255,0.07); border: 1px solid var(--border); color: var(--muted-light); }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 14px 28px; border-radius: 14px; border: none; cursor: pointer;
-      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px;
-      transition: all 0.2s ease; text-decoration: none; white-space: nowrap;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-      color: #fff;
-      box-shadow: 0 8px 24px -4px rgba(255,94,30,0.4);
-    }
-    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 12px 32px -4px rgba(255,94,30,0.5); }
-    .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--muted-light); }
-    .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
-    .btn:active { transform: scale(0.98); }
-
-    /* ── BACKGROUND EFFECTS ── */
-    .glow-bg {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-    }
-    .glow-1 {
-      position: absolute; width: 700px; height: 700px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,94,30,0.07) 0%, transparent 70%);
-      top: -200px; right: -100px;
-    }
-    .glow-2 {
-      position: absolute; width: 500px; height: 500px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%);
-      bottom: 20%; left: -150px;
-    }
-    .grid-lines {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 60px 60px;
+    
+    .font-bricolage {
+      font-family: 'Bricolage Grotesque', sans-serif;
     }
 
-    /* ── NAVBAR ── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(9,9,11,0.85); backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
+    /* 3D Perspective & Custom Transforms */
+    .perspective-1000 {
+      perspective: 1000px;
     }
-    .nav-inner {
-      display: flex; align-items: center; justify-content: space-between;
-      height: 64px;
+    .rotate-x-\[5deg\] {
+      transform: rotateX(5deg);
     }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    .rotate-y-\[-5deg\] {
+      transform: rotateY(-5deg);
     }
-    .nav-logo-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; box-shadow: 0 4px 12px rgba(255,94,30,0.4);
+    .mockup-3d-tilt {
+      transform: perspective(1000px) rotateX(6deg) rotateY(-4deg) rotateZ(1deg);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .nav-logo-text { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 18px; }
-    .nav-logo-text span { color: var(--orange); }
-    .nav-links { display: flex; align-items: center; gap: 6px; }
-    .nav-link { 
-      padding: 8px 14px; border-radius: 10px; color: var(--muted-light);
-      font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.15s;
-    }
-    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
-    .nav-cta { display: flex; align-items: center; gap: 8px; }
-    .nav-login { 
-      padding: 8px 16px; border-radius: 10px; color: var(--muted-light);
-      font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.15s;
-    }
-    .nav-login:hover { color: #fff; }
-    .btn-nav { padding: 9px 20px; font-size: 13px; border-radius: 10px; }
-    .nav-mobile-hidden { display: none; }
-
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .nav-mobile-hidden { display: flex; }
-      .nav-login { display: none; }
+    .mockup-3d-tilt:hover {
+      transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
     }
 
-    /* ── HERO ── */
-    .hero {
-      position: relative; z-index: 1;
-      padding: 100px 0 80px;
-      text-align: center;
+    /* Button code-shift animated gradient border */
+    @keyframes border-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-    .hero h1 {
-      font-size: clamp(36px, 6vw, 72px);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -0.03em;
-      margin: 18px 0;
-    }
-    .hero h1 em { 
-      font-style: normal; 
-      background: linear-gradient(135deg, var(--orange) 0%, var(--amber) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .hero-sub {
-      font-size: clamp(15px, 2vw, 19px); color: var(--muted-light);
-      max-width: 560px; margin: 0 auto 36px; line-height: 1.6;
-    }
-    .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-    .hero-note { margin-top: 16px; font-size: 12px; color: var(--muted); }
-    .hero-note span { color: #22c55e; }
-
-    /* ── SOCIAL PROOF BAR ── */
-    .proof-bar {
-      position: relative; z-index: 1;
-      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      padding: 18px 0; background: rgba(255,255,255,0.02);
-    }
-    .proof-inner {
-      display: flex; align-items: center; justify-content: center;
-      gap: 32px; flex-wrap: wrap;
-    }
-    .proof-item { display: flex; align-items: center; gap: 8px; }
-    .proof-num { font-weight: 800; font-size: 18px; color: #fff; }
-    .proof-label { font-size: 12px; color: var(--muted); }
-    .proof-divider { width: 1px; height: 32px; background: var(--border); }
-
-    /* ── SECTIONS COMMON ── */
-    section { position: relative; z-index: 1; }
-    .section-label {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--orange); margin-bottom: 12px;
-    }
-    .section-title {
-      font-size: clamp(26px, 4vw, 44px); font-weight: 800;
-      line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 14px;
-    }
-    .section-sub { font-size: 16px; color: var(--muted-light); max-width: 520px; line-height: 1.6; }
-
-    /* ── FEATURES GRID ── */
-    .features { padding: 100px 0; }
-    .features-header { text-align: center; margin-bottom: 60px; }
-    .features-header .section-sub { margin: 0 auto; }
-    .features-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-    .feature-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 28px;
-      transition: all 0.25s ease; cursor: default;
-    }
-    .feature-card:hover {
-      border-color: rgba(255,94,30,0.3);
-      background: rgba(255,94,30,0.03);
-      transform: translateY(-3px);
-      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5);
-    }
-    .feature-icon {
-      width: 48px; height: 48px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin-bottom: 16px;
-    }
-    .feature-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-    .feature-desc { font-size: 13px; color: var(--muted-light); line-height: 1.6; }
-
-    /* ── HOW IT WORKS ── */
-    .how { padding: 100px 0; background: linear-gradient(180deg, transparent, rgba(255,94,30,0.03), transparent); }
-    .how-header { text-align: center; margin-bottom: 64px; }
-    .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .how-step {
-      text-align: center; padding: 40px 28px;
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
-    }
-    .how-step-num {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-      color: #fff; font-family: 'Sora', sans-serif; font-weight: 800; font-size: 20px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px;
-      box-shadow: 0 8px 24px -4px rgba(255,94,30,0.4);
-    }
-    .how-step-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
-    .how-step-desc { font-size: 13px; color: var(--muted-light); line-height: 1.7; }
-
-    @media (max-width: 640px) {
-      .how-steps { grid-template-columns: 1fr; }
+    .btn-gradient-shift {
+      background: linear-gradient(115deg, #004BB0, #8b5cf6, #4c1d95, #004BB0);
+      background-size: 300% 300%;
+      animation: border-shift 6s ease infinite;
     }
 
-    /* ── PRICING ── */
-    .pricing { padding: 100px 0; }
-    .pricing-header { text-align: center; margin-bottom: 60px; }
-    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 780px; margin: 0 auto; }
-    .price-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 24px; padding: 36px;
-    }
-    .price-card.featured {
-      border-color: rgba(255,94,30,0.4);
-      background: linear-gradient(145deg, rgba(255,94,30,0.06), rgba(255,94,30,0.02));
-      box-shadow: 0 0 0 1px rgba(255,94,30,0.2), 0 24px 48px -12px rgba(0,0,0,0.5);
-    }
-    .price-plan { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-    .price-amount { display: flex; align-items: baseline; gap: 4px; margin: 14px 0; }
-    .price-currency { font-size: 20px; font-weight: 700; color: var(--muted-light); margin-top: 8px; }
-    .price-value { font-family: 'Sora', sans-serif; font-size: 52px; font-weight: 800; line-height: 1; }
-    .price-period { font-size: 14px; color: var(--muted); }
-    .price-desc { font-size: 13px; color: var(--muted-light); margin-bottom: 24px; line-height: 1.6; }
-    .price-features { list-style: none; space-y: 10px; margin-bottom: 28px; }
-    .price-features li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 13px; color: var(--muted-light); padding: 7px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .price-features li:last-child { border-bottom: none; }
-    .price-features li .check { color: #22c55e; font-weight: 700; font-size: 15px; flex-shrink: 0; }
-    .price-features li .x { color: var(--muted); flex-shrink: 0; }
-    .btn-price { width: 100%; }
-
-    @media (max-width: 600px) {
-      .pricing-grid { grid-template-columns: 1fr; }
+    /* Subtle grid line overlay */
+    .grid-lines-subtle {
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
 
-    /* ── TESTIMONIALS ── */
-    .testimonials { padding: 100px 0; }
-    .testimonials-header { text-align: center; margin-bottom: 60px; }
-    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .testimonial-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 28px;
+    /* Dashboard scheduling grid */
+    .dashboard-grid-cols {
+      display: grid;
+      grid-template-columns: 72px repeat(5, minmax(130px, 1fr));
     }
-    .testimonial-text { font-size: 14px; color: var(--muted-light); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
-    .testimonial-author { display: flex; align-items: center; gap: 12px; }
-    .testimonial-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; background: var(--bg-surface);
-    }
-    .testimonial-name { font-size: 13px; font-weight: 700; }
-    .testimonial-role { font-size: 12px; color: var(--muted); }
-    .stars { color: var(--amber); font-size: 13px; margin-bottom: 14px; }
-
-    @media (max-width: 768px) {
-      .testimonials-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ── FAQ ── */
-    .faq { padding: 100px 0; }
-    .faq-header { text-align: center; margin-bottom: 60px; }
-    .faq-list { max-width: 680px; margin: 0 auto; }
-    .faq-item {
-      border-bottom: 1px solid var(--border); overflow: hidden;
-    }
-    .faq-q {
-      width: 100%; display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 0; background: none; border: none; cursor: pointer;
-      font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600;
-      color: #fff; text-align: left; gap: 16px;
-    }
-    .faq-q .icon {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: rgba(255,255,255,0.06); display: flex; align-items: center;
-      justify-content: center; flex-shrink: 0; transition: transform 0.2s;
-      font-size: 16px; color: var(--muted-light);
-    }
-    .faq-item.open .faq-q .icon { transform: rotate(45deg); background: rgba(255,94,30,0.15); color: var(--orange); }
-    .faq-a { 
-      font-size: 14px; color: var(--muted-light); line-height: 1.7;
-      max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease;
-    }
-    .faq-item.open .faq-a { max-height: 300px; padding-bottom: 20px; }
-
-    /* ── CTA SECTION ── */
-    .cta-section {
-      padding: 100px 0;
-      text-align: center;
-    }
-    .cta-box {
-      background: linear-gradient(135deg, rgba(255,94,30,0.1), rgba(245,158,11,0.05));
-      border: 1px solid rgba(255,94,30,0.2);
-      border-radius: 32px; padding: 72px 40px;
-      max-width: 680px; margin: 0 auto;
-      position: relative; overflow: hidden;
-    }
-    .cta-box::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% -30%, rgba(255,94,30,0.15) 0%, transparent 70%);
-    }
-    .cta-box h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; margin-bottom: 14px; position: relative; }
-    .cta-box p { font-size: 16px; color: var(--muted-light); margin-bottom: 32px; position: relative; }
-    .cta-box .hero-ctas { position: relative; }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 48px 0 32px;
-      position: relative; z-index: 1;
-    }
-    .footer-inner {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 24px; text-align: center;
-    }
-    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-    .footer-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
-    .footer-link:hover { color: #fff; }
-    .footer-copy { font-size: 12px; color: var(--muted); }
-    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 20px; }
-    .footer-logo span { color: var(--orange); }
   </style>
 </head>
+<body class="antialiased selection:bg-purple-100 selection:text-purple-900">
 
-<body>
-  <!-- Background effects -->
-  <div class="glow-bg">
-    <div class="grid-lines"></div>
-    <div class="glow-1"></div>
-    <div class="glow-2"></div>
-  </div>
+  <!-- ========================================================================= -->
+  <!-- SECTION 1 - NAVIGATION -->
+  <!-- ========================================================================= -->
+  <header class="bg-[#000000] text-white sticky top-0 z-50 border-b border-white/10 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-8">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/60 flex items-center justify-center text-purple-400 group-hover:border-purple-500 transition-all shadow-inner">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <span class="font-bricolage font-bold text-lg tracking-tight text-white flex items-center">
+            ideatr
+            <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold font-sans tracking-wide bg-purple-950/80 text-purple-300 border border-purple-800/60 rounded">AI</span>
+          </span>
+        </a>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- NAVBAR -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <nav>
-    <div class="container nav-inner">
-      <a href="/" class="nav-logo">
-        <div class="nav-logo-icon">⚡</div>
-        <span class="nav-logo-text">Pedido<span>Vale</span></span>
-      </a>
-
-      <div class="nav-links">
-        <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
-        <a href="#como-funciona" class="nav-link">Como Funciona</a>
-        <a href="#precos" class="nav-link">Preços</a>
-        <a href="#faq" class="nav-link">FAQ</a>
+        <!-- Desktop Links -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400 font-sans">
+          <a href="#generator" class="hover:text-slate-50 transition-colors duration-200">Generator</a>
+          <a href="#examples" class="hover:text-slate-50 transition-colors duration-200">Examples</a>
+          <a href="#docs" class="hover:text-slate-50 transition-colors duration-200">Docs</a>
+          <a href="#pricing" class="hover:text-slate-50 transition-colors duration-200">Pricing</a>
+          <a href="#enterprise" class="hover:text-slate-50 transition-colors duration-200">Enterprise</a>
+        </nav>
       </div>
 
-      <div class="nav-cta">
-        <a href="login.html" class="nav-login">Entrar</a>
-        <a href="cadastro.html" class="btn btn-primary btn-nav">
-          Teste Grátis 7 Dias
+      <!-- Actions -->
+      <div class="flex items-center gap-3 font-sans">
+        <a href="login.html" class="px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white border border-stone-700 hover:border-stone-500 rounded-md transition-all duration-200">
+          Login
+        </a>
+        <a href="cadastro.html" class="px-4 py-2 text-xs font-semibold text-white bg-[#004BB0] hover:bg-[#003884] rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5">
+          <span>Start Building</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
         </a>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- HERO -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="hero">
-    <div class="container">
-      <div class="badge badge-green">
-        <span>●</span> Teste grátis por 7 dias • Sem cartão de crédito
+  <!-- ========================================================================= -->
+  <!-- SECTION 2 - HERO SECTION WITH SPLINE BACKGROUND -->
+  <!-- ========================================================================= -->
+  <section class="relative min-h-[85vh] lg:min-h-[92vh] flex items-center justify-center overflow-hidden pt-12 pb-20 px-4 sm:px-6 lg:px-8 bg-black">
+    
+    <!-- Spline Iframe Background Animation (-z-10) -->
+    <div class="absolute inset-0 -z-10 w-full h-full pointer-events-none opacity-80 mix-blend-screen">
+      <iframe 
+        src="https://my.spline.design/retrofuturismbganimation-Lb3VtL1bNaYUnirKNzn0FvaW" 
+        frameborder="0" 
+        class="w-full h-full scale-110 lg:scale-100"
+        allow="fullscreen"
+        title="Retro Futurism Background Animation">
+      </iframe>
+    </div>
+
+    <!-- Gradient Radial Overlay to blend Spline with content -->
+    <div class="absolute inset-0 -z-10 bg-radial from-transparent via-black/40 to-black pointer-events-none"></div>
+
+    <!-- Hero Content Container (z-10) -->
+    <div class="relative z-10 max-w-6xl mx-auto text-center w-full">
+      
+      <!-- Top Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-950/70 border border-purple-800/50 text-purple-300 text-xs font-semibold font-sans tracking-wide mb-6 backdrop-blur-md shadow-lg shadow-purple-950/30">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+        <span>AI-POWERED FULL-STACK GENERATION</span>
       </div>
 
-      <h1>
-        Seu restaurante vendendo mais<br>
-        com um sistema <em>completo</em>
+      <!-- Main Heading (Instrument Serif) -->
+      <h1 class="font-serif-title text-5xl sm:text-7xl lg:text-8xl font-normal text-white tracking-tight leading-[1.05] max-w-4xl mx-auto mb-6">
+        Describe it in English.<br class="hidden sm:inline">
+        <span class="italic text-purple-200/90 font-serif-title">We code the rest.</span>
       </h1>
 
-      <p class="hero-sub">
-        Cardápio digital profissional, pedidos pelo WhatsApp com taxa zero, PDV rápido, monitor de cozinha e muito mais. Tudo em um só lugar.
+      <!-- Subtitle -->
+      <p class="text-base sm:text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-normal leading-relaxed font-sans">
+        Enter your idea in plain English. ideatr generates production-ready Frontend, Backend, and Database instantly. Build and grow apps at the speed of thought.
       </p>
 
-      <div class="hero-ctas">
-        <a href="cadastro.html" class="btn btn-primary" style="font-size:15px; padding: 16px 36px;">
-          Criar Meu Cardápio Grátis →
-        </a>
-        <a href="cadastro.html" class="btn btn-secondary" style="font-size:15px; padding: 16px 28px;">
-          👀 Ver Demonstração
-        </a>
+      <!-- Search / Prompt Input Box -->
+      <div class="max-w-2xl mx-auto mb-16 px-2">
+        <form onsubmit="event.preventDefault(); window.location.href='cadastro.html';" class="relative flex flex-col sm:flex-row items-stretch sm:items-center bg-[#121118]/90 backdrop-blur-xl border border-white/15 p-2 rounded-2xl sm:rounded-xl shadow-2xl ring-1 ring-purple-500/20 focus-within:ring-2 focus-within:ring-purple-500/60 transition-all duration-300">
+          <div class="flex items-center flex-1 px-3 py-2 sm:py-0">
+            <i data-lucide="terminal" class="w-5 h-5 text-purple-400 mr-3 shrink-0"></i>
+            <input 
+              type="text" 
+              placeholder="Describe your dream app... e.g. A marketplace for local artisanal bakeries with delivery tracking" 
+              class="w-full bg-transparent text-white placeholder-slate-400 text-sm font-sans focus:outline-none"
+              required
+            >
+          </div>
+          <button 
+            type="submit" 
+            class="btn-gradient-shift text-white font-sans font-semibold text-sm px-6 py-3.5 rounded-lg shadow-lg hover:shadow-purple-500/30 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 mt-2 sm:mt-0 shrink-0"
+          >
+            <span>Generate App</span>
+            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 7h10v10"></path>
+              <path d="M7 17 17 7"></path>
+            </svg>
+          </button>
+        </form>
+        <div class="flex items-center justify-center gap-6 mt-3 text-xs text-slate-400 font-sans">
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> No Credit Card Required</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Next.js + Tailwind + Supabase</span>
+        </div>
       </div>
 
-      <p class="hero-note">
-        <span>✓</span> Sem instalação &nbsp;&nbsp;
-        <span>✓</span> Funciona no celular &nbsp;&nbsp;
-        <span>✓</span> Suporte via WhatsApp
+      <!-- 3D Mockup Container (perspective-1000) -->
+      <div class="relative max-w-5xl mx-auto perspective-1000">
+        <div class="mockup-3d-tilt rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-950/80 backdrop-blur-md">
+          <div class="bg-slate-900/90 px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+            </div>
+            <div class="px-3 py-1 bg-black/50 border border-white/5 rounded-md text-[11px] font-mono text-slate-400 flex items-center gap-2">
+              <i data-lucide="globe" class="w-3 h-3 text-slate-500"></i>
+              <span>ideatr.app/preview/project-management</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-400">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+          <img 
+            src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4aa0ba0f-cf6d-4050-bf33-824539eb56e0_1600w.png" 
+            alt="ideatr Hero UI Generation Showcase" 
+            class="w-full h-auto object-cover block"
+            loading="eager"
+          >
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- SECTION 3 - LOGO GRID -->
+  <!-- ========================================================================= -->
+  <section class="bg-[#F9F8F6] border-y border-stone-200 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-center text-xs uppercase tracking-widest font-semibold text-stone-500 mb-8 font-sans">
+        TRUSTED BY FOUNDERS & DEVELOPERS WORLDWIDE AT MODERN COMPANIES
       </p>
-    </div>
-  </section>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- SOCIAL PROOF BAR -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <div class="proof-bar">
-    <div class="container">
-      <div class="proof-inner">
-        <div class="proof-item">
-          <span class="proof-num">500+</span>
-          <span class="proof-label">Restaurantes ativos</span>
-        </div>
-        <div class="proof-divider"></div>
-        <div class="proof-item">
-          <span class="proof-num">R$0</span>
-          <span class="proof-label">Taxa por pedido</span>
-        </div>
-        <div class="proof-divider"></div>
-        <div class="proof-item">
-          <span class="proof-num">30s</span>
-          <span class="proof-label">Para criar sua loja</span>
-        </div>
-        <div class="proof-divider"></div>
-        <div class="proof-item">
-          <span class="proof-num">4.9★</span>
-          <span class="proof-label">Avaliação dos clientes</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- FUNCIONALIDADES -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="features" id="funcionalidades">
-    <div class="container">
-      <div class="features-header">
-        <p class="section-label">Funcionalidades</p>
-        <h2 class="section-title">Tudo que seu negócio precisa,<br>sem complicação</h2>
-        <p class="section-sub">Cada módulo foi criado pensando na praticidade do dia a dia do restaurante.</p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(255,94,30,0.12);">📱</div>
-          <h3 class="feature-title">Cardápio Digital com Fotos</h3>
-          <p class="feature-desc">Seu menu profissional com fotos em alta definição, opcionais, combos e badges de destaque (🔥 Popular, ✨ Novo).</p>
+      <!-- 2/4/6 Column Grid with Hover Transitions -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-stone-300 rounded-xl overflow-hidden border border-stone-300 shadow-sm">
+        
+        <!-- Brand 1 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="hexagon" class="w-7 h-7 text-stone-400 group-hover:text-purple-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">ACME CORP</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(34,197,94,0.12);">💬</div>
-          <h3 class="feature-title">Pedidos pelo WhatsApp</h3>
-          <p class="feature-desc">O cliente faz o pedido direto pelo cardápio e você recebe tudo organizado no WhatsApp. Zero taxa por transação.</p>
+        <!-- Brand 2 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="cpu" class="w-7 h-7 text-stone-400 group-hover:text-blue-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">HYPER AI</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(245,158,11,0.12);">💻</div>
-          <h3 class="feature-title">PDV Balcão Express</h3>
-          <p class="feature-desc">Lance pedidos de balcão, mesa ou telefone em 2 toques. Funciona no celular, tablet ou computador.</p>
+        <!-- Brand 3 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="infinity" class="w-7 h-7 text-stone-400 group-hover:text-indigo-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">NEXUS LABS</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(239,68,68,0.12);">🍳</div>
-          <h3 class="feature-title">Monitor de Cozinha (KDS)</h3>
-          <p class="feature-desc">Tela dedicada para a cozinha com cronômetro de preparo, alertas sonoros e botões grandes. Fim das comandas de papel.</p>
+        <!-- Brand 4 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="wind" class="w-7 h-7 text-stone-400 group-hover:text-teal-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">ZEPHYR</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(59,130,246,0.12);">🛵</div>
-          <h3 class="feature-title">Gestão de Entregas</h3>
-          <p class="feature-desc">Calcule taxas por bairro, defina tempo estimado e despache pedidos para o entregador com rota no Google Maps.</p>
+        <!-- Brand 5 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="mountain" class="w-7 h-7 text-stone-400 group-hover:text-emerald-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">PEAK SCALE</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(168,85,247,0.12);">🎁</div>
-          <h3 class="feature-title">Cupons & Fidelidade</h3>
-          <p class="feature-desc">Crie cupons promocionais (FRETEGRATIS, 10% OFF) e estimule clientes a voltarem sempre.</p>
+        <!-- Brand 6 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="box" class="w-7 h-7 text-stone-400 group-hover:text-amber-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">CUBE ARCH</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(20,184,166,0.12);">🔑</div>
-          <h3 class="feature-title">PIX Direto na Conta</h3>
-          <p class="feature-desc">Receba pagamentos instantâneos direto na sua chave PIX, sem intermediários e sem taxas ocultas.</p>
+        <!-- Brand 7 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="anchor" class="w-7 h-7 text-stone-400 group-hover:text-cyan-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">HARBOR SAAS</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(255,94,30,0.12);">🔗</div>
-          <h3 class="feature-title">Link Exclusivo da Loja</h3>
-          <p class="feature-desc">Seu cardápio em um link curto e memorável: <strong style="color:var(--amber)">pedidovale.com.br/sualoja</strong> — pronto para o Instagram.</p>
+        <!-- Brand 8 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="triangle" class="w-7 h-7 text-stone-400 group-hover:text-fuchsia-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">DELTA CLOUD</span>
         </div>
+
+        <!-- Brand 9 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="droplet" class="w-7 h-7 text-stone-400 group-hover:text-sky-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">FLOWBASE</span>
+        </div>
+
+        <!-- Brand 10 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="database" class="w-7 h-7 text-stone-400 group-hover:text-emerald-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">SYNCPULSE</span>
+        </div>
+
+        <!-- Brand 11 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="layers" class="w-7 h-7 text-stone-400 group-hover:text-violet-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">STACKVENT</span>
+        </div>
+
+        <!-- Brand 12 -->
+        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
+          <i data-lucide="sparkles" class="w-7 h-7 text-stone-400 group-hover:text-rose-600 transition-colors duration-300"></i>
+          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">LUMEN AI</span>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- COMO FUNCIONA -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="how" id="como-funciona">
-    <div class="container">
-      <div class="how-header">
-        <p class="section-label">Como Funciona</p>
-        <h2 class="section-title">Comece a vender em 3 passos</h2>
-        <p class="section-sub" style="margin:0 auto;">Sem complicação. Sem técnico. Sem instalação. Você mesmo configura tudo em minutos.</p>
+  <!-- ========================================================================= -->
+  <!-- SECTION 4 - WORKFLOW FEATURES (2-COLUMN GRID) -->
+  <!-- ========================================================================= -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]" id="features">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-16">
+        <span class="text-xs font-bold uppercase tracking-widest text-purple-700 bg-purple-100 px-3 py-1 rounded-full">INTELLIGENT WORKFLOW</span>
+        <h2 class="font-serif-title text-4xl sm:text-6xl text-stone-900 mt-4 leading-tight">
+          From conversational prompt to production release in seconds.
+        </h2>
+        <p class="text-stone-600 text-lg mt-4 font-normal">
+          No boilerplate configuration, no dependency conflicts. ideatr translates natural human intent directly into validated, typed source code.
+        </p>
       </div>
 
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="how-step-num">1</div>
-          <h3 class="how-step-title">Crie sua conta grátis</h3>
-          <p class="how-step-desc">Preencha o nome do seu restaurante, WhatsApp e cidade. Em 30 segundos sua loja já está ativa no ar.</p>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">2</div>
-          <h3 class="how-step-title">Monte seu cardápio</h3>
-          <p class="how-step-desc">Adicione categorias, produtos com fotos e preços. Nosso painel guiado torna tudo simples e intuitivo.</p>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">3</div>
-          <h3 class="how-step-title">Compartilhe e venda</h3>
-          <p class="how-step-desc">Copie seu link exclusivo, cole no Instagram e WhatsApp. Os pedidos chegam organizados pra você.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      <!-- 2-Column Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        <!-- Left: Plain English to Code Progress Bar Mockup -->
+        <div class="lg:col-span-7 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-xl shadow-stone-200/50 flex flex-col justify-between relative overflow-hidden group">
+          <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-100/50 rounded-full blur-3xl pointer-events-none"></div>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- PREÇOS -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="pricing" id="precos">
-    <div class="container">
-      <div class="pricing-header">
-        <p class="section-label">Planos</p>
-        <h2 class="section-title">Preço justo, sem surpresas</h2>
-        <p class="section-sub" style="margin:0 auto;">Comece grátis. Assine quando quiser. Cancele quando quiser.</p>
-      </div>
+          <div>
+            <div class="flex items-center justify-between pb-6 border-b border-stone-100">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
+                  <i data-lucide="terminal" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bricolage font-bold text-lg text-stone-900">Plain English to Code</h3>
+                  <p class="text-xs text-stone-500 font-sans">Synthesizing architecture & components</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Compiling
+              </span>
+            </div>
 
-      <div class="pricing-grid">
-        <!-- Plano Grátis -->
-        <div class="price-card">
-          <p class="price-plan">Avaliação Gratuita</p>
-          <div class="price-amount">
-            <span class="price-value">R$0</span>
-            <span class="price-period">/7 dias</span>
+            <!-- Prompt Box in card -->
+            <div class="mt-6 p-4 rounded-xl bg-stone-50 border border-stone-200/60 font-mono text-xs text-stone-700 leading-relaxed">
+              <span class="text-purple-600 font-bold">$ ideatr generate:</span> "Build an AI analytics dashboard with real-time WebSocket feeds, authentication with Google & Github, and export to CSV/PDF."
+            </div>
+
+            <!-- Progress Bars Mockup -->
+            <div class="mt-8 space-y-5">
+              <!-- Frontend Bar -->
+              <div>
+                <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
+                  <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i> Next.js 15 App Router Frontend</span>
+                  <span class="text-emerald-600">100% Ready</span>
+                </div>
+                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <!-- Backend Bar -->
+              <div>
+                <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
+                  <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-600"></i> Serverless Edge Functions & APIs</span>
+                  <span class="text-purple-600">59% Synthesizing...</span>
+                </div>
+                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-purple-600 to-fuchsia-600 h-full rounded-full transition-all duration-1000" style="width: 59%"></div>
+                </div>
+              </div>
+
+              <!-- Database Bar -->
+              <div>
+                <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
+                  <span class="flex items-center gap-1.5"><i data-lucide="database" class="w-3.5 h-3.5 text-emerald-600"></i> PostgreSQL Schema & RLS Migrations</span>
+                  <span class="text-emerald-600">75% Applying</span>
+                </div>
+                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-1000" style="width: 75%"></div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p class="price-desc">Teste todas as funcionalidades por 7 dias sem precisar de cartão de crédito.</p>
-          <ul class="price-features">
-            <li><span class="check">✓</span> Cardápio digital completo</li>
-            <li><span class="check">✓</span> Produtos ilimitados</li>
-            <li><span class="check">✓</span> Pedidos pelo WhatsApp</li>
-            <li><span class="check">✓</span> Link exclusivo da loja</li>
-            <li><span class="x">—</span> PDV Balcão Express</li>
-            <li><span class="x">—</span> Monitor de Cozinha KDS</li>
-            <li><span class="x">—</span> Cupons de desconto</li>
-          </ul>
-          <a href="cadastro.html" class="btn btn-secondary btn-price">Começar Grátis</a>
+
+          <!-- Bottom Quote -->
+          <div class="mt-8 pt-6 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+            <span>✨ Zero configuration required</span>
+            <span class="font-mono text-purple-700 font-semibold">1,842 files emitted</span>
+          </div>
         </div>
 
-        <!-- Plano Pro -->
-        <div class="price-card featured">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
-            <p class="price-plan" style="margin:0; color: var(--orange);">PRO — Mais Popular</p>
-            <span class="badge badge-orange">RECOMENDADO</span>
+        <!-- Right: Two Vertical Feature Cards -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          
+          <!-- Card 1 -->
+          <div class="flex-1 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-md hover:bg-slate-50 transition-all duration-300 group cursor-pointer">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mb-5 group-hover:scale-110 transition-transform duration-300">
+              <i data-lucide="cpu" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">Instant Full Stack</h3>
+            <p class="text-stone-600 text-sm leading-relaxed">
+              Auto-generated REST & GraphQL endpoints, Tailwind CSS component libraries, and robust state management wired together out-of-the-box.
+            </p>
           </div>
-          <div class="price-amount">
-            <span class="price-currency">R$</span>
-            <span class="price-value" style="color:var(--orange)">119</span>
-            <span class="price-period">/mês</span>
+
+          <!-- Card 2 -->
+          <div class="flex-1 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-md hover:bg-slate-50 transition-all duration-300 group cursor-pointer">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-5 group-hover:scale-110 transition-transform duration-300">
+              <i data-lucide="database" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">Production Ready DB</h3>
+            <p class="text-stone-600 text-sm leading-relaxed">
+              Strict typed ORM models with automated relational schema inference, index optimization, and row-level security policies preconfigured.
+            </p>
           </div>
-          <p class="price-desc">Acesso completo a todos os módulos do Ecosystem PedidoVale 360 para escalar suas vendas.</p>
-          <ul class="price-features">
-            <li><span class="check">✓</span> Cardápio digital completo</li>
-            <li><span class="check">✓</span> Produtos e categorias ilimitados</li>
-            <li><span class="check">✓</span> Pedidos pelo WhatsApp (taxa 0%)</li>
-            <li><span class="check">✓</span> PDV Balcão Express</li>
-            <li><span class="check">✓</span> Monitor de Cozinha KDS</li>
-            <li><span class="check">✓</span> Cupons & fidelização</li>
-            <li><span class="check">✓</span> Suporte via WhatsApp</li>
-          </ul>
-          <a href="cadastro.html" class="btn btn-primary btn-price">Testar 7 Dias Grátis →</a>
+
         </div>
+
       </div>
 
-      <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--muted);">
-        Precisa de mais de uma loja? <a href="https://wa.me/5599991040222" style="color:var(--orange); text-decoration:none; font-weight:600;">Fale conosco</a> sobre planos multi-unidades.
-      </p>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- DEPOIMENTOS -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="testimonials">
-    <div class="container">
-      <div class="testimonials-header">
-        <p class="section-label">Depoimentos</p>
-        <h2 class="section-title">Restaurantes que já vendem mais</h2>
-      </div>
+  <!-- ========================================================================= -->
+  <!-- SECTION 5 - TECHNICAL STATS & DIAGRAM -->
+  <!-- ========================================================================= -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 text-white relative overflow-hidden" id="architecture">
+    
+    <!-- Diagram Background with overlay -->
+    <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-luminosity bg-cover bg-center" style="background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/f7302105-bf99-4736-914e-d8fbdb904af5_1600w.png');"></div>
 
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p class="testimonial-text">"Em uma semana já aumentamos 40% os pedidos online. O cardápio ficou muito mais bonito e profissional. Nossos clientes adoraram!"</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">🍔</div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Trading Candles & Live Preview Mockup -->
+        <div class="lg:col-span-6 relative">
+          
+          <!-- Glassmorphism Card (backdrop-blur-xl) -->
+          <div class="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+              <div>
+                <div class="text-xs uppercase tracking-wider text-purple-400 font-semibold">Live Preview & Code Edit</div>
+                <div class="font-bricolage font-bold text-lg text-white mt-0.5">Execution Engine Latency</div>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-mono">14ms ping</span>
+            </div>
+
+            <!-- SVG Candlestick Chart Simulation -->
+            <div class="w-full h-48 py-2">
+              <svg class="w-full h-full" viewBox="0 0 400 150" fill="none" preserveAspectRatio="none">
+                <!-- Grid Lines -->
+                <line x1="0" y1="30" x2="400" y2="30" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
+                <line x1="0" y1="75" x2="400" y2="75" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
+                <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
+
+                <!-- Candles -->
+                <!-- Candle 1 -->
+                <line x1="40" y1="80" x2="40" y2="130" stroke="#22c55e" stroke-width="2"/>
+                <rect x="34" y="90" width="12" height="30" fill="#22c55e" rx="1"/>
+                <!-- Candle 2 -->
+                <line x1="80" y1="60" x2="80" y2="110" stroke="#22c55e" stroke-width="2"/>
+                <rect x="74" y="70" width="12" height="25" fill="#22c55e" rx="1"/>
+                <!-- Candle 3 (Red) -->
+                <line x1="120" y1="70" x2="120" y2="125" stroke="#ef4444" stroke-width="2"/>
+                <rect x="114" y="80" width="12" height="35" fill="#ef4444" rx="1"/>
+                <!-- Candle 4 -->
+                <line x1="160" y1="50" x2="160" y2="100" stroke="#22c55e" stroke-width="2"/>
+                <rect x="154" y="55" width="12" height="30" fill="#22c55e" rx="1"/>
+                <!-- Candle 5 -->
+                <line x1="200" y1="40" x2="200" y2="90" stroke="#22c55e" stroke-width="2"/>
+                <rect x="194" y="45" width="12" height="25" fill="#22c55e" rx="1"/>
+                <!-- Candle 6 -->
+                <line x1="240" y1="30" x2="240" y2="75" stroke="#22c55e" stroke-width="2"/>
+                <rect x="234" y="35" width="12" height="30" fill="#22c55e" rx="1"/>
+                <!-- Candle 7 -->
+                <line x1="280" y1="20" x2="280" y2="60" stroke="#22c55e" stroke-width="2"/>
+                <rect x="274" y="25" width="12" height="25" fill="#22c55e" rx="1"/>
+                <!-- Candle 8 -->
+                <line x1="320" y1="15" x2="320" y2="50" stroke="#22c55e" stroke-width="2"/>
+                <rect x="314" y="20" width="12" height="20" fill="#22c55e" rx="1"/>
+                <!-- Candle 9 -->
+                <line x1="360" y1="10" x2="360" y2="40" stroke="#a855f7" stroke-width="2"/>
+                <rect x="354" y="12" width="12" height="18" fill="#a855f7" rx="1"/>
+
+                <!-- Trend overlay curve -->
+                <path d="M 40 105 Q 120 90 200 55 T 360 20" fill="none" stroke="url(#trend-gradient)" stroke-width="3" stroke-linecap="round"/>
+                <defs>
+                  <linearGradient id="trend-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#22c55e" />
+                    <stop offset="70%" stop-color="#3b82f6" />
+                    <stop offset="100%" stop-color="#a855f7" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+
+            <!-- Mini stats footer in card -->
+            <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/10 text-center font-mono">
+              <div class="p-2 rounded bg-black/40">
+                <div class="text-[10px] text-slate-400">FPS</div>
+                <div class="text-sm font-bold text-emerald-400">120 FPS</div>
+              </div>
+              <div class="p-2 rounded bg-black/40">
+                <div class="text-[10px] text-slate-400">HOT RELOAD</div>
+                <div class="text-sm font-bold text-blue-400">&lt; 80ms</div>
+              </div>
+              <div class="p-2 rounded bg-black/40">
+                <div class="text-[10px] text-slate-400">ACCURACY</div>
+                <div class="text-sm font-bold text-purple-400">99.8%</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Technical Stats List -->
+        <div class="lg:col-span-6 space-y-8">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-purple-400 bg-purple-950/80 px-3 py-1 rounded-full border border-purple-800/60">PERFORMANCE AT SCALE</span>
+            <h2 class="font-serif-title text-4xl sm:text-5xl text-white mt-4 leading-tight">
+              Engineered for developer bliss and enterprise throughput.
+            </h2>
+          </div>
+
+          <!-- Feature Bullets -->
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0 mt-1">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-bricolage font-bold text-lg text-white">Real-time Generation</h4>
+                <p class="text-sm text-slate-400 mt-1 leading-relaxed">Parallel AST (Abstract Syntax Tree) generation streams components simultaneously directly to your sandbox.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 mt-1">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-bricolage font-bold text-lg text-white">LLM Optimization Engine</h4>
+                <p class="text-sm text-slate-400 mt-1 leading-relaxed">Multi-agent consensus eliminates halluncinations, verifying TypeScript compile-time safety on every keystroke.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Big Stat Numbers -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
             <div>
-              <p class="testimonial-name">Marcos Vieira</p>
-              <p class="testimonial-role">Dono • Burguer House</p>
+              <div class="font-serif-title text-4xl sm:text-5xl text-purple-400 font-bold">4.9/5</div>
+              <div class="text-xs text-slate-400 mt-1 font-sans">Developer Satisfaction</div>
+            </div>
+            <div>
+              <div class="font-serif-title text-4xl sm:text-5xl text-emerald-400 font-bold">1M+</div>
+              <div class="text-xs text-slate-400 mt-1 font-sans">Lines Emitted Daily</div>
+            </div>
+            <div>
+              <div class="font-serif-title text-4xl sm:text-5xl text-blue-400 font-bold">99.9%</div>
+              <div class="text-xs text-slate-400 mt-1 font-sans">Uptime SLA</div>
             </div>
           </div>
         </div>
 
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p class="testimonial-text">"O PDV balcão mudou nossa operação. Antes perdíamos tempo anotando pedidos em papel. Agora tudo vai direto pra cozinha automaticamente."</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">🍕</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- SECTION 6 - DASHBOARD (THE EMPIRE) - January 2026 -->
+  <!-- ========================================================================= -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 border-t border-stone-800 text-white" id="dashboard">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/60">AUTONOMOUS ORCHESTRATION</span>
+        <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">
+          The Empire: Centralized Ops Dashboard
+        </h2>
+        <p class="text-stone-400 text-base sm:text-lg mt-3">
+          Manage multiple AI instances, database migrations, and auto-scaling queues in one unified mission control.
+        </p>
+      </div>
+
+      <!-- Dashboard Shell -->
+      <div class="rounded-3xl bg-[#141210] border border-stone-800 shadow-2xl overflow-hidden">
+        
+        <!-- Header Bar -->
+        <div class="px-6 py-4 bg-[#1a1715] border-b border-stone-800 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+            </div>
             <div>
-              <p class="testimonial-name">Fernanda Lima</p>
-              <p class="testimonial-role">Gerente • Pizzaria Del Forno</p>
+              <span class="font-bricolage font-bold text-sm text-white">Empire Production Cluster</span>
+              <span class="ml-2 text-xs text-stone-400 font-mono">cluster-us-east-1</span>
+            </div>
+          </div>
+
+          <!-- Hardcoded January 2026 Date Requirement -->
+          <div class="flex items-center gap-4 text-xs font-sans">
+            <div class="px-3 py-1.5 rounded-lg bg-stone-800/80 border border-stone-700 text-stone-200 font-medium flex items-center gap-2">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>January 2026</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>Cluster Healthy</span>
             </div>
           </div>
         </div>
 
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p class="testimonial-text">"Migrei do iFood e parei de pagar comissão absurda. Agora 100% dos pedidos chegam pelo meu link e o dinheiro vai direto no meu PIX."</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">🍧</div>
+        <!-- Dashboard Body Layout (Sidebar + Week View Grid) -->
+        <div class="flex flex-col lg:flex-row">
+          
+          <!-- Mini Calendar Sidebar (width 72 on LG) -->
+          <div class="w-full lg:w-72 bg-[#12100e] p-6 border-b lg:border-b-0 lg:border-r border-stone-800 flex flex-col justify-between shrink-0">
             <div>
-              <p class="testimonial-name">Juliana Santos</p>
-              <p class="testimonial-role">Proprietária • Açaí & Cia</p>
+              <div class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-4 font-sans flex items-center justify-between">
+                <span>Active Services</span>
+                <span class="text-emerald-400 font-mono text-[10px]">8 ONLINE</span>
+              </div>
+
+              <!-- Service Toggles -->
+              <div class="space-y-3 font-sans text-xs">
+                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="database" class="w-3.5 h-3.5 text-blue-400"></i> Postgres Master</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400"></i> Edge Compute Pods</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-amber-400"></i> Redis Vector Cache</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
+                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="wind" class="w-3.5 h-3.5 text-rose-400"></i> Auto-Scaling Daemon</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+              </div>
+
+              <!-- Mini Calendar View -->
+              <div class="mt-8 pt-6 border-t border-stone-800">
+                <div class="text-xs font-bold text-stone-300 mb-3 font-sans">January 2026 — Release Sprint</div>
+                <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-mono text-stone-500">
+                  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                  <span class="text-stone-600">29</span><span class="text-stone-600">30</span><span class="text-stone-600">31</span>
+                  <span class="text-stone-300">1</span><span class="text-stone-300">2</span><span class="text-stone-300">3</span><span class="text-stone-300">4</span>
+                  <span class="text-stone-300">5</span><span class="text-stone-300">6</span><span class="text-stone-300">7</span><span class="text-stone-300">8</span>
+                  <span class="p-1 rounded bg-purple-600 text-white font-bold">9</span>
+                  <span class="text-stone-300">10</span><span class="text-stone-300">11</span>
+                  <span class="text-stone-300">12</span><span class="text-stone-300">13</span><span class="text-stone-300">14</span><span class="text-stone-300">15</span>
+                  <span class="text-stone-300">16</span><span class="text-stone-300">17</span><span class="text-stone-300">18</span>
+                </div>
+              </div>
             </div>
+
+            <!-- Quick Trigger -->
+            <div class="mt-6 pt-4 border-t border-stone-800">
+              <button class="w-full py-2 bg-stone-800 hover:bg-stone-700 text-xs font-semibold rounded-lg text-stone-200 transition-colors">
+                + Provision New Node
+              </button>
+            </div>
+          </div>
+
+          <!-- Week View Grid (Overflow-x-auto, explicit 72px repeat(5, 1fr)) -->
+          <div class="flex-1 overflow-x-auto p-6 bg-[#161412]">
+            
+            <!-- Week Header -->
+            <div class="dashboard-grid-cols gap-3 pb-3 border-b border-stone-800 text-xs font-mono text-stone-400 mb-4 min-w-[700px]">
+              <div>TIME</div>
+              <div class="font-bold text-stone-200">MON 05</div>
+              <div class="font-bold text-stone-200">TUE 06</div>
+              <div class="font-bold text-stone-200">WED 07</div>
+              <div class="font-bold text-stone-200 text-purple-400">THU 08 (TODAY)</div>
+              <div class="font-bold text-stone-200">FRI 09</div>
+            </div>
+
+            <!-- Timing Rows (07:00 to 12:00, 64px height per row) -->
+            <div class="space-y-3 min-w-[700px]">
+              
+              <!-- Row 07:00 -->
+              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
+                <div class="text-xs font-mono text-stone-500">07:00</div>
+                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-emerald-300">Build Succeeded</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">commit #84f291a</span>
+                </div>
+                <div></div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-emerald-300">SSL Renewed</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">edge-gateway</span>
+                </div>
+                <div></div>
+              </div>
+
+              <!-- Row 08:00 -->
+              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
+                <div class="text-xs font-mono text-stone-500">08:00</div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-fuchsia-500/15 border border-fuchsia-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-fuchsia-300">Schema Migration</span>
+                  <span class="text-fuchsia-400/80 font-mono text-[9px]">v2.4.0-auth</span>
+                </div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+
+              <!-- Row 09:00 -->
+              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
+                <div class="text-xs font-mono text-stone-500">09:00</div>
+                <div></div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-rose-500/15 border border-rose-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-rose-300">Auto-Scaling Spike</span>
+                  <span class="text-rose-400/80 font-mono text-[9px]">+14 Edge Workers</span>
+                </div>
+                <div class="h-12 rounded-lg bg-purple-500/20 border border-purple-500/50 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-purple-200">LLM Cache Warmer</span>
+                  <span class="text-purple-400 font-mono text-[9px]">98.2% Hit Rate</span>
+                </div>
+                <div></div>
+              </div>
+
+              <!-- Row 10:00 -->
+              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
+                <div class="text-xs font-mono text-stone-500">10:00</div>
+                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-emerald-300">Backup Verified</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">wal-g archive</span>
+                </div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-fuchsia-500/15 border border-fuchsia-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-fuchsia-300">Vector Re-index</span>
+                  <span class="text-fuchsia-400/80 font-mono text-[9px]">1.2M embeddings</span>
+                </div>
+              </div>
+
+              <!-- Row 11:00 -->
+              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
+                <div class="text-xs font-mono text-stone-500">11:00</div>
+                <div></div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-emerald-300">Zero-Downtime Rollout</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">canary-99%</span>
+                </div>
+                <div></div>
+                <div></div>
+              </div>
+
+              <!-- Row 12:00 -->
+              <div class="dashboard-grid-cols gap-3 h-16 items-center">
+                <div class="text-xs font-mono text-stone-500">12:00</div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-emerald-300">Traffic Peak Cleared</span>
+                  <span class="text-emerald-500/80 font-mono text-[9px]">42k req/s</span>
+                </div>
+                <div></div>
+                <div class="h-12 rounded-lg bg-rose-500/15 border border-rose-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
+                  <span class="font-semibold text-rose-300">Auto-Scaling Down</span>
+                  <span class="text-rose-400/80 font-mono text-[9px]">normal load</span>
+                </div>
+                <div></div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- SECTION 7 - TESTIMONIAL & SOCIAL PROOF -->
+  <!-- ========================================================================= -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]">
+    <div class="max-w-5xl mx-auto">
+      
+      <!-- Big Testimonial Card with Exact Asset User Image -->
+      <div class="bg-white rounded-3xl p-8 sm:p-12 border border-stone-200 shadow-xl relative overflow-hidden">
+        <div class="text-purple-600 mb-6">
+          <i data-lucide="quote" class="w-10 h-10 opacity-40"></i>
+        </div>
+
+        <blockquote class="font-serif-title text-2xl sm:text-4xl text-stone-900 leading-snug">
+          "ideatr cut our prototype-to-customer validation cycle from 6 weeks down to literally 45 minutes. We generated an entire HIPAA-compliant patient intake portal over a single lunch break."
+        </blockquote>
+
+        <div class="flex items-center gap-4 mt-8 pt-8 border-t border-stone-100">
+          <img 
+            src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0a9490d3-0806-4139-aaa6-628fd3eee5b1_320w.png" 
+            alt="David Sterling, Founder" 
+            class="w-14 h-14 rounded-full object-cover border-2 border-purple-200"
+          >
+          <div>
+            <div class="font-bricolage font-bold text-base text-stone-900">David Sterling</div>
+            <div class="text-xs text-stone-500 font-sans">VP of Engineering at HealthPulse AI • Y Combinator W24</div>
           </div>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- FAQ -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="faq" id="faq">
-    <div class="container">
-      <div class="faq-header">
-        <p class="section-label">Dúvidas Frequentes</p>
-        <h2 class="section-title">Respostas rápidas para você</h2>
+  <!-- ========================================================================= -->
+  <!-- SECTION 8 - PRICING -->
+  <!-- ========================================================================= -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-950 text-white" id="pricing">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-bold uppercase tracking-widest text-purple-400 bg-purple-950 px-3 py-1 rounded-full border border-purple-800">TRANSPARENT VALUE</span>
+        <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">Simple, predictable pricing.</h2>
+        <p class="text-slate-400 text-base mt-2">Start free, scale as your apps generate revenue.</p>
       </div>
 
-      <div class="faq-list">
-        <div class="faq-item" id="faq-1">
-          <button class="faq-q" onclick="toggleFaq('faq-1')">
-            Preciso instalar algum aplicativo?
-            <span class="icon">+</span>
-          </button>
-          <div class="faq-a">Não! O PedidoVale funciona 100% pelo navegador do celular ou computador. Nada para instalar, nada para atualizar manualmente.</div>
-        </div>
-
-        <div class="faq-item" id="faq-2">
-          <button class="faq-q" onclick="toggleFaq('faq-2')">
-            Quanto tempo leva para criar minha loja?
-            <span class="icon">+</span>
-          </button>
-          <div class="faq-a">Menos de 30 segundos para criar a conta e ter seu link ativo. Para montar um cardápio completo com fotos, a maioria dos nossos clientes leva entre 30 minutos a 2 horas.</div>
-        </div>
-
-        <div class="faq-item" id="faq-3">
-          <button class="faq-q" onclick="toggleFaq('faq-3')">
-            Tem taxa por pedido ou comissão?
-            <span class="icon">+</span>
-          </button>
-          <div class="faq-a">Absolutamente zero! Você paga apenas a mensalidade fixa do plano. Cada pedido que seu cliente faz, 100% do valor vai direto para você. Nenhuma comissão, nenhuma taxa oculta.</div>
-        </div>
-
-        <div class="faq-item" id="faq-4">
-          <button class="faq-q" onclick="toggleFaq('faq-4')">
-            Como funciona o pagamento pelo PIX?
-            <span class="icon">+</span>
-          </button>
-          <div class="faq-a">Você cadastra sua chave PIX no painel e ela aparece para o cliente no momento do pedido. O cliente paga direto para você, sem intermediário. O dinheiro cai na sua conta bancária imediatamente.</div>
-        </div>
-
-        <div class="faq-item" id="faq-5">
-          <button class="faq-q" onclick="toggleFaq('faq-5')">
-            Posso cancelar quando quiser?
-            <span class="icon">+</span>
-          </button>
-          <div class="faq-a">Sim, sem multa e sem burocracia. Você pode cancelar a qualquer momento. Seu plano fica ativo até o fim do período pago.</div>
-        </div>
-
-        <div class="faq-item" id="faq-6">
-          <button class="faq-q" onclick="toggleFaq('faq-6')">
-            O sistema funciona para qualquer tipo de restaurante?
-            <span class="icon">+</span>
-          </button>
-          <div class="faq-a">Sim! Hamburguerias, pizzarias, açaí, sushi, marmitaria, doceria, petiscaria e muito mais. O PedidoVale se adapta a qualquer segmento de alimentação.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- CTA FINAL -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <section class="cta-section">
-    <div class="container">
-      <div class="cta-box">
-        <h2>Pronto para vender mais?</h2>
-        <p>Crie sua conta grátis agora e receba seu primeiro pedido ainda hoje.</p>
-        <div class="hero-ctas">
-          <a href="cadastro.html" class="btn btn-primary" style="font-size:15px; padding:16px 36px;">
-            Criar Meu Cardápio Grátis →
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        
+        <!-- Hobby Plan -->
+        <div class="rounded-3xl bg-stone-900/90 border border-stone-800 p-8 flex flex-col justify-between hover:border-stone-700 transition-all">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Hobbyist</div>
+            <div class="font-serif-title text-4xl text-white my-4">$0 <span class="text-sm font-sans text-slate-500 font-normal">/ month</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">For indie hackers and developers exploring conversational app generation.</p>
+            <ul class="space-y-3 text-xs text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 5 full app generations / month</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Standard Edge deployment</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> SQLite export</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Community Discord</li>
+            </ul>
+          </div>
+          <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white bg-stone-800 hover:bg-stone-700 rounded-xl transition-colors">
+            Start Free
           </a>
-          <a href="https://wa.me/5599991040222" target="_blank" class="btn btn-secondary" style="font-size:15px; padding:16px 28px;">
-            💬 Falar no WhatsApp
+        </div>
+
+        <!-- Pro Plan (Featured) -->
+        <div class="rounded-3xl bg-gradient-to-b from-purple-950/40 via-stone-900 to-stone-900 border-2 border-purple-500/60 p-8 flex flex-col justify-between shadow-2xl relative">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-purple-600 rounded-full text-[10px] font-bold tracking-wider uppercase text-white shadow-md">
+            MOST POPULAR
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-purple-400">Pro Builder</div>
+            <div class="font-serif-title text-4xl text-white my-4">$29 <span class="text-sm font-sans text-slate-500 font-normal">/ month</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Unlimited synthesis, custom domains, and PostgreSQL production schemas.</p>
+            <ul class="space-y-3 text-xs text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Unlimited app generations</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Instant GitHub sync & PRs</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Managed Supabase database</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Custom domains & SSL</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Priority compiler queue</li>
+            </ul>
+          </div>
+          <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white btn-gradient-shift rounded-xl shadow-lg shadow-purple-900/40 hover:brightness-110 transition-all">
+            Get Pro Access
           </a>
         </div>
-        <p style="margin-top:16px; font-size:12px; color:var(--muted);">7 dias grátis • Sem cartão de crédito • Cancele quando quiser</p>
+
+        <!-- Enterprise Plan -->
+        <div class="rounded-3xl bg-stone-900/90 border border-stone-800 p-8 flex flex-col justify-between hover:border-stone-700 transition-all">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Enterprise</div>
+            <div class="font-serif-title text-4xl text-white my-4">$199 <span class="text-sm font-sans text-slate-500 font-normal">/ month</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Dedicated VPC clusters, SOC2 compliance, custom LLM fine-tuning.</p>
+            <ul class="space-y-3 text-xs text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Dedicated cluster deployment</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Self-hosted LLM runtime</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> SOC2 Type II & HIPAA certified</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 24/7 Dedicated Slack channel</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/5599991040222" target="_blank" class="mt-8 w-full py-3 text-center text-xs font-bold text-white bg-stone-800 hover:bg-stone-700 rounded-xl transition-colors">
+            Contact Sales
+          </a>
+        </div>
+
       </div>
+
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════ -->
-  <!-- FOOTER -->
-  <!-- ═══════════════════════════════════════════════ -->
-  <footer>
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-logo">Pedido<span>Vale</span></div>
-        <div class="footer-links">
-          <a href="#funcionalidades" class="footer-link">Funcionalidades</a>
-          <a href="#precos" class="footer-link">Preços</a>
-          <a href="cadastro.html" class="footer-link">Criar Conta</a>
-          <a href="login.html" class="footer-link">Entrar</a>
-          <a href="https://wa.me/5599991040222" class="footer-link">Suporte</a>
-        </div>
-        <p class="footer-copy">© 2026 PedidoVale. Todos os direitos reservados. Feito com ❤️ para restaurantes brasileiros.</p>
+  <!-- ========================================================================= -->
+  <!-- SECTION 9 - CALL TO ACTION & FOOTER -->
+  <!-- ========================================================================= -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-black text-white relative overflow-hidden text-center">
+    <div class="max-w-4xl mx-auto relative z-10">
+      
+      <h2 class="font-serif-title text-5xl sm:text-7xl leading-tight">
+        Build your next breakthrough app today.
+      </h2>
+      <p class="text-slate-400 text-lg max-w-xl mx-auto mt-4 mb-8">
+        Join over 120,000 developers building full-stack applications in plain English.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="cadastro.html" class="btn-gradient-shift px-8 py-4 rounded-xl text-white font-bold text-sm shadow-xl hover:shadow-purple-600/30 transition-all flex items-center gap-2">
+          <span>Start Building with ideatr</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
+        </a>
+        <a href="login.html" class="px-6 py-4 rounded-xl text-slate-300 hover:text-white border border-stone-800 hover:border-stone-600 font-semibold text-sm transition-all">
+          Explore Component Demos
+        </a>
       </div>
+
+      <!-- Unicorn Studio Badge Integration -->
+      <div class="mt-16 flex items-center justify-center gap-3">
+        <img 
+          src="https://assets.unicorn.studio/media/made_in_us_small_web.svg" 
+          alt="Made with Unicorn Studio" 
+          class="h-7 opacity-70 hover:opacity-100 transition-opacity"
+        >
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black border-t border-stone-900 py-12 px-4 sm:px-6 lg:px-8 text-slate-500 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-2 text-white font-bricolage font-bold text-sm">
+        <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+        <span>ideatr</span>
+        <span class="text-stone-600 font-normal font-sans ml-2">© 2026 ideatr Inc. All rights reserved.</span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-slate-300 transition-colors">Privacy</a>
+        <a href="#" class="hover:text-slate-300 transition-colors">Terms</a>
+        <a href="#" class="hover:text-slate-300 transition-colors">Security</a>
+        <a href="#" class="hover:text-slate-300 transition-colors">Status</a>
+        <a href="superadmin.html" class="hover:text-slate-300 transition-colors">Admin</a>
+      </div>
+
     </div>
   </footer>
 
+  <!-- Initialize Lucide Icons -->
   <script>
-    function toggleFaq(id) {
-      const item = document.getElementById(id);
-      const wasOpen = item.classList.contains('open');
-      // Fecha todos
-      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
-      // Abre o clicado se estava fechado
-      if (!wasOpen) item.classList.add('open');
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
   </script>
 </body>
 </html>
