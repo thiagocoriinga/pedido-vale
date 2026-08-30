@@ -82,7 +82,93 @@ function loadStoreData() {
     if (savedProds) {
       PRODUCTS = JSON.parse(savedProds);
     } else {
-      PRODUCTS = [];
+      PRODUCTS = [
+        {
+          id: "prod-combo-1",
+          name: "Combo Monster Especial + Fritas + Refri",
+          category_id: "cat-combos",
+          price: 45.90,
+          promo_price: 39.90,
+          description: "Pão brioche selado na manteiga, 2x smash burger 120g, cheddar cremoso derretido, bacon fatiado crocante, cebola caramelizada + Batata Frita Crocante + 1x Refrigerante Lata 350ml.",
+          status: "active",
+          featured: true,
+          is_new: false,
+          popular: true,
+          image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80",
+          extras: [
+            { name: "Maionese Artesanal da Casa (Pote 50ml)", price: 4.00 },
+            { name: "Bacon Crocante Extra", price: 5.00 },
+            { name: "Cheddar Melt Extra", price: 5.00 }
+          ]
+        },
+        {
+          id: "prod-combo-2",
+          name: "Combo Smash Duplo Bacon & Fritas",
+          category_id: "cat-combos",
+          price: 39.90,
+          promo_price: 34.90,
+          description: "1x Smash Burger Duplo no pão brioche com queijo prato e molho especial + 1x Porção individual de batatas fritas douradas + 1x Coca-Cola gelada.",
+          status: "active",
+          featured: false,
+          is_new: true,
+          popular: true,
+          image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=600&q=80",
+          extras: [
+            { name: "Queijo Cheddar Dobrado", price: 4.50 },
+            { name: "Molho Barbecue Rústico", price: 3.50 }
+          ]
+        },
+        {
+          id: "prod-burger-1",
+          name: "X-Bacon Especial Artesanal",
+          category_id: "cat-burgers",
+          price: 32.00,
+          promo_price: 28.90,
+          description: "Blend 160g bovino artesanal na grelha, queijo cheddar inglês, fatias generosas de bacon crocante e maionese verde da casa no pão brioche tostado.",
+          status: "active",
+          featured: true,
+          is_new: false,
+          popular: true,
+          image: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=80",
+          extras: [
+            { name: "Hambúrguer Extra 160g", price: 9.00 },
+            { name: "Ovo Frito na Manteiga", price: 3.00 },
+            { name: "Cebola Crispy Crocante", price: 4.00 }
+          ]
+        },
+        {
+          id: "prod-burger-2",
+          name: "Smash Burger Clássico Duplo Cheese",
+          category_id: "cat-burgers",
+          price: 26.00,
+          promo_price: null,
+          description: "Dois smash burgers de 90g ultra prensados com crostinha crocante, dupla camada de queijo derretido e picles artesanal.",
+          status: "active",
+          featured: false,
+          is_new: false,
+          popular: true,
+          image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&q=80",
+          extras: [
+            { name: "Fatias de Bacon", price: 4.50 },
+            { name: "Molho Especial Smash", price: 3.00 }
+          ]
+        },
+        {
+          id: "prod-drink-1",
+          name: "Coca-Cola Original 350ml Gelada",
+          category_id: "cat-bebidas",
+          price: 6.50,
+          promo_price: null,
+          description: "Refrigerante em lata 350ml servido trincando de gelado.",
+          status: "active",
+          featured: false,
+          is_new: false,
+          popular: true,
+          image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
+          extras: []
+        }
+      ];
+      saveProducts();
     }
 
     const savedOrders = localStorage.getItem(getStoreKey('ORDERS'));
