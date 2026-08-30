@@ -329,7 +329,11 @@
         </div>
       </div>
 
-      <div class="topbar-actions">
+      <div class="topbar-actions flex items-center gap-2.5">
+        <!-- Botão Loja Aberta / Fechada no Topbar -->
+        <button id="topbar-store-status-btn" onclick="toggleStoreOpenStatus()" class="btn-topbar flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25 shadow-sm" title="Clique para abrir ou fechar a loja para pedidos online">
+          <span id="topbar-store-status-text">Loja Aberta</span>
+        </button>
         <a href="cardapio.html" id="topbar-view-menu-btn" target="_blank" class="btn-topbar btn-topbar-primary">
           🌐 Ver Cardápio
         </a>
@@ -568,12 +572,12 @@
             <div>
               <div class="flex items-center gap-2">
                 <h3 id="dash-store-name" class="font-bold text-xl text-white">MEU RESTAURANTE</h3>
-                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold">ATIVO</span>
+                <span id="dash-store-status-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold">ONLINE</span>
               </div>
               <div class="flex items-center gap-3 mt-1.5">
                 <span class="text-xs text-stone-400 font-medium">Aceitar pedidos agora?</span>
-                <button id="switch-orders-btn" onclick="toggleStoreOpenStatus()" class="px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white">
-                  Sim
+                <button id="switch-orders-btn" onclick="toggleStoreOpenStatus()" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> Aberta (Sim)
                 </button>
               </div>
             </div>
@@ -1606,7 +1610,7 @@
     <span id="admin-toast-text">Ação executada!</span>
   </div>
 
-  <script src="admin.js?v=20260830_V30"></script>
+  <script src="admin.js?v=20260830_V35"></script>
 
   <script>
     // Sidebar mobile helpers

@@ -387,6 +387,14 @@
     </div>
   </div>
 
+  <!-- BANNER AVISO DE LOJA FECHADA -->
+  <div id="store-closed-banner" class="max-w-4xl mx-auto mt-4 px-4 hidden">
+    <div class="bg-rose-500/15 border border-rose-500/30 rounded-2xl p-4 text-center flex flex-col sm:flex-row items-center justify-center gap-2 text-rose-300 font-poppins text-xs font-semibold shadow-lg">
+      <span class="text-xl">🔴</span>
+      <span><strong>ESTABELECIMENTO FECHADO NO MOMENTO</strong> — Não estamos recebendo novos pedidos online agora. Consulte nossos horários de funcionamento!</span>
+    </div>
+  </div>
+
   <!-- ========================================================================= -->
   <!-- MAIN CONTENT CONTAINER -->
   <!-- ========================================================================= -->
@@ -1480,6 +1488,39 @@
         }
       }
 
+      // Status da Loja (Online / Fechada)
+      const storeIsOpen = (storeConfig && storeConfig.isOpen !== undefined) 
+        ? (storeConfig.isOpen === true || storeConfig.isOpen === 'true') 
+        : true;
+      STORE_DATA.store.isOpen = storeIsOpen;
+
+      // Atualizar Indicadores Visuais de Status da Loja (Aberto / Fechado)
+      const profStatusInd = document.getElementById('profile-status-indicator');
+      const cardStatusPill = document.getElementById('store-status-pill-card');
+      const closedBanner = document.getElementById('store-closed-banner');
+
+      if (storeIsOpen) {
+        if (profStatusInd) {
+          profStatusInd.className = 'inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 font-poppins';
+          profStatusInd.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span id="profile-status-text">Aberto Agora</span>`;
+        }
+        if (cardStatusPill) {
+          cardStatusPill.className = 'px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-poppins font-bold flex items-center gap-1.5';
+          cardStatusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Aberto Hoje`;
+        }
+        if (closedBanner) closedBanner.classList.add('hidden');
+      } else {
+        if (profStatusInd) {
+          profStatusInd.className = 'inline-flex items-center gap-1.5 text-xs font-bold text-rose-400 font-poppins';
+          profStatusInd.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> <span id="profile-status-text">Fechado no Momento</span>`;
+        }
+        if (cardStatusPill) {
+          cardStatusPill.className = 'px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-poppins font-bold flex items-center gap-1.5';
+          cardStatusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> Fechado no Momento`;
+        }
+        if (closedBanner) closedBanner.classList.remove('hidden');
+      }
+
       // Card Flutuante de Perfil da Loja
       const profNameEl = document.getElementById('profile-store-name');
       if (profNameEl) profNameEl.innerText = storeName;
@@ -2215,11 +2256,31 @@
       const unitTotal = base + addsTotal;
       const grandTotal = unitTotal * modalQuantity;
 
-      document.getElementById('modal-add-btn-text').innerHTML = `Adicionar <span class="font-anton text-sm sm:text-base tracking-wide ml-1">${grandTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>`;
+      const addBtnText = document.getElementById('modal-add-btn-text');
+      const addBtn = document.getElementById('modal-add-to-cart-btn');
+
+      if (STORE_DATA.store && STORE_DATA.store.isOpen === false) {
+        if (addBtnText) addBtnText.innerHTML = `🔴 Loja Fechada no Momento`;
+        if (addBtn) {
+          addBtn.classList.add('opacity-60', 'cursor-not-allowed', 'bg-stone-700');
+          addBtn.classList.remove('bg-brand-orange');
+        }
+      } else {
+        if (addBtnText) addBtnText.innerHTML = `Adicionar <span class="font-anton text-sm sm:text-base tracking-wide ml-1">${grandTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>`;
+        if (addBtn) {
+          addBtn.classList.remove('opacity-60', 'cursor-not-allowed', 'bg-stone-700');
+          addBtn.classList.add('bg-brand-orange');
+        }
+      }
     }
 
     function addCurrentProductToCart() {
       if (!currentSelectedProduct) return;
+
+      if (STORE_DATA.store && STORE_DATA.store.isOpen === false) {
+        showToast('⚠️ O estabelecimento está FECHADO e não aceita pedidos no momento!');
+        return;
+      }
 
       const notes = document.getElementById('modal-product-notes').value.trim();
       const all = STORE_DATA.adicionais || [];
@@ -2869,6 +2930,18 @@
       if (subtotalEl) subtotalEl.innerText = formattedSubtotal;
       if (totalEl) totalEl.innerText = formattedTotal;
 
+      if (checkoutBtn) {
+        if (STORE_DATA.store && STORE_DATA.store.isOpen === false) {
+          checkoutBtn.disabled = true;
+          checkoutBtn.className = "w-full py-4 rounded-2xl bg-rose-500/20 text-rose-300 border border-rose-500/30 font-anton text-xs tracking-wider cursor-not-allowed flex items-center justify-center gap-2";
+          checkoutBtn.innerHTML = `<span>🔴 LOJA FECHADA NO MOMENTO</span>`;
+        } else {
+          checkoutBtn.disabled = false;
+          checkoutBtn.className = "w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2";
+          checkoutBtn.innerHTML = `<span>AVANÇAR PARA O PAGAMENTO</span> <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>`;
+        }
+      }
+
       const dockBadge = document.getElementById('mobile-dock-badge');
       const dockTotal = document.getElementById('mobile-dock-total');
       if (dockBadge) dockBadge.innerText = totalCount;
@@ -2981,6 +3054,11 @@
     let pendingOrderMessage = "";
 
     function initiateCheckout() {
+      if (STORE_DATA.store && STORE_DATA.store.isOpen === false) {
+        alert('⚠️ Desculpe! O estabelecimento está FECHADO no momento e não está aceitando novos pedidos online. Por favor, consulte nossos horários de funcionamento!');
+        return;
+      }
+
       if (!cart || cart.length === 0) {
         showToast('Sua sacola está vazia! Adicione itens do cardápio.');
         return;
@@ -3259,31 +3337,38 @@
     }
 
     // ==========================================
-    // CONTROLE AUTOMÁTICO DE HORÁRIO EM TEMPO REAL
+    // CONTROLE DE STATUS DA LOJA (ONLINE / FECHADA)
     // ==========================================
     function isStoreOpen() {
-      const now = new Date();
-      const minutesNow = now.getHours() * 60 + now.getMinutes();
-      const openMinutes = 19 * 60 + 30; // 19:30 = 1170 minutos
-      const closeMinutes = 23 * 60 + 30; // 23:30 = 1410 minutos
-      return minutesNow >= openMinutes && minutesNow <= closeMinutes;
+      // Prioridade absoluta para a chave configurada pelo proprietário no Painel Admin
+      if (window.STORE_DATA && window.STORE_DATA.store && window.STORE_DATA.store.isOpen !== undefined) {
+        return window.STORE_DATA.store.isOpen === true || window.STORE_DATA.store.isOpen === 'true';
+      }
+      return true;
     }
 
     function updateStoreLiveStatus() {
       const open = isStoreOpen();
       const now = new Date();
       const dayOfWeek = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+      const storeHours = (window.STORE_DATA && window.STORE_DATA.store && window.STORE_DATA.store.hours) ? window.STORE_DATA.store.hours : "18:00 às 23:30";
 
-      // 1. Badge do Header / Navbar
-      const headerBadge = document.getElementById('header-status-badge');
-      if (headerBadge) {
-        if (open) {
-          headerBadge.className = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm";
-          headerBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Aberto até 23h30</span>`;
-        } else {
-          headerBadge.className = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-[10px] font-poppins font-bold transition-colors cursor-pointer shadow-sm";
-          headerBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span><span>Fechado • Abre 19h30</span>`;
+      // 1. Indicador Principal de Perfil
+      const profStatusInd = document.getElementById('profile-status-indicator');
+      const closedBanner = document.getElementById('store-closed-banner');
+
+      if (open) {
+        if (profStatusInd) {
+          profStatusInd.className = "inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 font-poppins";
+          profStatusInd.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span id="profile-status-text">Aberto Agora • Aceitando Pedidos</span>`;
         }
+        if (closedBanner) closedBanner.classList.add('hidden');
+      } else {
+        if (profStatusInd) {
+          profStatusInd.className = "inline-flex items-center gap-1.5 text-xs font-bold text-rose-400 font-poppins";
+          profStatusInd.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> <span id="profile-status-text">Fechado no Momento</span>`;
+        }
+        if (closedBanner) closedBanner.classList.remove('hidden');
       }
 
       // 2. Badge do Card de Horários na Seção de Informações
@@ -3291,10 +3376,10 @@
       if (cardBadge) {
         if (open) {
           cardBadge.className = "px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-poppins font-bold flex items-center gap-1.5";
-          cardBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>Aberto Agora • Fecha às 23h30`;
+          cardBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Aberto Agora (${storeHours})`;
         } else {
-          cardBadge.className = "px-2.5 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-poppins font-bold flex items-center gap-1.5";
-          cardBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>Fechado Agora • Abre às 19h30`;
+          cardBadge.className = "px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-poppins font-bold flex items-center gap-1.5";
+          cardBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> Fechado no Momento`;
         }
       }
 
@@ -3303,10 +3388,10 @@
       if (modalBadge) {
         if (open) {
           modalBadge.className = "px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] flex items-center gap-1.5";
-          modalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Aberto Agora • 19:30 às 23:30`;
+          modalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Aberto Agora • ${storeHours}`;
         } else {
-          modalBadge.className = "px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold text-[10px] flex items-center gap-1.5";
-          modalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>Fechado Agora • Abre às 19:30`;
+          modalBadge.className = "px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-bold text-[10px] flex items-center gap-1.5";
+          modalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Fechado no Momento`;
         }
       }
 
@@ -3329,6 +3414,24 @@
         }
       });
     }
+
+    // Ouvir alterações de status da loja em tempo real do Painel Admin
+    try {
+      const liveChannel = new BroadcastChannel('store_orders_channel');
+      liveChannel.onmessage = (event) => {
+        if (event.data && event.data.type === 'STORE_STATUS_CHANGED') {
+          const targetStore = event.data.store;
+          if (!targetStore || targetStore === (window.STORE_DATA && window.STORE_DATA.slug)) {
+            if (window.STORE_DATA && window.STORE_DATA.store) {
+              window.STORE_DATA.store.isOpen = event.data.isOpen;
+            }
+            updateStoreLiveStatus();
+            renderCart();
+            showToast(event.data.isOpen ? "🟢 A loja está aberta e aceitando pedidos online!" : "🔴 A loja foi fechada pelo proprietário no momento.");
+          }
+        }
+      };
+    } catch (e) {}
 
     // Inicialização do status em tempo real, bairros, ruas e perfil do cliente
     initNeighborhoodSelect();

@@ -259,14 +259,40 @@ function renderTrialInfo() {
 
 function updateSwitchOrdersButton() {
   const btn = document.getElementById('switch-orders-btn');
-  if (!btn) return;
+  const topbarBtn = document.getElementById('topbar-store-status-btn');
+  const topbarText = document.getElementById('topbar-store-status-text');
+  const dashBadge = document.getElementById('dash-store-status-badge');
 
   if (STORE_DATA.isOpen) {
-    btn.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white shadow-lg";
-    btn.innerText = "Sim";
+    if (btn) {
+      btn.className = "px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg flex items-center gap-1.5";
+      btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> Aberta (Sim)`;
+    }
+    if (topbarBtn) {
+      topbarBtn.className = "btn-topbar flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25 shadow-sm";
+    }
+    if (topbarText) {
+      topbarText.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block mr-1"></span> Loja Aberta`;
+    }
+    if (dashBadge) {
+      dashBadge.className = "px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold";
+      dashBadge.innerText = "ONLINE";
+    }
   } else {
-    btn.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-rose-500 text-white shadow-lg";
-    btn.innerText = "Não";
+    if (btn) {
+      btn.className = "px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-rose-500 hover:bg-rose-600 text-white shadow-lg flex items-center gap-1.5";
+      btn.innerHTML = `🔴 Fechada (Não)`;
+    }
+    if (topbarBtn) {
+      topbarBtn.className = "btn-topbar flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:bg-rose-500/25 shadow-sm";
+    }
+    if (topbarText) {
+      topbarText.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500 inline-block mr-1"></span> Loja Fechada`;
+    }
+    if (dashBadge) {
+      dashBadge.className = "px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold";
+      dashBadge.innerText = "FECHADA";
+    }
   }
 }
 
@@ -274,7 +300,14 @@ function toggleStoreOpenStatus() {
   STORE_DATA.isOpen = !STORE_DATA.isOpen;
   saveStoreConfig();
   updateSwitchOrdersButton();
-  showToast(STORE_DATA.isOpen ? "🟢 Loja aberta para receber pedidos!" : "🔴 Loja pausada (não aceita pedidos).");
+
+  // Notificar cardápio e abas abertas via BroadcastChannel
+  try {
+    const channel = new BroadcastChannel('store_orders_channel');
+    channel.postMessage({ type: 'STORE_STATUS_CHANGED', store: CURRENT_STORE_SLUG, isOpen: STORE_DATA.isOpen });
+  } catch (e) {}
+
+  showToast(STORE_DATA.isOpen ? "🟢 Loja Aberta (Aceitando Pedidos Online)!" : "🔴 Loja Fechada (Novos pedidos pausados)!");
 }
 
 function copyStoreMenuLink() {
@@ -2815,6 +2848,7 @@ function initStoreAdmin() {
   }
 
   renderStoreTopbar();
+  updateSwitchOrdersButton();
   renderTrialInfo();
   renderCategorySelects();
   renderCategoryAccordionList();
