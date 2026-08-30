@@ -1094,6 +1094,7 @@ function renderOrderCard(o, nextStatus, nextLabel) {
   const modeInfo = getOrderModeInfo(o);
   const isNew = o.status === 'new';
   const isPrep = o.status === 'prep';
+  const isDelivery = o.status === 'delivery';
 
   return `
     <div class="bg-black/60 border ${isNew ? 'border-brand-orange/60 shadow-[0_0_20px_rgba(255,94,30,0.25)]' : 'border-white/10'} rounded-2xl p-4 space-y-3 shadow-lg relative">
@@ -1120,37 +1121,62 @@ function renderOrderCard(o, nextStatus, nextLabel) {
         <span class="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-stone-300">${o.payment_method || 'A Combinar'}</span>
       </div>
 
-      <div class="space-y-1.5 pt-1">
-        <!-- Ação Principal de Avanço / Aceite -->
+      <div class="space-y-2 pt-1 border-t border-white/5">
+        <!-- 1. AÇÕES DE TRANSIÇÃO E ACEITE -->
         ${isNew ? `
           <div class="grid grid-cols-2 gap-1.5">
-            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1">
+            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1">
               <span>✅</span>
-              <span>Aceitar ➔</span>
+              <span>Aceitar Pedido</span>
             </button>
-            <button onclick="openRejectOrderModal('${o.id}')" class="py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 font-bold text-xs transition-colors flex items-center justify-center gap-1">
+            <button onclick="openRejectOrderModal('${o.id}')" class="py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 font-bold text-xs transition-colors flex items-center justify-center gap-1">
               <span>❌</span>
               <span>Rejeitar</span>
             </button>
           </div>
-        ` : `
-          <div class="flex items-center gap-1.5">
-            <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95">
-              ${nextLabel}
+        ` : (isPrep ? `
+          <div class="space-y-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', 'delivery')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5">
+              <span>🛵</span>
+              <span>Despachar Entrega / Pronto ➔</span>
             </button>
-            <button onclick="openRejectOrderModal('${o.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs border border-rose-500/20" title="Cancelar Pedido">
-              ❌
-            </button>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="advanceOrderStatus('${o.id}', 'new')" class="py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 text-[11px] font-semibold flex items-center justify-center gap-1" title="Voltar para Novos Pedidos">
+                <span>⏪</span>
+                <span>Voltar p/ Novos</span>
+              </button>
+              <button onclick="openRejectOrderModal('${o.id}')" class="py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-[11px] font-semibold flex items-center justify-center gap-1" title="Cancelar Pedido">
+                <span>❌</span>
+                <span>Cancelar</span>
+              </button>
+            </div>
           </div>
-        `}
+        ` : `
+          <div class="space-y-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', 'done')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5">
+              <span>🏁</span>
+              <span>Finalizar Pedido (Concluído) ✅</span>
+            </button>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 border border-white/10 text-[11px] font-semibold flex items-center justify-center gap-1" title="Voltar para Preparo">
+                <span>⏪</span>
+                <span>Voltar p/ Cozinha</span>
+              </button>
+              <button onclick="openRejectOrderModal('${o.id}')" class="py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-[11px] font-semibold flex items-center justify-center gap-1" title="Cancelar Pedido">
+                <span>❌</span>
+                <span>Cancelar</span>
+              </button>
+            </div>
+          </div>
+        `)}
 
-        <!-- Botões Utilitários (Imprimir e Zap) -->
+        <!-- 2. BOTÕES UTILITÁRIOS (IMPRIMIR E WHATSAPP) -->
         <div class="grid grid-cols-2 gap-1.5 pt-0.5">
-          <button onclick="printOrderReceipt('${o.id}')" class="py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-[11px] font-semibold border border-white/10 flex items-center justify-center gap-1" title="Imprimir Comanda">
+          <button onclick="printOrderReceipt('${o.id}')" class="py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-[11px] font-semibold border border-white/10 flex items-center justify-center gap-1" title="Imprimir Comanda Térmica">
             <span>🖨️</span>
             <span>Imprimir</span>
           </button>
-          <button onclick="sendOrderWhatsApp('${o.id}')" class="py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-[11px] font-semibold border border-emerald-500/20 flex items-center justify-center gap-1" title="Avisar no WhatsApp">
+          <button onclick="sendOrderWhatsApp('${o.id}')" class="py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-[11px] font-semibold border border-emerald-500/20 flex items-center justify-center gap-1" title="Avisar Cliente no WhatsApp">
             <span>💬</span>
             <span>WhatsApp</span>
           </button>
@@ -1744,7 +1770,7 @@ function submitPdvOrder() {
     items: itemsDesc,
     total: totalPrice,
     payment_method: payMethod,
-    status: 'prep',
+    status: 'new', // ENTRA EM NOVOS PEDIDOS!
     time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     created_at: Date.now()
   };
@@ -1755,8 +1781,9 @@ function submitPdvOrder() {
   renderKdsOrders();
   clearPdvCart();
   document.getElementById('pdv-customer-name').value = '';
+  showFloatingOrderAlert(newOrder);
 
-  showToast(`✅ Pedido ${orderId} lançado e enviado para a Cozinha KDS!`);
+  showToast(`✅ Pedido ${orderId} lançado em Novos Pedidos!`);
 }
 
 // -------------------------------------------------------------------------
@@ -2021,10 +2048,16 @@ function renderKdsOrders() {
           
           <!-- Botão Principal de Avanço -->
           ${isNew ? `
-            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-bold tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
-              <span>👨‍🍳</span>
-              <span>INICIAR PREPARO</span>
-            </button>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-bold tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+                <span>👨‍🍳</span>
+                <span>ACEITAR & PREPARAR</span>
+              </button>
+              <button onclick="openRejectOrderModal('${o.id}')" class="py-3 rounded-2xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 font-bold tracking-wider text-xs transition-colors flex items-center justify-center gap-1.5">
+                <span>❌</span>
+                <span>REJEITAR</span>
+              </button>
+            </div>
           ` : (isPrep ? `
             <button onclick="advanceOrderStatus('${o.id}', 'delivery')" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
               <span>✅</span>
