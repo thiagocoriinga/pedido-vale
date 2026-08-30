@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR" class="dark scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PedidoVale — Cardápio Digital & Sistema Completo para Restaurantes</title>
-  <meta name="description" content="A plataforma SaaS mais completa e moderna para restaurantes, hamburguerias e delivery. Cardápio digital com pedidos WhatsApp taxa 0%, PDV balcão, monitor KDS e cupons.">
+  <title>PedidoVale • Sistema & Cardápio Digital para Restaurantes</title>
+  <meta name="description" content="A plataforma SaaS mais moderna e completa para restaurantes, hamburguerias e delivery. Cardápio digital com pedidos pelo WhatsApp taxa 0%, PDV balcão, cozinha KDS e PIX direto.">
+  <meta name="theme-color" content="#05080A">
 
-  <!-- Google Fonts: Inter, DM Sans, Instrument Serif, Bricolage Grotesque -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconify Icons CDN -->
+  <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <script>
     tailwind.config = {
@@ -23,19 +24,17 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            body: ['DM Sans', 'sans-serif'],
-            serif: ['Instrument Serif', 'serif'],
-            display: ['Bricolage Grotesque', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            geist: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
           colors: {
-            brand: {
-              orange: '#FF5E1E',
-              orangeDark: '#E54A0D',
-              amber: '#FF9E1B',
-              bgOff: '#F9F8F6',
-              dark: '#080504',
-            }
+            lumigreen: '#c6f91f',
+            lumigreenDark: '#aade17',
+            lumibg: '#05080A',
+            lumicard: '#0B0F12',
+            lumisurface: '#080D10',
+            brandOrange: '#FF5E1E',
           }
         }
       }
@@ -43,672 +42,534 @@
   </script>
 
   <style>
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    /* Reset & Base */
+    html {
+      font-family: 'Inter', system-ui, sans-serif;
+      color-scheme: dark;
+      background-color: #05080A;
+      scroll-behavior: smooth;
     }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #e5e7eb;
-      border-radius: 20px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #cbd5e1;
-    }
-
     body {
-      background-color: #F9F8F6;
-      color: #0f172a;
+      background-color: #05080A;
+      color: #ffffff;
       overflow-x: hidden;
-      font-family: 'DM Sans', 'Inter', sans-serif;
+      margin: 0;
       -webkit-font-smoothing: antialiased;
+      selection-background-color: #c6f91f;
+      selection-color: #000000;
+    }
+    ::selection {
+      background-color: #c6f91f;
+      color: #000000;
     }
 
-    .font-serif-title {
-      font-family: 'Instrument Serif', Georgia, serif;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 20px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(198,249,31,0.4); }
+
+    /* Flashlight hover glow effect */
+    .flashlight-target {
+      position: relative;
+      overflow: hidden;
     }
-    
-    .font-bricolage {
-      font-family: 'Bricolage Grotesque', sans-serif;
+    .flashlight-target::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(
+        450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(198, 249, 31, 0.15),
+        transparent 40%
+      );
+      border-radius: inherit;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .flashlight-target:hover::before {
+      opacity: 1;
     }
 
-    /* 3D Perspective & Custom Transforms */
-    .perspective-1000 {
-      perspective: 1000px;
-    }
-    .rotate-x-\[5deg\] {
-      transform: rotateX(5deg);
-    }
-    .rotate-y-\[-5deg\] {
-      transform: rotateY(-5deg);
-    }
-    .mockup-3d-tilt {
-      transform: perspective(1000px) rotateX(6deg) rotateY(-4deg) rotateZ(1deg);
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .mockup-3d-tilt:hover {
-      transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    /* Subtle grid background */
+    .grid-bg-pattern {
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 36px 36px;
     }
 
-    /* Button code-shift animated gradient border */
-    @keyframes border-shift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Character and slide animations */
+    .char-clip-wrap {
+      display: inline-flex;
+      overflow: hidden;
+      line-height: 1.2;
+      vertical-align: bottom;
     }
-    .btn-gradient-shift {
-      background: linear-gradient(115deg, #FF5E1E, #FF9E1B, #E54A0D, #FF5E1E);
-      background-size: 300% 300%;
-      animation: border-shift 6s ease infinite;
+    .animate-blur-in {
+      animation: blurFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes blurFadeIn {
+      from { opacity: 0; filter: blur(10px); transform: translateY(16px); }
+      to { opacity: 1; filter: blur(0); transform: translateY(0); }
     }
 
-    /* Dashboard scheduling grid */
-    .dashboard-grid-cols {
-      display: grid;
-      grid-template-columns: 72px repeat(5, minmax(130px, 1fr));
+    /* Smartphone device float & glow */
+    .phone-mockup-shadow {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px rgba(198, 249, 31, 0.15);
+    }
+    .desktop-mockup-shadow {
+      box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), 0 0 50px rgba(198, 249, 31, 0.08);
     }
   </style>
 </head>
-<body class="antialiased selection:bg-orange-100 selection:text-orange-900">
+
+<body class="bg-[#05080A] text-white antialiased">
 
   <!-- ========================================================================= -->
-  <!-- SECTION 1 - NAVIGATION -->
+  <!-- BACKGROUND GRID & VERTICAL GUIDES -->
   <!-- ========================================================================= -->
-  <header class="bg-[#000000] text-white sticky top-0 z-50 border-b border-white/10 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <div class="fixed inset-0 pointer-events-none z-0 flex justify-center max-w-[1360px] mx-auto w-full border-x border-white/5">
+    <div class="absolute left-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
+    <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/[0.02] -translate-x-1/2 hidden md:block">
+      <div class="absolute top-[35vh] left-4 text-[10px] text-white/20 font-mono tracking-tight">PEDIDOVALE • v3.6</div>
+    </div>
+    <div class="absolute right-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- NAVBAR (LUMIMOTION DESIGN) -->
+  <!-- ========================================================================= -->
+  <nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-[#05080A]/85 backdrop-blur-md">
+    <div class="max-w-[1360px] mx-auto w-full px-6 h-16 flex items-center justify-between relative">
       
-      <!-- Brand Logo -->
-      <div class="flex items-center gap-8">
-        <a href="/" class="flex items-center gap-2.5 group">
-          <div class="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-[#FF5E1E] group-hover:border-orange-500 transition-all shadow-inner">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <a class="flex items-center gap-2.5 group" href="/">
+          <div class="w-8 h-8 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] shadow-[0_0_12px_rgba(198,249,31,0.25)] group-hover:scale-105 transition-transform">
+            <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="text-xl"></iconify-icon>
           </div>
-          <span class="font-bricolage font-bold text-lg tracking-tight text-white flex items-center">
-            Pedido<span class="text-[#FF5E1E]">Vale</span>
-            <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold font-sans tracking-wide bg-orange-950/80 text-orange-300 border border-orange-800/60 rounded">HUB 360</span>
+          <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5">
+            Pedido<span class="text-[#c6f91f]">Vale</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-mono font-medium tracking-wide bg-[#c6f91f]/10 text-[#c6f91f] border border-[#c6f91f]/20 rounded">HUB 360</span>
           </span>
         </a>
-
-        <!-- Desktop Links -->
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400 font-sans">
-          <a href="#funcionalidades" class="hover:text-slate-50 transition-colors duration-200">Módulos</a>
-          <a href="#ecossistema" class="hover:text-slate-50 transition-colors duration-200">Como Funciona</a>
-          <a href="#kds-pdv" class="hover:text-slate-50 transition-colors duration-200">Operação</a>
-          <a href="#precos" class="hover:text-slate-50 transition-colors duration-200">Planos</a>
-        </nav>
       </div>
 
-      <!-- Actions -->
-      <div class="flex items-center gap-3 font-sans">
-        <a href="login.html" class="px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white border border-stone-700 hover:border-stone-500 rounded-md transition-all duration-200">
-          Entrar no Painel
+      <!-- Links Centrais -->
+      <div class="hidden md:flex items-center gap-6 text-xs font-medium tracking-tight text-white/60">
+        <a href="#solucao" class="hover:text-white transition-colors">Cardápio Digital</a>
+        <a href="#como-funciona" class="hover:text-white transition-colors">Como Funciona</a>
+        <a href="#modulos" class="hover:text-white transition-colors">PDV & Cozinha KDS</a>
+        <a href="#precos" class="hover:text-white transition-colors">Planos & Preços</a>
+        <a href="#faq" class="hover:text-white transition-colors">Dúvidas</a>
+      </div>
+
+      <!-- Ações Direita -->
+      <div class="flex items-center gap-3">
+        <a href="login.html" class="text-xs text-white/70 hover:text-white transition-colors font-medium px-3 py-1.5">
+          Entrar
         </a>
-        <a href="cadastro.html" class="px-4 py-2 text-xs font-semibold text-white bg-[#FF5E1E] hover:bg-[#E54A0D] rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5">
-          <span>Criar Cardápio Grátis</span>
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 7h10v10"></path>
-            <path d="M7 17 17 7"></path>
-          </svg>
+        <a href="cadastro.html" class="text-xs text-black bg-[#c6f91f] px-4 py-2 hover:bg-[#aade17] transition-all font-semibold rounded-md shadow-[0_0_18px_rgba(198,249,31,0.25)] flex items-center gap-1.5">
+          <span>Criar Loja Grátis</span>
+          <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
         </a>
       </div>
+
+      <!-- Corner Accent Dots -->
+      <div class="absolute -bottom-[2px] -left-[2px] w-[3px] h-[3px] bg-white/30 rounded-full"></div>
+      <div class="absolute -bottom-[2px] -right-[2px] w-[3px] h-[3px] bg-white/30 rounded-full"></div>
     </div>
-  </header>
+  </nav>
 
   <!-- ========================================================================= -->
-  <!-- SECTION 2 - HERO SECTION WITH SPLINE BACKGROUND -->
+  <!-- HERO SECTION -->
   <!-- ========================================================================= -->
-  <section class="relative min-h-[85vh] lg:min-h-[92vh] flex items-center justify-center overflow-hidden pt-12 pb-20 px-4 sm:px-6 lg:px-8 bg-black">
-    
-    <!-- Spline Iframe Background Animation (-z-10) -->
-    <div class="absolute inset-0 -z-10 w-full h-full pointer-events-none opacity-80 mix-blend-screen">
-      <iframe 
-        src="https://my.spline.design/retrofuturismbganimation-Lb3VtL1bNaYUnirKNzn0FvaW" 
-        frameborder="0" 
-        class="w-full h-full scale-110 lg:scale-100"
-        allow="fullscreen"
-        title="Retro Futurism Background Animation">
-      </iframe>
-    </div>
-
-    <!-- Gradient Radial Overlay -->
-    <div class="absolute inset-0 -z-10 bg-radial from-transparent via-black/40 to-black pointer-events-none"></div>
-
-    <!-- Hero Content Container (z-10) -->
-    <div class="relative z-10 max-w-6xl mx-auto text-center w-full">
+  <main class="flex-1 max-w-[1360px] mx-auto w-full relative z-10">
+    <section id="hero" class="w-full border-b border-white/10 pt-20 md:pt-28 pb-16 px-6 relative overflow-hidden">
       
-      <!-- Top Badge -->
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-950/70 border border-orange-800/50 text-orange-300 text-xs font-semibold font-sans tracking-wide mb-6 backdrop-blur-md shadow-lg shadow-orange-950/30">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-orange-400"></i>
-        <span>ECOSSISTEMA 360 PARA RESTAURANTES & DELIVERY</span>
-      </div>
+      <!-- Top Radial Ambient Glow -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#c6f91f]/[0.04] blur-[150px] pointer-events-none z-0"></div>
 
-      <!-- Main Heading (Instrument Serif) -->
-      <h1 class="font-serif-title text-5xl sm:text-7xl lg:text-8xl font-normal text-white tracking-tight leading-[1.05] max-w-4xl mx-auto mb-6">
-        Seu cardápio online.<br class="hidden sm:inline">
-        <span class="italic text-orange-200/90 font-serif-title">Sem taxas por pedido.</span>
-      </h1>
-
-      <!-- Subtitle -->
-      <p class="text-base sm:text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-normal leading-relaxed font-sans">
-        Cardápio digital premium, pedidos automáticos no WhatsApp, PDV balcão ultrarrápido, monitor de cozinha KDS e gestão de cupons. Tudo integrado para você vender muito mais.
-      </p>
-
-      <!-- Store Creation Prompt Box -->
-      <div class="max-w-2xl mx-auto mb-16 px-2">
-        <form onsubmit="event.preventDefault(); const slug = document.getElementById('hero-store-input').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-'); window.location.href='cadastro.html?store=' + encodeURIComponent(slug);" class="relative flex flex-col sm:flex-row items-stretch sm:items-center bg-[#121118]/90 backdrop-blur-xl border border-white/15 p-2 rounded-2xl sm:rounded-xl shadow-2xl ring-1 ring-orange-500/20 focus-within:ring-2 focus-within:ring-orange-500/60 transition-all duration-300">
-          <div class="flex items-center flex-1 px-3 py-2 sm:py-0">
-            <span class="text-stone-400 text-sm font-mono mr-1">pedidovale.com.br/</span>
-            <input 
-              type="text" 
-              id="hero-store-input"
-              placeholder="sualoja" 
-              class="w-full bg-transparent text-white placeholder-slate-500 text-sm font-sans focus:outline-none font-semibold"
-              required
-            >
-          </div>
-          <button 
-            type="submit" 
-            class="btn-gradient-shift text-white font-sans font-semibold text-sm px-6 py-3.5 rounded-lg shadow-lg hover:shadow-orange-500/30 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 mt-2 sm:mt-0 shrink-0"
-          >
-            <span>Criar Minha Loja</span>
-            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M7 7h10v10"></path>
-              <path d="M7 17 17 7"></path>
-            </svg>
-          </button>
-        </form>
-        <div class="flex items-center justify-center gap-6 mt-3 text-xs text-slate-400 font-sans">
-          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Teste grátis por 7 dias</span>
-          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Sem taxa sobre suas vendas</span>
-          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Direto no seu PIX</span>
-        </div>
-      </div>
-
-      <!-- 3D Mockup Container (perspective-1000) -->
-      <div class="relative max-w-5xl mx-auto perspective-1000">
-        <div class="mockup-3d-tilt rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-950/80 backdrop-blur-md">
-          <div class="bg-slate-900/90 px-4 py-3 border-b border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
-              <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
-              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-            </div>
-            <div class="px-3 py-1 bg-black/50 border border-white/5 rounded-md text-[11px] font-mono text-slate-400 flex items-center gap-2">
-              <i data-lucide="globe" class="w-3 h-3 text-orange-400"></i>
-              <span>pedidovale.com.br/demo-restaurante</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-400">
-              <i data-lucide="layers" class="w-3.5 h-3.5 text-orange-400"></i>
-            </div>
-          </div>
-          <img 
-            src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4aa0ba0f-cf6d-4050-bf33-824539eb56e0_1600w.png" 
-            alt="PedidoVale Hub 360 - Cardápio e Gestão" 
-            class="w-full h-auto object-cover block"
-            loading="eager"
-          >
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION 3 - RESTAURANT TYPES GRID -->
-  <!-- ========================================================================= -->
-  <section class="bg-[#F9F8F6] border-y border-stone-200 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
-      <p class="text-center text-xs uppercase tracking-widest font-semibold text-stone-500 mb-8 font-sans">
-        PERFEITO PARA TODOS OS FORMATOS DE GASTRONOMIA E ALIMENTAÇÃO
-      </p>
-
-      <!-- 2/4/6 Column Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-stone-300 rounded-xl overflow-hidden border border-stone-300 shadow-sm">
+      <div class="flex flex-col z-10 relative items-center">
         
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="box" class="w-7 h-7 text-stone-400 group-hover:text-orange-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">HAMBURGUERIAS</span>
-        </div>
-
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="triangle" class="w-7 h-7 text-stone-400 group-hover:text-amber-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">PIZZARIAS</span>
-        </div>
-
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="droplet" class="w-7 h-7 text-stone-400 group-hover:text-purple-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">AÇAÍ & SORVETES</span>
-        </div>
-
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="wind" class="w-7 h-7 text-stone-400 group-hover:text-teal-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">SUSHI & ORIENTAL</span>
-        </div>
-
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="layers" class="w-7 h-7 text-stone-400 group-hover:text-emerald-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">MARMITARIAS</span>
-        </div>
-
-        <div class="bg-[#F9F8F6] p-6 flex flex-col items-center justify-center gap-2 group transition-all duration-300 hover:bg-white cursor-pointer">
-          <i data-lucide="sparkles" class="w-7 h-7 text-stone-400 group-hover:text-rose-600 transition-colors duration-300"></i>
-          <span class="text-xs font-bold font-sans tracking-tight text-stone-600 group-hover:text-stone-900 transition-colors">DOCERIAS & CAFÉS</span>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION 4 - WORKFLOW & FEATURES (2-COLUMN GRID) -->
-  <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]" id="funcionalidades">
-    <div class="max-w-7xl mx-auto">
-      
-      <!-- Section Header -->
-      <div class="max-w-3xl mb-16">
-        <span class="text-xs font-bold uppercase tracking-widest text-orange-700 bg-orange-100 px-3 py-1 rounded-full">ECOSSISTEMA HUB 360</span>
-        <h2 class="font-serif-title text-4xl sm:text-6xl text-stone-900 mt-4 leading-tight">
-          Do pedido do cliente até a entrega na porta. Tudo sob controle.
-        </h2>
-        <p class="text-stone-600 text-lg mt-4 font-normal">
-          Uma plataforma unificada que conecta seu cardápio público, balcão de vendas, cozinha e faturamento sem intermediários nem comissões abusivas.
-        </p>
-      </div>
-
-      <!-- 2-Column Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        
-        <!-- Left: Live Order Progress Mockup -->
-        <div class="lg:col-span-7 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-xl shadow-stone-200/50 flex flex-col justify-between relative overflow-hidden group">
-          <div class="absolute -right-20 -top-20 w-64 h-64 bg-orange-100/50 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div>
-            <div class="flex items-center justify-between pb-6 border-b border-stone-100">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
-                  <i data-lucide="sparkles" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-bricolage font-bold text-lg text-stone-900">Fluxo de Pedido em Tempo Real</h3>
-                  <p class="text-xs text-stone-500 font-sans">Sincronização imediata Cardápio → KDS → WhatsApp</p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Loja Aberta
-              </span>
+        <!-- Header Texto -->
+        <div class="flex flex-col md:flex-row w-full justify-between max-w-6xl mx-auto gap-10 items-end mb-16">
+          <div class="flex flex-col items-start w-full md:w-3/5 text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 backdrop-blur-md text-xs text-[#c6f91f] mb-6 rounded-full font-mono tracking-tight shadow-[0_0_12px_rgba(198,249,31,0.1)]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#c6f91f] shadow-[0_0_8px_#c6f91f]"></span>
+              Chega de pagar 27% de comissão em marketplaces
             </div>
 
-            <!-- Order Preview Box -->
-            <div class="mt-6 p-4 rounded-xl bg-stone-50 border border-stone-200/60 font-mono text-xs text-stone-700 leading-relaxed">
-              <span class="text-orange-600 font-bold">#PED-1049 (WhatsApp):</span> "1x Combo Artesanal Duplo + Batata Rústica + Coca-Cola 350ml • Entrega no Bairro Centro • Pagamento PIX R$ 42,90"
-            </div>
-
-            <!-- Progress Bars Mockup -->
-            <div class="mt-8 space-y-5">
-              <!-- Cardápio / WhatsApp Bar -->
-              <div>
-                <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
-                  <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-3.5 h-3.5 text-orange-600"></i> Cardápio Digital Interativo</span>
-                  <span class="text-emerald-600">100% Taxa Zero</span>
-                </div>
-                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
-                </div>
-              </div>
-
-              <!-- PDV Balcão -->
-              <div>
-                <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
-                  <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-blue-600"></i> PDV Balcão Express (Mesas / Balcão)</span>
-                  <span class="text-blue-600">Lançamento em 2 toques</span>
-                </div>
-                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-1000" style="width: 85%"></div>
-                </div>
-              </div>
-
-              <!-- Cozinha KDS -->
-              <div>
-                <div class="flex justify-between text-xs font-bold text-stone-700 mb-1.5 font-sans">
-                  <span class="flex items-center gap-1.5"><i data-lucide="database" class="w-3.5 h-3.5 text-emerald-600"></i> Monitor KDS de Cozinha</span>
-                  <span class="text-emerald-600">Comandas Sem Papel</span>
-                </div>
-                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-1000" style="width: 95%"></div>
-                </div>
-              </div>
-            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-light tracking-tighter leading-[1.08] text-balance">
+              Seu restaurante vendendo no <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-[#c6f91f] font-normal">piloto automático.</span>
+            </h1>
           </div>
 
-          <!-- Bottom Summary -->
-          <div class="mt-8 pt-6 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-            <span>✨ Sem mensalidade por volume ou pedidos</span>
-            <span class="font-mono text-orange-600 font-semibold">100% no seu bolso</span>
-          </div>
-        </div>
-
-        <!-- Right: Two Vertical Feature Cards -->
-        <div class="lg:col-span-5 flex flex-col gap-6">
-          
-          <!-- Card 1 -->
-          <div class="flex-1 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-md hover:bg-slate-50 transition-all duration-300 group cursor-pointer">
-            <div class="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 mb-5 group-hover:scale-110 transition-transform duration-300">
-              <i data-lucide="cpu" class="w-6 h-6"></i>
-            </div>
-            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">PDV Balcão & Mesas</h3>
-            <p class="text-stone-600 text-sm leading-relaxed">
-              Atenda clientes no balcão ou lance pedidos presenciais em segundos. Integração nativa com a cozinha para zero confusão.
+          <div class="flex flex-col items-start md:items-end w-full md:w-2/5 text-left md:text-right">
+            <p class="text-white/60 text-base md:text-lg max-w-md mb-8 text-pretty tracking-tight leading-relaxed">
+              Cardápio digital interativo com pedidos organizados no WhatsApp, PDV balcão em 2 toques e monitor de cozinha KDS sem comandas de papel.
             </p>
-          </div>
 
-          <!-- Card 2 -->
-          <div class="flex-1 bg-white rounded-3xl p-8 border border-stone-200/80 shadow-md hover:bg-slate-50 transition-all duration-300 group cursor-pointer">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-5 group-hover:scale-110 transition-transform duration-300">
-              <i data-lucide="database" class="w-6 h-6"></i>
-            </div>
-            <h3 class="font-bricolage font-bold text-xl text-stone-900 mb-2">Monitor de Cozinha (KDS)</h3>
-            <p class="text-stone-600 text-sm leading-relaxed">
-              Elimine os erros de comandas rasgadas ou perdidas. Alertas visuais e sonoros para sua equipe preparar no tempo certo.
-            </p>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION 5 - TECHNICAL PERFORMANCE & ANALYTICS -->
-  <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 text-white relative overflow-hidden" id="ecossistema">
-    
-    <!-- Diagram Background with overlay -->
-    <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-luminosity bg-cover bg-center" style="background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/f7302105-bf99-4736-914e-d8fbdb904af5_1600w.png');"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto">
-      
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        
-        <!-- Left: Live Preview Mockup -->
-        <div class="lg:col-span-6 relative">
-          
-          <div class="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-              <div>
-                <div class="text-xs uppercase tracking-wider text-orange-400 font-semibold">Painel de Desempenho</div>
-                <div class="font-bricolage font-bold text-lg text-white mt-0.5">Volume de Pedidos Diários</div>
-              </div>
-              <span class="px-2.5 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-mono">+42% este mês</span>
-            </div>
-
-            <!-- SVG Candlestick / Sales Volume Chart -->
-            <div class="w-full h-48 py-2">
-              <svg class="w-full h-full" viewBox="0 0 400 150" fill="none" preserveAspectRatio="none">
-                <line x1="0" y1="30" x2="400" y2="30" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
-                <line x1="0" y1="75" x2="400" y2="75" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
-                <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
-
-                <line x1="40" y1="80" x2="40" y2="130" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="34" y="90" width="12" height="30" fill="#FF5E1E" rx="1"/>
-                <line x1="80" y1="60" x2="80" y2="110" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="74" y="70" width="12" height="25" fill="#FF5E1E" rx="1"/>
-                <line x1="120" y1="70" x2="120" y2="125" stroke="#FF9E1B" stroke-width="2"/>
-                <rect x="114" y="80" width="12" height="35" fill="#FF9E1B" rx="1"/>
-                <line x1="160" y1="50" x2="160" y2="100" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="154" y="55" width="12" height="30" fill="#FF5E1E" rx="1"/>
-                <line x1="200" y1="40" x2="200" y2="90" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="194" y="45" width="12" height="25" fill="#FF5E1E" rx="1"/>
-                <line x1="240" y1="30" x2="240" y2="75" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="234" y="35" width="12" height="30" fill="#FF5E1E" rx="1"/>
-                <line x1="280" y1="20" x2="280" y2="60" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="274" y="25" width="12" height="25" fill="#FF5E1E" rx="1"/>
-                <line x1="320" y1="15" x2="320" y2="50" stroke="#FF5E1E" stroke-width="2"/>
-                <rect x="314" y="20" width="12" height="20" fill="#FF5E1E" rx="1"/>
-                <line x1="360" y1="10" x2="360" y2="40" stroke="#22c55e" stroke-width="2"/>
-                <rect x="354" y="12" width="12" height="18" fill="#22c55e" rx="1"/>
-
-                <path d="M 40 105 Q 120 90 200 55 T 360 20" fill="none" stroke="url(#trend-gradient-pv)" stroke-width="3" stroke-linecap="round"/>
-                <defs>
-                  <linearGradient id="trend-gradient-pv" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#FF5E1E" />
-                    <stop offset="70%" stop-color="#FF9E1B" />
-                    <stop offset="100%" stop-color="#22c55e" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
-
-            <!-- Mini stats footer in card -->
-            <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/10 text-center font-mono">
-              <div class="p-2 rounded bg-black/40">
-                <div class="text-[10px] text-slate-400">COMISSÃO</div>
-                <div class="text-sm font-bold text-emerald-400">0% TAXA</div>
-              </div>
-              <div class="p-2 rounded bg-black/40">
-                <div class="text-[10px] text-slate-400">TEMPO MÉDIO</div>
-                <div class="text-sm font-bold text-blue-400">22 min</div>
-              </div>
-              <div class="p-2 rounded bg-black/40">
-                <div class="text-[10px] text-slate-400">PIX DIRETO</div>
-                <div class="text-sm font-bold text-orange-400">IMEDIATO</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Right: Technical Stats List -->
-        <div class="lg:col-span-6 space-y-8">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-950/80 px-3 py-1 rounded-full border border-orange-800/60">AUTONOMIA & LUCRO</span>
-            <h2 class="font-serif-title text-4xl sm:text-5xl text-white mt-4 leading-tight">
-              Construído para restaurantes que querem lucrar de verdade.
-            </h2>
-          </div>
-
-          <!-- Feature Bullets -->
-          <div class="space-y-6">
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 shrink-0 mt-1">
-                <i data-lucide="sparkles" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="font-bricolage font-bold text-lg text-white">Cardápio Ultra Rápido</h4>
-                <p class="text-sm text-slate-400 mt-1 leading-relaxed">Carrega instantaneamente no celular do cliente sem necessidade de baixar aplicativos pesados.</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-1">
-                <i data-lucide="cpu" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="font-bricolage font-bold text-lg text-white">Chave PIX Própria</h4>
-                <p class="text-sm text-slate-400 mt-1 leading-relaxed">O dinheiro do cliente vai direto para a sua conta bancária no momento do pedido. Sem intermediários.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Big Stat Numbers -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
-            <div>
-              <div class="font-serif-title text-4xl sm:text-5xl text-orange-400 font-bold">500+</div>
-              <div class="text-xs text-slate-400 mt-1 font-sans">Restaurantes Ativos</div>
-            </div>
-            <div>
-              <div class="font-serif-title text-4xl sm:text-5xl text-emerald-400 font-bold">R$ 0</div>
-              <div class="text-xs text-slate-400 mt-1 font-sans">Taxa por Pedido</div>
-            </div>
-            <div>
-              <div class="font-serif-title text-4xl sm:text-5xl text-amber-400 font-bold">4.9★</div>
-              <div class="text-xs text-slate-400 mt-1 font-sans">Avaliação dos Lojistas</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION 6 - OPERATIONAL DASHBOARD (THE EMPIRE SCHEDULE) -->
-  <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900 border-t border-stone-800 text-white" id="kds-pdv">
-    <div class="max-w-7xl mx-auto">
-      
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/60">OPERAÇÃO EM TEMPO REAL</span>
-        <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">
-          Controle Total da Cozinha & Balcão
-        </h2>
-        <p class="text-stone-400 text-base sm:text-lg mt-3">
-          Acompanhe turnos, picos de pedidos e tempos de preparo da sua equipe em uma grade operacional limpa.
-        </p>
-      </div>
-
-      <!-- Dashboard Shell -->
-      <div class="rounded-3xl bg-[#141210] border border-stone-800 shadow-2xl overflow-hidden">
-        
-        <!-- Header Bar -->
-        <div class="px-6 py-4 bg-[#1a1715] border-b border-stone-800 flex flex-wrap items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
-              <i data-lucide="cpu" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <span class="font-bricolage font-bold text-sm text-white">Central de Pedidos ao Vivo</span>
-              <span class="ml-2 text-xs text-stone-400 font-mono">cozinha-balcao-online</span>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-4 text-xs font-sans">
-            <div class="px-3 py-1.5 rounded-lg bg-stone-800/80 border border-stone-700 text-stone-200 font-medium flex items-center gap-2">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-orange-400"></i>
-              <span>Operação Delivery 2026</span>
-            </div>
-            <div class="flex items-center gap-2 text-emerald-400">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>KDS Ativo</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dashboard Body Layout -->
-        <div class="flex flex-col lg:flex-row">
-          
-          <!-- Mini Calendar Sidebar -->
-          <div class="w-full lg:w-72 bg-[#12100e] p-6 border-b lg:border-b-0 lg:border-r border-stone-800 flex flex-col justify-between shrink-0">
-            <div>
-              <div class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-4 font-sans flex items-center justify-between">
-                <span>Módulos Ativos</span>
-                <span class="text-emerald-400 font-mono text-[10px]">TUDO PRONTO</span>
-              </div>
-
-              <!-- Service Toggles -->
-              <div class="space-y-3 font-sans text-xs">
-                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="database" class="w-3.5 h-3.5 text-orange-400"></i> Cardápio Digital</span>
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                </div>
-                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-400"></i> PDV Balcão</span>
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                </div>
-                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-400"></i> Monitor KDS Cozinha</span>
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                </div>
-                <div class="flex items-center justify-between p-2.5 rounded-lg bg-stone-900/90 border border-stone-800">
-                  <span class="text-stone-300 flex items-center gap-2"><i data-lucide="wind" class="w-3.5 h-3.5 text-blue-400"></i> Despacho Entregadores</span>
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                </div>
-              </div>
-
-              <!-- Mini Schedule -->
-              <div class="mt-8 pt-6 border-t border-stone-800">
-                <div class="text-xs font-bold text-stone-300 mb-3 font-sans">Turno Noturno • 18:00 às 23:30</div>
-                <p class="text-[11px] text-stone-400 leading-relaxed">
-                  Tempo médio de preparo: <strong>14 min</strong>. 0 atrasos registrados no último turno.
-                </p>
-              </div>
-            </div>
-
-            <!-- Quick Trigger -->
-            <div class="mt-6 pt-4 border-t border-stone-800">
-              <a href="login.html" class="block w-full py-2 bg-stone-800 hover:bg-stone-700 text-center text-xs font-semibold rounded-lg text-stone-200 transition-colors">
-                Abrir Painel do Lojista
+            <div class="flex flex-wrap items-center gap-3">
+              <a href="cadastro.html" class="bg-[#c6f91f] text-black px-6 py-3 text-sm hover:bg-[#aade17] transition-all flex items-center gap-2 shadow-[0_0_25px_rgba(198,249,31,0.25)] font-semibold rounded-md">
+                <span>Criar Cardápio Grátis</span>
+                <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+              </a>
+              <a href="#como-funciona" class="border border-white/10 bg-white/5 backdrop-blur-md text-white px-5 py-3 text-sm hover:bg-white/10 hover:border-white/20 transition-all font-medium rounded-md flex items-center gap-2">
+                <iconify-icon icon="solar:play-circle-linear" width="16"></iconify-icon>
+                <span>Como Funciona</span>
               </a>
             </div>
           </div>
+        </div>
 
-          <!-- Week View Grid -->
-          <div class="flex-1 overflow-x-auto p-6 bg-[#161412]">
+        <!-- ========================================================================= -->
+        <!-- INTERACTIVE DUAL SHOWCASE: PC (ADMIN PAINEL) + CELULAR (CARDÁPIO CLIENTE) -->
+        <!-- ========================================================================= -->
+        <div class="w-full max-w-[1280px] mx-auto z-10 relative mt-4">
+          
+          <!-- Outer Window Shell -->
+          <div class="group/window bg-[#0B0F12] w-full border border-white/10 p-2 sm:p-3 relative rounded-2xl desktop-mockup-shadow">
             
-            <div class="dashboard-grid-cols gap-3 pb-3 border-b border-stone-800 text-xs font-mono text-stone-400 mb-4 min-w-[700px]">
-              <div>HORA</div>
-              <div class="font-bold text-stone-200">SEXTA</div>
-              <div class="font-bold text-stone-200 text-orange-400">SÁBADO (PICO)</div>
-              <div class="font-bold text-stone-200 text-orange-400">DOMINGO (PICO)</div>
-              <div class="font-bold text-stone-200">SEGUNDA</div>
-              <div class="font-bold text-stone-200">TERÇA</div>
-            </div>
+            <!-- Top Light Edge Line -->
+            <div class="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-70 z-50 pointer-events-none"></div>
 
-            <!-- Timing Rows -->
-            <div class="space-y-3 min-w-[700px]">
+            <!-- Inner Screen Canvas -->
+            <div class="overflow-hidden flex flex-col lg:flex-row text-[12px] antialiased text-white/60 bg-[#05080A] w-full min-h-[640px] lg:h-[720px] border border-white/10 relative rounded-xl shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
               
-              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">18:00</div>
-                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Abertura Loja</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">4 pedidos na fila</span>
+              <!-- Subtle Background Grid -->
+              <div class="absolute inset-0 grid-bg-pattern opacity-45 pointer-events-none z-0"></div>
+              <div class="absolute -top-24 left-1/3 w-2/3 h-72 bg-[#c6f91f]/[0.04] blur-[120px] pointer-events-none z-0"></div>
+
+              <!-- ======================================== -->
+              <!-- PC DESKTOP: ADMIN SIDEBAR -->
+              <!-- ======================================== -->
+              <aside class="hidden md:flex w-[240px] bg-[#05080A]/90 backdrop-blur-md flex-col border-r border-white/10 shadow-[10px_0_30px_-15px_rgba(0,0,0,0.5)] shrink-0 relative z-10">
+                
+                <!-- Store Brand Header -->
+                <div class="flex h-14 border-b border-white/10 px-4 items-center justify-between">
+                  <div class="flex items-center gap-2.5 text-white font-semibold text-xs tracking-wide">
+                    <div class="w-6 h-6 rounded-md bg-[#FF5E1E] flex items-center justify-center text-white text-[10px] font-bold">🍔</div>
+                    <div class="truncate">
+                      <div class="font-bold text-white text-xs leading-none">Rei do Burger</div>
+                      <span class="text-[10px] text-[#c6f91f] font-mono">● Loja Aberta</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="h-12 rounded-lg bg-orange-500/15 border border-orange-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-orange-300">Pico Inicial</span>
-                  <span class="text-orange-400/80 font-mono text-[9px]">12 pedidos balcão</span>
+
+                <!-- Admin Navigation Modules -->
+                <nav class="px-3 pt-4 space-y-1.5">
+                  <div class="text-[10px] font-mono uppercase tracking-widest text-white/30 px-3 mb-2">Painel de Controle</div>
+                  
+                  <div class="flex items-center gap-2.5 px-3 py-2.5 bg-gradient-to-r from-[#c6f91f]/15 to-[#c6f91f]/5 border border-[#c6f91f]/25 text-[#c6f91f] rounded-md shadow-[inset_0_0_20px_rgba(198,249,31,0.06)] font-semibold">
+                    <iconify-icon icon="solar:widget-5-linear" width="16"></iconify-icon>
+                    <span>Hub 360 (Visão Geral)</span>
+                  </div>
+
+                  <div class="flex items-center justify-between px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-md cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                      <iconify-icon icon="solar:hamburger-menu-linear" width="16"></iconify-icon>
+                      <span>Cardápio & Produtos</span>
+                    </div>
+                    <span class="text-[9px] font-mono bg-white/10 text-white/60 px-1.5 py-0.5 rounded">24 itens</span>
+                  </div>
+
+                  <div class="flex items-center justify-between px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-md cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                      <iconify-icon icon="solar:bell-bing-linear" width="16" class="text-orange-400"></iconify-icon>
+                      <span>Pedidos ao Vivo</span>
+                    </div>
+                    <span class="text-[9px] font-mono bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.5 rounded font-bold">3 novos</span>
+                  </div>
+
+                  <div class="flex items-center gap-2.5 px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-md cursor-pointer">
+                    <iconify-icon icon="solar:laptop-minimalistic-linear" width="16" class="text-blue-400"></iconify-icon>
+                    <span>PDV Balcão Express</span>
+                  </div>
+
+                  <div class="flex items-center gap-2.5 px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-md cursor-pointer">
+                    <iconify-icon icon="solar:chef-hat-minimalistic-linear" width="16" class="text-emerald-400"></iconify-icon>
+                    <span>Monitor Cozinha (KDS)</span>
+                  </div>
+
+                  <div class="flex items-center gap-2.5 px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-md cursor-pointer">
+                    <iconify-icon icon="solar:ticket-sale-linear" width="16" class="text-purple-400"></iconify-icon>
+                    <span>Cupons de Desconto</span>
+                  </div>
+                </nav>
+
+                <!-- Plan Info Card in Sidebar -->
+                <div class="mt-auto p-3">
+                  <div class="border border-white/10 bg-[#0B0F12]/90 rounded-lg p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs text-white/85 font-medium">Plano Pro Ativo</span>
+                      <span class="text-[#c6f91f] text-xs font-mono font-bold">0% TAXA</span>
+                    </div>
+                    <div class="h-1 w-full bg-white/10 overflow-hidden rounded-full">
+                      <div class="h-full w-[100%] bg-[#c6f91f] shadow-[0_0_10px_#c6f91f]"></div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2 text-[10px]">
+                      <span class="text-white/40">Pedidos ilimitados</span>
+                      <span class="text-[#c6f91f]">Sem comissão</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="h-12 rounded-lg bg-orange-500/15 border border-orange-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-orange-300">Pico Delivery</span>
-                  <span class="text-orange-400/80 font-mono text-[9px]">18 pedidos WhatsApp</span>
+              </aside>
+
+              <!-- ======================================== -->
+              <!-- PC DESKTOP: MAIN ADMIN WORKSPACE -->
+              <!-- ======================================== -->
+              <div class="flex-1 flex flex-col min-w-0 bg-transparent relative z-10">
+                
+                <!-- Admin Topbar -->
+                <header class="h-14 flex items-center justify-between gap-3 px-5 border-b border-white/10 bg-[#0B0F12]/80 backdrop-blur-md">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs text-white/40 font-mono">pedidovale.com.br/<strong class="text-white">reidoburger</strong></span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono">ONLINE</span>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 border border-white/10 bg-[#05080A] px-3 py-1.5 rounded-md text-xs text-white/80">
+                      <iconify-icon icon="solar:copy-linear" class="text-[#c6f91f]"></iconify-icon>
+                      <span class="hidden sm:inline">Copiar Link do Cardápio</span>
+                    </div>
+                    <button class="bg-[#c6f91f] text-black px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-[#aade17] transition-colors flex items-center gap-1.5 shadow-[0_0_15px_rgba(198,249,31,0.3)]">
+                      <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon>
+                      <span>Novo Produto</span>
+                    </button>
+                  </div>
+                </header>
+
+                <!-- Admin Main Content Grid -->
+                <div class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4">
+                  
+                  <!-- Top Metrics Bar -->
+                  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                        <span>Faturamento Hoje</span>
+                        <iconify-icon icon="solar:wallet-money-linear" class="text-[#c6f91f]"></iconify-icon>
+                      </div>
+                      <div class="text-base sm:text-lg font-bold text-white">R$ 1.840,50</div>
+                      <div class="text-[10px] text-[#55e154] flex items-center gap-1 mt-0.5">
+                        <span>↑ 24%</span> vs. ontem
+                      </div>
+                    </div>
+
+                    <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                        <span>Pedidos Entregues</span>
+                        <iconify-icon icon="solar:box-minimalistic-linear" class="text-blue-400"></iconify-icon>
+                      </div>
+                      <div class="text-base sm:text-lg font-bold text-white">38 pedidos</div>
+                      <div class="text-[10px] text-blue-400 mt-0.5">100% no prazo</div>
+                    </div>
+
+                    <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                        <span>Tempo Médio Cozinha</span>
+                        <iconify-icon icon="solar:clock-circle-linear" class="text-amber-400"></iconify-icon>
+                      </div>
+                      <div class="text-base sm:text-lg font-bold text-white">14 min</div>
+                      <div class="text-[10px] text-amber-400 mt-0.5">Monitor KDS ativo</div>
+                    </div>
+
+                    <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                        <span>Economia em Taxas</span>
+                        <iconify-icon icon="solar:shield-check-bold" class="text-emerald-400"></iconify-icon>
+                      </div>
+                      <div class="text-base sm:text-lg font-bold text-emerald-400">R$ 496,90</div>
+                      <div class="text-[10px] text-white/40 mt-0.5">Lucro 100% seu</div>
+                    </div>
+                  </div>
+
+                  <!-- Live Orders & Categories Split -->
+                  <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+                    
+                    <!-- Coluna Esquerda: Pedidos ao Vivo no KDS -->
+                    <div class="xl:col-span-7 border border-white/10 bg-[#0B0F12]/80 rounded-xl p-4 space-y-3">
+                      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                        <div class="flex items-center gap-2">
+                          <span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
+                          <h3 class="font-semibold text-xs text-white">Pedidos ao Vivo na Cozinha</h3>
+                        </div>
+                        <span class="text-[10px] font-mono text-white/40">Sincronizado via WhatsApp</span>
+                      </div>
+
+                      <!-- Pedido Card 1 -->
+                      <div class="border border-[#c6f91f]/30 bg-[#05080A] rounded-lg p-3 shadow-sm">
+                        <div class="flex items-center justify-between text-xs mb-1.5">
+                          <span class="font-bold text-white">#1048 • Lucas Mendonça</span>
+                          <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 text-[10px] font-mono font-semibold">PREPARANDO (8 min)</span>
+                        </div>
+                        <p class="text-xs text-white/70">1x Combo Smash Bacon Duplo + Batata Rústica + Coca Zero</p>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/40">
+                          <span>PIX Pago • R$ 44,90</span>
+                          <span class="text-[#c6f91f] font-mono font-semibold">Despachar p/ Entregador →</span>
+                        </div>
+                      </div>
+
+                      <!-- Pedido Card 2 -->
+                      <div class="border border-white/10 bg-[#05080A] rounded-lg p-3 shadow-sm">
+                        <div class="flex items-center justify-between text-xs mb-1.5">
+                          <span class="font-bold text-white">#1047 • Camila Torres</span>
+                          <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px] font-mono font-semibold">SAIU PARA ENTREGA</span>
+                        </div>
+                        <p class="text-xs text-white/70">2x Burger Cheddar Especial + 1x Porção de Onion Rings</p>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/40">
+                          <span>Cartão no Balcão • R$ 68,00</span>
+                          <span>Entregador: Carlos (Moto 02)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Coluna Direita: Gestão Rápida de Cardápio -->
+                    <div class="xl:col-span-5 border border-white/10 bg-[#0B0F12]/80 rounded-xl p-4 space-y-3">
+                      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                        <h3 class="font-semibold text-xs text-white">Categorias & Destaques</h3>
+                        <span class="text-[10px] text-[#c6f91f] font-mono">+ Adicionar</span>
+                      </div>
+
+                      <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                          <div class="flex items-center gap-2">
+                            <span>🔥</span>
+                            <span class="font-medium text-white">Combos Artesanais</span>
+                          </div>
+                          <span class="text-[10px] text-white/40 font-mono">6 produtos</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                          <div class="flex items-center gap-2">
+                            <span>🍔</span>
+                            <span class="font-medium text-white">Hambúrgueres Smash</span>
+                          </div>
+                          <span class="text-[10px] text-white/40 font-mono">8 produtos</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                          <div class="flex items-center gap-2">
+                            <span>🍟</span>
+                            <span class="font-medium text-white">Porções & Acompanhamentos</span>
+                          </div>
+                          <span class="text-[10px] text-white/40 font-mono">5 produtos</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                          <div class="flex items-center gap-2">
+                            <span>🥤</span>
+                            <span class="font-medium text-white">Bebidas & Sobremesas</span>
+                          </div>
+                          <span class="text-[10px] text-white/40 font-mono">5 produtos</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
                 </div>
-                <div></div>
-                <div></div>
+
               </div>
 
-              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">19:30</div>
-                <div></div>
-                <div class="h-12 rounded-lg bg-rose-500/15 border border-rose-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-rose-300">Alta Demanda KDS</span>
-                  <span class="text-rose-400/80 font-mono text-[9px]">Capacidade máxima</span>
+              <!-- ========================================================================= -->
+              <!-- CELULAR / SMARTPHONE MOCKUP: EXPERIÊNCIA DO CLIENTE FINAL (CARDÁPIO) -->
+              <!-- ========================================================================= -->
+              <div class="w-full lg:w-[320px] bg-[#090b0f] border-t lg:border-t-0 lg:border-l border-white/10 p-4 shrink-0 flex flex-col justify-center items-center relative z-20">
+                
+                <div class="text-[10px] font-mono uppercase tracking-widest text-[#c6f91f] mb-3 flex items-center gap-1.5">
+                  <iconify-icon icon="solar:smartphone-linear" width="14"></iconify-icon>
+                  <span>Visão do Cliente (Mobile)</span>
                 </div>
-                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Despacho Rápido</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">Tempo médio 18m</span>
-                </div>
-                <div></div>
-                <div></div>
-              </div>
 
-              <div class="dashboard-grid-cols gap-3 h-16 items-center border-b border-stone-800/40">
-                <div class="text-xs font-mono text-stone-500">21:00</div>
-                <div class="h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-emerald-300">Cupons Utilizados</span>
-                  <span class="text-emerald-500/80 font-mono text-[9px]">14x FRETEGRATIS</span>
+                <!-- iPhone Realistic Shell Frame -->
+                <div class="w-[275px] h-[540px] bg-black rounded-[36px] p-2.5 border-[3px] border-stone-800 phone-mockup-shadow relative overflow-hidden flex flex-col">
+                  
+                  <!-- Dynamic Island Notch -->
+                  <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-50 flex items-center justify-end px-2">
+                    <div class="w-2 h-2 rounded-full bg-[#111] border border-white/10"></div>
+                  </div>
+
+                  <!-- Phone Screen Content -->
+                  <div class="w-full h-full bg-[#080504] rounded-[28px] overflow-y-auto text-white flex flex-col no-scrollbar relative">
+                    
+                    <!-- Cover / Header Loja -->
+                    <div class="bg-gradient-to-b from-[#FF5E1E]/40 to-transparent p-3 pt-6 text-center border-b border-white/5">
+                      <div class="w-12 h-12 rounded-xl bg-orange-600 mx-auto flex items-center justify-center text-xl shadow-lg border border-white/20 mb-1.5">
+                        🍔
+                      </div>
+                      <div class="font-bold text-xs text-white">Rei do Burger 👑</div>
+                      <div class="text-[9px] text-[#c6f91f] font-mono mt-0.5">● Aberto • Entrega 30-45m</div>
+                      <div class="text-[8px] text-white/40 mt-0.5">Taxa Fixa R$ 5,00 • PIX ou Cartão</div>
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex gap-1.5 px-2.5 py-2 overflow-x-auto no-scrollbar border-b border-white/5 text-[9px] shrink-0">
+                      <span class="px-2 py-1 rounded-full bg-[#c6f91f] text-black font-bold shrink-0">Combos</span>
+                      <span class="px-2 py-1 rounded-full bg-white/5 text-white/60 shrink-0">Burgers</span>
+                      <span class="px-2 py-1 rounded-full bg-white/5 text-white/60 shrink-0">Porções</span>
+                      <span class="px-2 py-1 rounded-full bg-white/5 text-white/60 shrink-0">Bebidas</span>
+                    </div>
+
+                    <!-- Products List -->
+                    <div class="p-2.5 space-y-2 flex-1">
+                      
+                      <!-- Product 1 -->
+                      <div class="border border-white/10 bg-white/[0.02] rounded-xl p-2 flex gap-2 items-center">
+                        <div class="w-12 h-12 rounded-lg bg-stone-900 flex items-center justify-center text-lg shrink-0 border border-white/5">
+                          🍔
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="text-[10px] font-bold text-white truncate">Smash Bacon Duplo</div>
+                          <div class="text-[8px] text-white/40 line-clamp-1">2x carnes 90g, queijo cheddar...</div>
+                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5">R$ 32,90</div>
+                        </div>
+                        <button class="w-6 h-6 rounded-md bg-[#c6f91f] text-black font-bold flex items-center justify-center text-xs shadow-sm">+</button>
+                      </div>
+
+                      <!-- Product 2 -->
+                      <div class="border border-white/10 bg-white/[0.02] rounded-xl p-2 flex gap-2 items-center">
+                        <div class="w-12 h-12 rounded-lg bg-stone-900 flex items-center justify-center text-lg shrink-0 border border-white/5">
+                          🍟
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="text-[10px] font-bold text-white truncate">Batata Rústica Especial</div>
+                          <div class="text-[8px] text-white/40 line-clamp-1">Crocante com alecrim e páprica</div>
+                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5">R$ 18,00</div>
+                        </div>
+                        <button class="w-6 h-6 rounded-md bg-[#c6f91f] text-black font-bold flex items-center justify-center text-xs shadow-sm">+</button>
+                      </div>
+
+                      <!-- Product 3 -->
+                      <div class="border border-white/10 bg-white/[0.02] rounded-xl p-2 flex gap-2 items-center">
+                        <div class="w-12 h-12 rounded-lg bg-stone-900 flex items-center justify-center text-lg shrink-0 border border-white/5">
+                          🥤
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="text-[10px] font-bold text-white truncate">Refrigerante Lata 350ml</div>
+                          <div class="text-[8px] text-white/40 line-clamp-1">Coca-Cola, Guaraná, Fanta...</div>
+                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5">R$ 6,00</div>
+                        </div>
+                        <button class="w-6 h-6 rounded-md bg-[#c6f91f] text-black font-bold flex items-center justify-center text-xs shadow-sm">+</button>
+                      </div>
+
+                    </div>
+
+                    <!-- Bottom Floating Cart Button -->
+                    <div class="p-2 border-t border-white/10 bg-[#05080A]/95 mt-auto">
+                      <div class="w-full py-2 bg-[#c6f91f] text-black font-bold text-[10px] rounded-lg text-center flex items-center justify-between px-3 shadow-[0_0_15px_rgba(198,249,31,0.3)]">
+                        <span>Ver Sacola (2 itens)</span>
+                        <span>R$ 50,90 →</span>
+                      </div>
+                    </div>
+
+                  </div>
+
                 </div>
-                <div class="h-12 rounded-lg bg-amber-500/15 border border-amber-500/40 p-2 text-[11px] font-sans flex flex-col justify-center">
-                  <span class="font-semibold text-amber-300">Mesas Salão</span>
-                  <span class="text-amber-400/80 font-mono text-[9px]">PDV Express 100%</span>
-                </div>
-                <div></div>
-                <div></div>
-                <div></div>
+
               </div>
 
             </div>
@@ -719,182 +580,367 @@
 
       </div>
 
-    </div>
-  </section>
+    </section>
 
-  <!-- ========================================================================= -->
-  <!-- SECTION 7 - TESTIMONIAL & SOCIAL PROOF -->
-  <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F8F6]">
-    <div class="max-w-5xl mx-auto">
-      
-      <div class="bg-white rounded-3xl p-8 sm:p-12 border border-stone-200 shadow-xl relative overflow-hidden">
-        <div class="text-orange-600 mb-6">
-          <i data-lucide="quote" class="w-10 h-10 opacity-40"></i>
-        </div>
-
-        <blockquote class="font-serif-title text-2xl sm:text-4xl text-stone-900 leading-snug">
-          "Paramos de pagar quase R$ 4.000 de comissões por mês em apps tradicionais. Agora nossos clientes pedem direto pelo nosso link do PedidoVale e o PIX cai na hora."
-        </blockquote>
-
-        <div class="flex items-center gap-4 mt-8 pt-8 border-t border-stone-100">
-          <img 
-            src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0a9490d3-0806-4139-aaa6-628fd3eee5b1_320w.png" 
-            alt="Rodrigo Alencar, Hamburgueria Artesanal" 
-            class="w-14 h-14 rounded-full object-cover border-2 border-orange-200"
-          >
-          <div>
-            <div class="font-bricolage font-bold text-base text-stone-900">Rodrigo Alencar</div>
-            <div class="text-xs text-stone-500 font-sans">Proprietário • Brasa & Burger Gourmet</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION 8 - PRICING -->
-  <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-stone-950 text-white" id="precos">
-    <div class="max-w-7xl mx-auto">
-      
-      <div class="text-center max-w-2xl mx-auto mb-16">
-        <span class="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-950 px-3 py-1 rounded-full border border-orange-800">PREÇO FIXO & JUSTO</span>
-        <h2 class="font-serif-title text-4xl sm:text-6xl text-white mt-4">Planos sem pegadinhas.</h2>
-        <p class="text-slate-400 text-base mt-2">Comece com teste grátis de 7 dias e escale suas vendas.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    <!-- ========================================================================= -->
+    <!-- SECTION: PROCESSO SIMPLES DE 4 ETAPAS (LUMIMOTION STEP GRID) -->
+    <!-- ========================================================================= -->
+    <section id="como-funciona" class="w-full border-b border-white/10 py-24 px-6 bg-transparent relative z-10">
+      <div class="max-w-6xl mx-auto">
         
-        <!-- Plano Teste -->
-        <div class="rounded-3xl bg-stone-900/90 border border-stone-800 p-8 flex flex-col justify-between hover:border-stone-700 transition-all">
-          <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Teste Grátis</div>
-            <div class="font-serif-title text-4xl text-white my-4">R$ 0 <span class="text-sm font-sans text-slate-500 font-normal">/ 7 dias</span></div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Experimente todas as funções sem precisar cadastrar cartão de crédito.</p>
-            <ul class="space-y-3 text-xs text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Cardápio digital completo</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Produtos & fotos ilimitadas</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Pedidos no WhatsApp (taxa 0%)</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Link exclusivo da loja</li>
-            </ul>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+          <div class="flex flex-col items-start w-full md:w-1/2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-6 uppercase tracking-widest font-mono font-semibold rounded-full">
+              <span>Como o PedidoVale Funciona</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-light tracking-tighter text-white text-balance">
+              Do cadastro ao primeiro pedido <br>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#c6f91f]">em 4 passos rápidos.</span>
+            </h2>
           </div>
-          <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white bg-stone-800 hover:bg-stone-700 rounded-xl transition-colors">
-            Começar Grátis
-          </a>
+
+          <div class="flex flex-col items-start md:items-end w-full md:w-1/2 text-left md:text-right">
+            <p class="text-base md:text-lg text-white/50 text-pretty tracking-tight mb-8 max-w-md">
+              Sem precisar de técnico, sem taxa de instalação e sem complicações. Você mesmo cria sua loja em 30 segundos.
+            </p>
+            <a href="cadastro.html" class="bg-[#c6f91f] text-black px-6 py-3 text-sm hover:bg-[#aade17] transition-all inline-flex items-center gap-2 font-semibold shadow-[0_0_20px_rgba(198,249,31,0.2)] rounded-md">
+              <span>Criar Minha Conta Grátis</span>
+              <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+            </a>
+          </div>
         </div>
 
-        <!-- Plano Pro (Featured) -->
-        <div class="rounded-3xl bg-gradient-to-b from-orange-950/40 via-stone-900 to-stone-900 border-2 border-orange-500/60 p-8 flex flex-col justify-between shadow-2xl relative">
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#FF5E1E] rounded-full text-[10px] font-bold tracking-wider uppercase text-white shadow-md">
-            MAIS POPULAR
-          </div>
-          <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-orange-400">Plano Pro Completo</div>
-            <div class="font-serif-title text-4xl text-white my-4">R$ 119 <span class="text-sm font-sans text-slate-500 font-normal">/ mês</span></div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Todos os módulos do Hub 360 liberados para você escalar sua operação.</p>
-            <ul class="space-y-3 text-xs text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Cardápio digital com fotos HD</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> PDV Balcão Express (Mesas e Balcão)</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Monitor KDS de Cozinha</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Gerador de Cupons & Promoções</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Suporte prioritário via WhatsApp</li>
-            </ul>
-          </div>
-          <a href="cadastro.html" class="mt-8 w-full py-3 text-center text-xs font-bold text-white btn-gradient-shift rounded-xl shadow-lg shadow-orange-900/40 hover:brightness-110 transition-all">
-            Assinar Plano Pro
-          </a>
-        </div>
+        <!-- 4-Step Modular Grid with Flashlight Effect -->
+        <div class="overflow-hidden bg-[#070A0D]/90 border border-white/10 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            
+            <!-- Etapa 1 -->
+            <div class="flashlight-target min-h-[380px] p-8 border-b md:border-r border-white/10 transition-colors hover:bg-white/[0.02]">
+              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                Etapa 01
+              </div>
+              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Crie seu Link Exclusivo</h3>
+              <p class="text-sm text-white/50 leading-relaxed mb-6">
+                Defina o nome do seu restaurante e gere seu link personalizado no formato <strong class="text-white">pedidovale.com.br/sualoja</strong>.
+              </p>
+              <div class="p-4 rounded-xl bg-[#05080A] border border-white/10 font-mono text-xs text-white/80 flex items-center justify-between">
+                <span class="text-[#c6f91f]">pedidovale.com.br/meurestaurante</span>
+                <span class="text-emerald-400">✓ Ativo</span>
+              </div>
+            </div>
 
-        <!-- Plano Multi-Lojas -->
-        <div class="rounded-3xl bg-stone-900/90 border border-stone-800 p-8 flex flex-col justify-between hover:border-stone-700 transition-all">
-          <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Multi-Unidades / Franquias</div>
-            <div class="font-serif-title text-4xl text-white my-4">Sob Consulta</div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Para redes de restaurantes com várias filiais e gestão unificada de pedidos.</p>
-            <ul class="space-y-3 text-xs text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Múltiplas lojas e cardápios</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Relatórios consolidados</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Treinamento de equipe</li>
-              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Gerente de conta exclusivo</li>
-            </ul>
+            <!-- Etapa 2 -->
+            <div class="flashlight-target min-h-[380px] p-8 border-b border-white/10 transition-colors hover:bg-white/[0.02]">
+              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                Etapa 02
+              </div>
+              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Monte seu Cardápio Digital</h3>
+              <p class="text-sm text-white/50 leading-relaxed mb-6">
+                Cadastre categorias, produtos com fotos em alta definição, preços e opcionais (ex: ponto da carne, molhos, adicionais).
+              </p>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Categorias</div>
+                <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Produtos + Fotos</div>
+                <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Opcionais</div>
+              </div>
+            </div>
+
+            <!-- Etapa 3 -->
+            <div class="flashlight-target min-h-[380px] p-8 md:border-r border-b md:border-b-0 border-white/10 transition-colors hover:bg-white/[0.02]">
+              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                Etapa 03
+              </div>
+              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Divulgue no Instagram & WhatsApp</h3>
+              <p class="text-sm text-white/50 leading-relaxed mb-6">
+                Cole seu link na bio do Instagram e no WhatsApp. O cliente clica, monta o pedido e tudo chega formatado no seu WhatsApp.
+              </p>
+              <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center gap-2">
+                <iconify-icon icon="solar:whatsapp-linear" class="text-lg"></iconify-icon>
+                <span>Pedidos 100% integrados sem taxa</span>
+              </div>
+            </div>
+
+            <!-- Etapa 4 -->
+            <div class="flashlight-target min-h-[380px] p-8 transition-colors hover:bg-white/[0.02]">
+              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                Etapa 04
+              </div>
+              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Gerencie no PDV & Cozinha KDS</h3>
+              <p class="text-sm text-white/50 leading-relaxed mb-6">
+                Acompanhe o tempo de preparo na tela da cozinha, despache com entregadores e receba o valor direto na sua chave PIX.
+              </p>
+              <div class="p-3 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 text-[#c6f91f] text-xs font-mono flex items-center justify-between">
+                <span>PIX Direto na sua conta</span>
+                <span class="font-bold">R$ 0 de comissão</span>
+              </div>
+            </div>
+
           </div>
-          <a href="https://wa.me/5599991040222" target="_blank" class="mt-8 w-full py-3 text-center text-xs font-bold text-white bg-stone-800 hover:bg-stone-700 rounded-xl transition-colors">
-            Falar com Consultor
-          </a>
         </div>
 
       </div>
+    </section>
 
-    </div>
-  </section>
+    <!-- ========================================================================= -->
+    <!-- SECTION: MÓDULOS ECOSSISTEMA HUB 360 -->
+    <!-- ========================================================================= -->
+    <section id="modulos" class="w-full border-b border-white/10 py-24 px-6 bg-transparent relative z-10">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-4 uppercase tracking-widest font-mono font-semibold rounded-full">
+            <span>Módulos do Sistema</span>
+          </div>
+          <h2 class="text-4xl md:text-6xl font-light tracking-tighter text-white">
+            Tudo que sua operação precisa em um só lugar.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+            <div class="w-10 h-10 rounded-xl bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] text-xl mb-4">
+              <iconify-icon icon="solar:smartphone-linear"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">Cardápio Digital com Fotos</h3>
+            <p class="text-xs text-white/50 leading-relaxed">Menu responsivo, rápido e bonito. Suporte a opcionais, combos, badges de destaque e cálculo automático de entrega.</p>
+          </div>
+
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xl mb-4">
+              <iconify-icon icon="solar:laptop-minimalistic-linear"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">PDV Balcão Express</h3>
+            <p class="text-xs text-white/50 leading-relaxed">Lance pedidos presenciais, de mesa ou de telefone com apenas 2 toques. Envio imediato para a tela da cozinha.</p>
+          </div>
+
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl mb-4">
+              <iconify-icon icon="solar:chef-hat-minimalistic-linear"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">Monitor de Cozinha (KDS)</h3>
+            <p class="text-xs text-white/50 leading-relaxed">Cronômetro de preparo por pedido, alertas sonoros e status (Novo → Em Preparo → Pronto p/ Entrega).</p>
+          </div>
+
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl mb-4">
+              <iconify-icon icon="solar:ticket-sale-linear"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">Cupons & Promoções</h3>
+            <p class="text-xs text-white/50 leading-relaxed">Crie cupons em % de desconto, valor fixo em R$ ou Frete Grátis com limite de uso para alavancar vendas.</p>
+          </div>
+
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl mb-4">
+              <iconify-icon icon="solar:scooter-linear"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">Taxas & Entregas por Bairro</h3>
+            <p class="text-xs text-white/50 leading-relaxed">Configure taxas de frete personalizadas por região e botão com rota direta no Google Maps para o motoboy.</p>
+          </div>
+
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 text-xl mb-4">
+              <iconify-icon icon="solar:qr-code-linear"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">PIX Direto na Sua Conta</h3>
+            <p class="text-xs text-white/50 leading-relaxed">Cadastre sua chave PIX e o cliente paga na hora, com confirmação e sem taxa de intermediação bancária.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION: PREÇOS & PLANOS -->
+    <!-- ========================================================================= -->
+    <section id="precos" class="w-full border-b border-white/10 py-24 px-6 bg-transparent relative z-10">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-4 uppercase tracking-widest font-mono font-semibold rounded-full">
+            <span>Preço Fixo e Transparente</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-light tracking-tighter text-white">
+            Planos sem taxas sobre seus pedidos.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          
+          <!-- Teste Grátis -->
+          <div class="border border-white/10 bg-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-mono uppercase text-white/50 mb-2">Avaliação</div>
+              <div class="text-4xl font-light text-white my-3">R$ 0 <span class="text-xs text-white/40 font-normal">/ 7 dias</span></div>
+              <p class="text-xs text-white/50 mb-6">Teste todos os recursos sem compromisso e sem precisar cadastrar cartão.</p>
+              
+              <ul class="space-y-3 text-xs text-white/70">
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Cardápio digital completo</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Produtos ilimitados</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Pedidos pelo WhatsApp</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> 0% de comissão</li>
+              </ul>
+            </div>
+            <a href="cadastro.html" class="mt-8 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-center text-xs font-semibold rounded-lg text-white transition-colors">
+              Começar Teste Grátis
+            </a>
+          </div>
+
+          <!-- Plano Pro (Destaque Lumimotion) -->
+          <div class="border-2 border-[#c6f91f] bg-gradient-to-b from-[#c6f91f]/[0.08] to-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between relative shadow-[0_0_35px_rgba(198,249,31,0.15)]">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#c6f91f] text-black text-[10px] font-bold rounded-full uppercase tracking-wider">
+              MAIS ESCOLHIDO
+            </div>
+            <div>
+              <div class="text-xs font-mono uppercase text-[#c6f91f] mb-2 font-bold">Plano Pro Oficial</div>
+              <div class="text-4xl font-light text-white my-3">R$ 119 <span class="text-xs text-white/40 font-normal">/ mês</span></div>
+              <p class="text-xs text-white/60 mb-6">Acesso total a todos os módulos do ecossistema para escalar suas vendas.</p>
+              
+              <ul class="space-y-3 text-xs text-white/80">
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Cardápio Digital com fotos HD</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> PDV Balcão Express (Mesas & Balcão)</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Monitor de Cozinha KDS</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Sistema de Cupons & Fidelidade</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Suporte prioritário via WhatsApp</li>
+              </ul>
+            </div>
+            <a href="cadastro.html" class="mt-8 w-full py-3 bg-[#c6f91f] hover:bg-[#aade17] text-black text-center text-xs font-bold rounded-lg transition-colors shadow-[0_0_20px_rgba(198,249,31,0.3)]">
+              Assinar Plano Pro
+            </a>
+          </div>
+
+          <!-- Multi-Lojas -->
+          <div class="border border-white/10 bg-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-mono uppercase text-white/50 mb-2">Franquias & Redes</div>
+              <div class="text-3xl font-light text-white my-3">Sob Consulta</div>
+              <p class="text-xs text-white/50 mb-6">Para redes com múltiplas filiais e gestão integrada de faturamento.</p>
+              
+              <ul class="space-y-3 text-xs text-white/70">
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Múltiplas lojas e cardápios</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Relatórios consolidados</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Treinamento de equipe</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Gerente de conta exclusivo</li>
+              </ul>
+            </div>
+            <a href="https://wa.me/5599991040222" target="_blank" class="mt-8 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-center text-xs font-semibold rounded-lg text-white transition-colors">
+              Falar no WhatsApp
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- FAQ ACCORDION -->
+    <!-- ========================================================================= -->
+    <section id="faq" class="w-full border-b border-white/10 py-24 px-6 bg-transparent relative z-10">
+      <div class="max-w-4xl mx-auto">
+        
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-5xl font-light tracking-tighter text-white">Dúvidas Frequentes</h2>
+        </div>
+
+        <div class="space-y-3">
+          
+          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer">
+            <summary class="font-medium text-sm text-white flex items-center justify-between list-none">
+              <span>Preciso baixar algum aplicativo para usar o sistema?</span>
+              <iconify-icon icon="solar:alt-arrow-down-linear" class="group-open:rotate-180 transition-transform text-[#c6f91f]"></iconify-icon>
+            </summary>
+            <p class="text-xs text-white/50 mt-3 leading-relaxed">
+              Não! O PedidoVale é 100% web e roda direto pelo navegador no celular, tablet ou computador. Nem você nem seus clientes precisam instalar nada.
+            </p>
+          </details>
+
+          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer">
+            <summary class="font-medium text-sm text-white flex items-center justify-between list-none">
+              <span>Existe cobrança de comissão sobre meus pedidos?</span>
+              <iconify-icon icon="solar:alt-arrow-down-linear" class="group-open:rotate-180 transition-transform text-[#c6f91f]"></iconify-icon>
+            </summary>
+            <p class="text-xs text-white/50 mt-3 leading-relaxed">
+              Zero comissão! Você paga apenas a mensalidade fixa do seu plano e 100% do valor dos pedidos vai direto para o seu restaurante.
+            </p>
+          </details>
+
+          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer">
+            <summary class="font-medium text-sm text-white flex items-center justify-between list-none">
+              <span>Como recebo o dinheiro das vendas por PIX?</span>
+              <iconify-icon icon="solar:alt-arrow-down-linear" class="group-open:rotate-180 transition-transform text-[#c6f91f]"></iconify-icon>
+            </summary>
+            <p class="text-xs text-white/50 mt-3 leading-relaxed">
+              Você cadastra sua própria chave PIX (telefone, CNPJ, e-mail ou aleatória) no painel. O cliente paga direto para você e o dinheiro cai imediatamente na sua conta bancária.
+            </p>
+          </details>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- CTA FINAL (LUMIMOTION STYLE) -->
+    <!-- ========================================================================= -->
+    <section class="py-24 px-6 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto relative z-10">
+        <h2 class="text-4xl sm:text-6xl font-light tracking-tighter text-white leading-tight mb-6">
+          Pronto para transformar a gestão <br>do seu restaurante?
+        </h2>
+        <p class="text-white/50 text-base max-w-lg mx-auto mb-10">
+          Crie seu cardápio agora mesmo e receba pedidos no WhatsApp com taxa zero.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a href="cadastro.html" class="bg-[#c6f91f] text-black px-8 py-4 text-sm hover:bg-[#aade17] transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(198,249,31,0.3)] font-bold rounded-lg">
+            <span>Começar Teste Grátis (7 Dias)</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+          </a>
+          <a href="https://wa.me/5599991040222" target="_blank" class="border border-white/10 bg-white/5 text-white px-6 py-4 text-sm hover:bg-white/10 transition-all font-semibold rounded-lg">
+            💬 Falar no WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
   <!-- ========================================================================= -->
-  <!-- SECTION 9 - CALL TO ACTION & FOOTER -->
+  <!-- FOOTER -->
   <!-- ========================================================================= -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-black text-white relative overflow-hidden text-center">
-    <div class="max-w-4xl mx-auto relative z-10">
+  <footer class="border-t border-white/10 py-12 px-6 bg-[#05080A] text-white/40 text-xs">
+    <div class="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
       
-      <h2 class="font-serif-title text-5xl sm:text-7xl leading-tight">
-        Seu restaurante pronto para vender mais hoje.
-      </h2>
-      <p class="text-slate-400 text-lg max-w-xl mx-auto mt-4 mb-8">
-        Crie seu cardápio em menos de 1 minuto e comece a receber pedidos diretamente no seu WhatsApp.
-      </p>
-
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="cadastro.html" class="btn-gradient-shift px-8 py-4 rounded-xl text-white font-bold text-sm shadow-xl hover:shadow-orange-600/30 transition-all flex items-center gap-2">
-          <span>Criar Cardápio Grátis</span>
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 7h10v10"></path>
-            <path d="M7 17 17 7"></path>
-          </svg>
-        </a>
-        <a href="https://wa.me/5599991040222" target="_blank" class="px-6 py-4 rounded-xl text-slate-300 hover:text-white border border-stone-800 hover:border-stone-600 font-semibold text-sm transition-all">
-          💬 Tirar Dúvidas no WhatsApp
-        </a>
-      </div>
-
-      <!-- Unicorn Studio Badge Integration -->
-      <div class="mt-16 flex items-center justify-center gap-3">
-        <img 
-          src="https://assets.unicorn.studio/media/made_in_us_small_web.svg" 
-          alt="Made with Unicorn Studio" 
-          class="h-7 opacity-70 hover:opacity-100 transition-opacity"
-        >
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-black border-t border-stone-900 py-12 px-4 sm:px-6 lg:px-8 text-slate-500 text-xs">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-      
-      <div class="flex items-center gap-2 text-white font-bricolage font-bold text-sm">
-        <i data-lucide="sparkles" class="w-4 h-4 text-orange-400"></i>
-        <span>PedidoVale</span>
-        <span class="text-stone-600 font-normal font-sans ml-2">© 2026 PedidoVale Ecosystem. Todos os direitos reservados.</span>
+      <div class="flex items-center gap-2.5 text-white">
+        <div class="w-6 h-6 rounded bg-[#c6f91f]/20 text-[#c6f91f] flex items-center justify-center font-bold text-xs">⚡</div>
+        <span class="font-bold text-sm text-white">Pedido<span class="text-[#c6f91f]">Vale</span></span>
+        <span class="text-white/30 ml-2 font-mono">© 2026 PedidoVale. Todos os direitos reservados.</span>
       </div>
 
       <div class="flex items-center gap-6">
-        <a href="login.html" class="hover:text-slate-300 transition-colors">Entrar</a>
-        <a href="cadastro.html" class="hover:text-slate-300 transition-colors">Criar Conta</a>
-        <a href="https://wa.me/5599991040222" target="_blank" class="hover:text-slate-300 transition-colors">Suporte</a>
-        <a href="superadmin.html" class="hover:text-slate-300 transition-colors">Master</a>
+        <a href="login.html" class="hover:text-white transition-colors">Entrar</a>
+        <a href="cadastro.html" class="hover:text-white transition-colors">Criar Conta</a>
+        <a href="https://wa.me/5599991040222" target="_blank" class="hover:text-white transition-colors">Suporte</a>
+        <a href="superadmin.html" class="hover:text-white transition-colors">Super Admin</a>
       </div>
 
     </div>
   </footer>
 
-  <!-- Initialize Lucide Icons -->
+  <!-- Flashlight Mouse Follow Script -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+    document.querySelectorAll('.flashlight-target').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
     });
   </script>
+
 </body>
 </html>
