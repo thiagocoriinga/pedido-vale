@@ -757,21 +757,43 @@
     <!-- ABA: MONITOR KDS DE COZINHA (PRODUÇÃO EM TEMPO REAL) -->
     <!-- ========================================================================= -->
     <div id="store-view-kds" class="store-tab-pane hidden space-y-6">
-      <div class="flex items-center justify-between bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+      
+      <!-- Topbar do KDS -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span class="w-2.5 h-6 bg-red-500 rounded-full"></span>
+            <span class="w-2.5 h-6 bg-red-500 rounded-full animate-pulse"></span>
             Monitor KDS de Cozinha (Tela de Produção)
           </h2>
           <p class="text-xs text-brand-textMuted mt-0.5">Visão limpa e grande para a equipe da cozinha preparar os pedidos sem papel</p>
         </div>
-        <div class="flex items-center gap-3">
+
+        <div class="flex flex-wrap items-center gap-2">
           <span id="kds-pending-count" class="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-400 font-bold text-xs">0 na fila</span>
+          
+          <button onclick="createTestOrderForKitchen()" class="px-3 py-1.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+            <span>+</span>
+            <span>Simular Pedido Teste</span>
+          </button>
+
           <button onclick="toggleKdsSound()" id="kds-sound-btn" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold border border-white/10 flex items-center gap-1.5">
             <span>🔊</span>
             <span>Som: Ativo</span>
           </button>
         </div>
+      </div>
+
+      <!-- Filtros Rápidos do KDS -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <button onclick="filterKdsStatus('all')" id="kds-filter-all" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-brand-orange text-white kds-filter-btn">
+          🍳 Todos em Produção
+        </button>
+        <button onclick="filterKdsStatus('prep')" id="kds-filter-prep" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-filter-btn">
+          ⏳ Em Preparo
+        </button>
+        <button onclick="filterKdsStatus('ready')" id="kds-filter-ready" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-filter-btn">
+          🛵 Prontos p/ Entrega / Balcão
+        </button>
       </div>
 
       <!-- Grade de Comandas da Cozinha -->
@@ -1469,7 +1491,7 @@
     <span id="admin-toast-text">Ação executada!</span>
   </div>
 
-  <script src="admin.js?v=20260830_11"></script>
+  <script src="admin.js?v=20260830_12"></script>
 
   <script>
     // Sidebar mobile helpers

@@ -1008,20 +1008,23 @@ function renderOrderCard(o, nextStatus, nextLabel) {
 
       <div>
         <div class="font-bold text-white text-xs">${o.customer_name}</div>
-        <div class="text-xs text-stone-300">${o.items}</div>
-        <div class="text-[11px] text-stone-400 mt-1">📍 ${o.address}</div>
+        <div class="text-xs text-stone-300 font-medium">${o.items}</div>
+        <div class="text-[11px] text-stone-400 mt-1">📍 ${o.address || 'Balcão'}</div>
       </div>
 
       <div class="flex items-center justify-between pt-1 text-xs">
-        <span class="font-bold text-amber-400">${formatCurrency(o.total)}</span>
-        <span class="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-stone-300">${o.payment_method}</span>
+        <span class="font-bold text-amber-400">${formatCurrency(o.total || 0)}</span>
+        <span class="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-stone-300">${o.payment_method || 'A Combinar'}</span>
       </div>
 
       <div class="flex items-center gap-1.5 pt-1">
-        <a href="https://wa.me/${cleanPhone(o.customer_phone)}" target="_blank" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs" title="Conversar no WhatsApp">
+        <button onclick="printOrderReceipt('${o.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs border border-white/10" title="Imprimir Comanda">
+          🖨️
+        </button>
+        <button onclick="sendOrderWhatsApp('${o.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs border border-emerald-500/20" title="Avisar no WhatsApp">
           💬
-        </a>
-        <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all">
+        </button>
+        <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95">
           ${nextLabel}
         </button>
       </div>
@@ -1622,9 +1625,11 @@ function submitPdvOrder() {
 }
 
 // -------------------------------------------------------------------------
-// MÓDULO 2: MONITOR KDS DE COZINHA (TELA DE PRODUÇÃO)
+// -------------------------------------------------------------------------
+// MÓDULO 2: MONITOR KDS DE COZINHA (TELA DE PRODUÇÃO & COMANDOS COMPLETOS)
 // -------------------------------------------------------------------------
 let KDS_SOUND_ACTIVE = true;
+let KDS_ACTIVE_FILTER = 'all';
 
 function toggleKdsSound() {
   KDS_SOUND_ACTIVE = !KDS_SOUND_ACTIVE;
@@ -1632,7 +1637,82 @@ function toggleKdsSound() {
   if (btn) {
     btn.innerHTML = `<span>${KDS_SOUND_ACTIVE ? '🔊' : '🔇'}</span><span>Som: ${KDS_SOUND_ACTIVE ? 'Ativo' : 'Mudo'}</span>`;
   }
+  if (KDS_SOUND_ACTIVE) playKitchenAlertSound();
   showToast(KDS_SOUND_ACTIVE ? "🔊 Alertas sonoros da cozinha ativados!" : "🔇 Alertas sonoros silenciados.");
+}
+
+function playKitchenAlertSound() {
+  if (!KDS_SOUND_ACTIVE) return;
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Nota Lá (A5)
+    osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.35);
+
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.36);
+  } catch (e) {}
+}
+
+function filterKdsStatus(status) {
+  KDS_ACTIVE_FILTER = status;
+  document.querySelectorAll('.kds-filter-btn').forEach(btn => {
+    btn.classList.remove('bg-brand-orange', 'text-white');
+    btn.classList.add('bg-white/5', 'text-stone-300');
+  });
+
+  const activeBtn = document.getElementById(`kds-filter-${status}`);
+  if (activeBtn) {
+    activeBtn.classList.add('bg-brand-orange', 'text-white');
+    activeBtn.classList.remove('bg-white/5', 'text-stone-300');
+  }
+
+  renderKdsOrders();
+}
+
+function createTestOrderForKitchen() {
+  const sampleItems = [
+    "1x Combo Smash Bacon + Batata Frita M + Coca-Cola 350ml (Sem cebola)",
+    "2x Burger Artesanal Duplo Queijo + Molho Especial da Casa",
+    "1x Porção de Batata Rústica c/ Cheddar & Bacon Crocante + 1x Suco de Laranja",
+    "1x Pizza Calabresa Especial Grande + 1x Guaraná 2L"
+  ];
+  const sampleNames = ["Lucas Ferreira", "Mariana Silva", "Carlos Eduardo", "Fernanda Santos", "Rodrigo Costa"];
+  const sampleTypes = ["Delivery", "Balcão / Retirada", "Mesa 04"];
+
+  const randomItem = sampleItems[Math.floor(Math.random() * sampleItems.length)];
+  const randomName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+  const randomType = sampleTypes[Math.floor(Math.random() * sampleTypes.length)];
+  const orderId = `#B${Math.floor(1000 + Math.random() * 9000)}`;
+
+  const newOrder = {
+    id: orderId,
+    customer_name: `${randomName} (${randomType})`,
+    customer_phone: STORE_DATA.whatsapp || '5599991040222',
+    address: randomType === 'Delivery' ? 'Rua das Flores, 240 - Centro' : 'Consumo / Retirada no Local',
+    items: randomItem,
+    total: Math.floor(25 + Math.random() * 60) + 0.90,
+    payment_method: 'PIX (Aprovado)',
+    status: 'prep',
+    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    created_at: Date.now()
+  };
+
+  ORDERS.unshift(newOrder);
+  saveOrders();
+  renderOrdersKanban();
+  renderKdsOrders();
+  playKitchenAlertSound();
+  showToast(`🔔 Pedido teste ${orderId} criado e enviado para a cozinha!`);
 }
 
 function renderKdsOrders() {
@@ -1640,15 +1720,27 @@ function renderKdsOrders() {
   const countEl = document.getElementById('kds-pending-count');
   if (!grid) return;
 
-  const kitchenOrders = ORDERS.filter(o => o.status === 'new' || o.status === 'prep');
-  if (countEl) countEl.innerText = `${kitchenOrders.length} na fila`;
+  let kitchenOrders = ORDERS;
+  if (KDS_ACTIVE_FILTER === 'prep') {
+    kitchenOrders = ORDERS.filter(o => o.status === 'new' || o.status === 'prep');
+  } else if (KDS_ACTIVE_FILTER === 'ready') {
+    kitchenOrders = ORDERS.filter(o => o.status === 'delivery');
+  } else {
+    kitchenOrders = ORDERS.filter(o => o.status === 'new' || o.status === 'prep' || o.status === 'delivery');
+  }
+
+  const pendingCount = ORDERS.filter(o => o.status === 'new' || o.status === 'prep').length;
+  if (countEl) countEl.innerText = `${pendingCount} na fila`;
 
   if (kitchenOrders.length === 0) {
     grid.innerHTML = `
-      <div class="col-span-full py-16 text-center space-y-2">
-        <span class="text-4xl block">👨‍🍳</span>
-        <h4 class="font-bold text-base text-white">Cozinha 100% em dia!</h4>
-        <p class="text-xs text-stone-500">Nenhum pedido aguardando preparo no momento.</p>
+      <div class="col-span-full py-16 text-center space-y-3 bg-[#120D0A]/80 border border-brand-darkBorder rounded-3xl p-8">
+        <span class="text-5xl block">👨‍🍳</span>
+        <h4 class="font-bold text-lg text-white">Cozinha 100% em dia!</h4>
+        <p class="text-xs text-stone-400 max-w-sm mx-auto">Nenhum pedido pendente nesta visualização. Novos pedidos aparecerão automaticamente aqui com alerta sonoro.</p>
+        <button onclick="createTestOrderForKitchen()" class="px-5 py-2.5 rounded-2xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold shadow-orange-glow active:scale-95 transition-all">
+          + Criar Pedido Teste
+        </button>
       </div>
     `;
     return;
@@ -1656,42 +1748,251 @@ function renderKdsOrders() {
 
   grid.innerHTML = kitchenOrders.map(o => {
     const isNew = o.status === 'new';
+    const isPrep = o.status === 'prep';
+    const isDelivery = o.status === 'delivery';
+
     const elapsedMinutes = Math.floor((Date.now() - (o.created_at || Date.now())) / 60000);
-    const borderColor = isNew ? 'border-brand-orange/60' : 'border-amber-500/60';
-    const badgeColor = isNew ? 'bg-brand-orange text-white' : 'bg-amber-500 text-black';
+    const isLate = elapsedMinutes >= 20;
+
+    let borderColor = 'border-amber-500/50';
+    let badgeColor = 'bg-amber-500 text-black';
+    let badgeText = 'EM PREPARO';
+
+    if (isNew) {
+      borderColor = 'border-brand-orange';
+      badgeColor = 'bg-brand-orange text-white animate-pulse';
+      badgeText = 'NOVO PEDIDO';
+    } else if (isDelivery) {
+      borderColor = 'border-emerald-500/50';
+      badgeColor = 'bg-emerald-500 text-white';
+      badgeText = 'PRONTO / EXPEDIÇÃO';
+    }
 
     return `
-      <div class="bg-[#120D0A] border ${borderColor} rounded-3xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
+      <div class="bg-[#120D0A] border ${borderColor} rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col justify-between space-y-4 relative group">
+        
         <div class="space-y-3">
-          <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
+          
+          <!-- Cabeçalho do Card -->
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
             <div class="flex items-center gap-2">
-              <span class="font-anton text-lg text-white">${o.id}</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeColor}">
-                ${isNew ? 'NOVO' : 'EM PREPARO'}
+              <span class="font-anton text-xl text-white tracking-wide">${o.id}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${badgeColor}">
+                ${badgeText}
               </span>
             </div>
-            <span class="text-xs text-amber-400 font-mono font-bold">⏱️ ${elapsedMinutes} min</span>
+            <div class="flex items-center gap-1">
+              <span class="text-xs font-mono font-bold ${isLate ? 'text-rose-400 animate-pulse font-black' : 'text-amber-400'}">
+                ⏱️ ${elapsedMinutes} min ${isLate ? '⚠️' : ''}
+              </span>
+            </div>
           </div>
 
+          <!-- Cliente e Tipo -->
           <div>
-            <span class="text-xs text-stone-400 block font-medium">Cliente:</span>
-            <h4 class="font-bold text-white text-sm leading-tight">${o.customer_name}</h4>
+            <span class="text-[11px] text-stone-400 block font-medium">Cliente & Destino:</span>
+            <h4 class="font-bold text-white text-sm leading-tight mt-0.5">${o.customer_name}</h4>
+            <span class="text-[11px] text-stone-400 block mt-1">📍 ${o.address || 'Balcão / Retirada'}</span>
           </div>
 
-          <div class="p-3 bg-black/60 border border-white/5 rounded-2xl space-y-1.5">
-            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">ITENS DO PEDIDO:</span>
-            <p class="font-bold text-xs text-amber-200 leading-relaxed">${o.items}</p>
+          <!-- Itens do Pedido -->
+          <div class="p-3.5 bg-black/70 border border-white/10 rounded-2xl space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">ITENS PARA PRODUÇÃO:</span>
+              <span class="text-[11px] font-bold text-amber-400">${formatCurrency(o.total || 0)}</span>
+            </div>
+            <p class="font-bold text-xs sm:text-sm text-amber-200 leading-relaxed">${o.items}</p>
           </div>
+
         </div>
 
-        <div class="pt-2">
-          <button onclick="advanceOrderStatus('${o.id}', '${isNew ? 'prep' : 'delivery'}')" class="w-full py-3 rounded-2xl ${isNew ? 'bg-amber-500 hover:bg-amber-600 text-black' : 'bg-emerald-500 hover:bg-emerald-600 text-white'} font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all">
-            ${isNew ? '👨‍🍳 INICIAR PREPARO' : '✅ PRONTO P/ DESPACHO 🛵'}
-          </button>
+        <!-- Barra de Ações Rápidas da Cozinha -->
+        <div class="space-y-2 pt-2">
+          
+          <!-- Botão Principal de Avanço -->
+          ${isNew ? `
+            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+              <span>👨‍🍳</span>
+              <span>INICIAR PREPARO</span>
+            </button>
+          ` : (isPrep ? `
+            <button onclick="advanceOrderStatus('${o.id}', 'delivery')" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+              <span>✅</span>
+              <span>MARCAR PRONTO / DESPACHO 🛵</span>
+            </button>
+          ` : `
+            <button onclick="advanceOrderStatus('${o.id}', 'done')" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 text-white font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+              <span>🏁</span>
+              <span>FINALIZAR / ENTREGUE</span>
+            </button>
+          `)}
+
+          <!-- Comandos Secundários (Imprimir, Zap, Voltar) -->
+          <div class="grid grid-cols-3 gap-1.5 text-xs">
+            <button onclick="printOrderReceipt('${o.id}')" class="py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 font-semibold flex items-center justify-center gap-1 transition-colors border border-white/10" title="Imprimir Comanda Térmica (80mm/58mm)">
+              <span>🖨️</span>
+              <span class="text-[10px]">Imprimir</span>
+            </button>
+
+            <button onclick="sendOrderWhatsApp('${o.id}')" class="py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-semibold flex items-center justify-center gap-1 transition-colors border border-emerald-500/20" title="Avisar Cliente no WhatsApp">
+              <span>💬</span>
+              <span class="text-[10px]">Avisar</span>
+            </button>
+
+            <button onclick="revertOrderStatus('${o.id}')" class="py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold flex items-center justify-center gap-1 transition-colors border border-rose-500/20" title="Voltar Etapa / Cancelar">
+              <span>⏪</span>
+              <span class="text-[10px]">Voltar</span>
+            </button>
+          </div>
+
         </div>
+
       </div>
     `;
   }).join('');
+}
+
+// -------------------------------------------------------------------------
+// IMPRESSÃO TÉRMICA DE COMANDAS & CUPOM NÃO-FISCAL (80MM / 58MM)
+// -------------------------------------------------------------------------
+function printOrderReceipt(orderId) {
+  const order = ORDERS.find(o => o.id === orderId);
+  if (!order) {
+    showToast("⚠️ Pedido não encontrado para impressão.");
+    return;
+  }
+
+  const storeName = (STORE_DATA && STORE_DATA.name) ? STORE_DATA.name : "REI DO BURGER";
+  const storeZap = (STORE_DATA && STORE_DATA.whatsapp) ? STORE_DATA.whatsapp : "";
+  const storeAddr = (STORE_DATA && STORE_DATA.address) ? STORE_DATA.address : "";
+
+  const printWindow = window.open('', '_blank', 'width=380,height=600');
+  if (!printWindow) {
+    showToast("⚠️ Desbloqueie popups para imprimir o cupom.");
+    return;
+  }
+
+  const itemsListFormatted = order.items.split(',').map(item => `
+    <tr>
+      <td style="padding: 4px 0; font-weight: bold; border-bottom: 1px dashed #ccc;">${item.trim()}</td>
+    </tr>
+  `).join('');
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Comanda ${order.id} • ${storeName}</title>
+      <style>
+        @page { margin: 0; size: 80mm auto; }
+        body {
+          font-family: 'Courier New', Courier, monospace;
+          width: 280px;
+          margin: 0 auto;
+          padding: 10px;
+          color: #000;
+          font-size: 13px;
+          line-height: 1.3;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-bold { font-weight: bold; }
+        .divider { border-top: 1px dashed #000; margin: 8px 0; }
+        .double-divider { border-top: 2px solid #000; margin: 10px 0; }
+        .order-badge { font-size: 18px; font-weight: 900; }
+      </style>
+    </head>
+    <body onload="window.print(); setTimeout(() => window.close(), 500);">
+      <div class="text-center">
+        <div class="font-bold" style="font-size: 16px;">${storeName.toUpperCase()}</div>
+        ${storeAddr ? `<div>${storeAddr}</div>` : ''}
+        ${storeZap ? `<div>Tel: ${storeZap}</div>` : ''}
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="text-center">
+        <div class="order-badge">PEDIDO ${order.id}</div>
+        <div>Horário: ${order.time || new Date().toLocaleTimeString()}</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <div><strong>CLIENTE:</strong> ${order.customer_name}</div>
+        ${order.address ? `<div><strong>ENDEREÇO:</strong> ${order.address}</div>` : ''}
+        <div><strong>PAGAMENTO:</strong> ${order.payment_method || 'A Combinar'}</div>
+      </div>
+
+      <div class="double-divider"></div>
+
+      <div class="font-bold">ITENS DO PEDIDO:</div>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 4px;">
+        ${itemsListFormatted}
+      </table>
+
+      <div class="double-divider"></div>
+
+      <div style="font-size: 15px; font-weight: bold; display: flex; justify-content: space-between;">
+        <span>TOTAL:</span>
+        <span>${formatCurrency(order.total || 0)}</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="text-center" style="font-size: 11px; margin-top: 10px;">
+        Plataforma PedidoVale • www.pedidovale.com.br
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  showToast(`🖨️ Enviando comanda ${order.id} para impressão!`);
+}
+
+function sendOrderWhatsApp(orderId) {
+  const order = ORDERS.find(o => o.id === orderId);
+  if (!order) return;
+
+  const phone = cleanPhone(order.customer_phone || STORE_DATA.whatsapp || '');
+  if (!phone) {
+    showToast("⚠️ Telefone do cliente não cadastrado.");
+    return;
+  }
+
+  let statusMsg = "Seu pedido está sendo preparado com todo carinho!";
+  if (order.status === 'delivery') {
+    statusMsg = "Seu pedido está PRONTO e acabou de sair para entrega! 🛵💨";
+  } else if (order.status === 'done') {
+    statusMsg = "Seu pedido foi CONCLUÍDO com sucesso! Agradecemos a preferência e bom apetite! 😋";
+  }
+
+  const storeName = STORE_DATA.name || "Rei do Burger";
+  const msg = encodeURIComponent(`Olá, *${order.customer_name}*! 👋\n\nAtualização do seu pedido *${order.id}* no *${storeName}*:\n\n👉 *${statusMsg}*\n\n📋 *Itens:* ${order.items}\n💰 *Total:* ${formatCurrency(order.total || 0)}\n\nQualquer dúvida estamos à disposição!`);
+  
+  window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${msg}`, '_blank');
+}
+
+function revertOrderStatus(orderId) {
+  const order = ORDERS.find(o => o.id === orderId);
+  if (!order) return;
+
+  if (order.status === 'delivery') {
+    order.status = 'prep';
+    showToast(`⏪ Pedido ${order.id} retornado para preparo.`);
+  } else if (order.status === 'prep') {
+    order.status = 'new';
+    showToast(`⏪ Pedido ${order.id} retornado para novos.`);
+  } else {
+    if (confirm(`Deseja cancelar o pedido ${order.id}?`)) {
+      ORDERS = ORDERS.filter(o => o.id !== orderId);
+      showToast(`❌ Pedido ${order.id} cancelado.`);
+    }
+  }
+
+  saveOrders();
+  renderOrdersKanban();
+  renderKdsOrders();
 }
 
 // -------------------------------------------------------------------------
