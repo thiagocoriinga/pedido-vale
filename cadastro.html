@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#080504">
-  <title>PedidoVale • Gestão Completa para seu Restaurante Vender Mais</title>
-  <meta name="description" content="Controle vendas, pedidos, cardápio digital, PDV, cozinha KDS e entregas em tempo real. Crie sua loja grátis em menos de 1 minuto!">
+  <meta name="theme-color" content="#05080A">
+  <title>Criar Loja Grátis • PedidoVale</title>
+  <meta name="description" content="Crie seu cardápio digital profissional, PDV balcão e monitor KDS em 30 segundos. Teste grátis por 7 dias sem taxa de instalação e sem cartão.">
 
   <!-- Forçar HTTPS Automático em Produção -->
   <script>
@@ -14,10 +14,13 @@
     }
   </script>
 
-  <!-- Google Fonts: Anton & Poppins -->
+  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconify Icons CDN -->
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,26 +30,17 @@
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand: {
-              cream: '#FBF5ED',
-              orange: '#FF5E1E',
-              orangeHover: '#E54A0D',
-              amber: '#FF9E1B',
-              dark: '#080504',
-              darkSurface: '#120D0A',
-              darkCard: '#18120E',
-              darkBorder: '#29211C',
-              textMuted: '#9E938A',
-            }
-          },
           fontFamily: {
-            anton: ['Anton', 'sans-serif'],
-            poppins: ['Poppins', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            geist: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
-          boxShadow: {
-            'card-dark': '0 20px 40px -15px rgba(0, 0, 0, 0.8)',
-            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
+          colors: {
+            lumigreen: '#c6f91f',
+            lumigreenDark: '#aade17',
+            lumibg: '#05080A',
+            lumicard: '#0B0F12',
+            lumisurface: '#080D10',
           }
         }
       }
@@ -54,367 +48,450 @@
   </script>
 
   <style>
+    /* Reset & Base */
+    html {
+      font-family: 'Inter', system-ui, sans-serif;
+      color-scheme: dark;
+      background-color: #05080A;
+    }
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #080504;
-      color: #F3EBE1;
+      background-color: #05080A;
+      color: #ffffff;
+      overflow-x: hidden;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
     }
-    h1, h2, h3, h4, .font-anton {
-      font-family: 'Anton', sans-serif;
-      letter-spacing: 0.035em;
-      text-transform: uppercase;
+    ::selection {
+      background-color: #c6f91f;
+      color: #000000;
     }
-    .stars {
-      background-image:
-        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
-      background-size: 200px 200px;
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 20px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(198,249,31,0.4); }
+
+    /* Flashlight hover glow effect */
+    .flashlight-target {
+      position: relative;
+      overflow: hidden;
     }
-    .grid-bg-dark {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
+    .flashlight-target::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(
+        500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(198, 249, 31, 0.15),
+        transparent 40%
+      );
+      border-radius: inherit;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .flashlight-target:hover::before {
+      opacity: 1;
+    }
+    .flashlight-content {
+      position: relative;
+      z-index: 2;
+      background-color: transparent;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+    }
+
+    /* Subtle grid pattern */
+    .grid-bg-pattern {
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    .form-card-shadow {
+      box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8), 0 0 40px rgba(198,249,31,0.06);
     }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col items-center justify-start relative overflow-x-hidden stars">
+<body class="bg-[#05080A] text-white antialiased font-sans min-h-screen flex flex-col justify-between">
 
-  <!-- AURA BACKGROUND GLOW -->
-  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div class="grid-bg-dark absolute inset-0"></div>
-    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/15 blur-[160px] rounded-full"></div>
-    <div class="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-amber-600/15 blur-[150px] rounded-full"></div>
+  <!-- ========================================================================= -->
+  <!-- VERTICAL GUIDES & AURA GLOW -->
+  <!-- ========================================================================= -->
+  <div class="fixed inset-0 pointer-events-none z-0 flex justify-center max-w-[1360px] mx-auto w-full border-x border-white/5">
+    <div class="absolute left-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
+    <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/[0.02] -translate-x-1/2 hidden md:block">
+      <div class="absolute top-[30vh] left-4 text-[10px] text-white/20 font-mono tracking-tight">ONBOARDING • 7 DIAS GRÁTIS</div>
+    </div>
+    <div class="absolute right-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
   </div>
 
-  <!-- TOPBAR HEADER -->
-  <header class="w-full sticky top-0 z-50 bg-[#080504]/90 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-xl bg-brand-orange text-white flex items-center justify-center font-bold text-lg shadow-orange-glow">
-        ⚡
-      </div>
-      <div>
-        <span class="font-anton text-lg sm:text-xl text-white tracking-wider leading-none block">PEDIDO<span class="text-brand-orange">VALE</span></span>
-        <span class="text-[10px] text-brand-textMuted uppercase tracking-widest font-semibold block">Ecosystem 360</span>
-      </div>
-    </div>
+  <canvas id="hero-aura-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-80"></canvas>
 
-    <div class="flex items-center gap-2.5">
-      <a href="login.html" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-300 hover:text-white text-xs font-semibold transition-all">
-        Fazer Login
-      </a>
-      <a href="#cadastro-section" class="px-4 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold shadow-orange-glow active:scale-95 transition-all">
-        Criar Loja Grátis
-      </a>
+  <!-- Ambient Glow Spotlights -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#c6f91f]/[0.06] blur-[160px] pointer-events-none z-0"></div>
+
+  <!-- ========================================================================= -->
+  <!-- TOPBAR HEADER -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-50 w-full border-b border-white/10 bg-[#05080A]/85 backdrop-blur-md">
+    <div class="max-w-[1360px] mx-auto w-full px-6 h-16 flex items-center justify-between relative">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <a class="flex items-center gap-2.5 group" href="/">
+          <div class="w-8 h-8 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] shadow-[0_0_12px_rgba(198,249,31,0.25)] group-hover:scale-105 transition-transform">
+            <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="text-xl"></iconify-icon>
+          </div>
+          <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5 font-geist">
+            Pedido<span class="text-[#c6f91f]">Vale</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-mono font-medium bg-[#c6f91f]/10 text-[#c6f91f] border border-[#c6f91f]/20 rounded">CADASTRO</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Links Direita -->
+      <div class="flex items-center gap-4 text-xs font-geist">
+        <a href="/" class="text-white/60 hover:text-white transition-colors flex items-center gap-1">
+          <span>← Voltar ao Início</span>
+        </a>
+        <a href="login.html" class="px-3.5 py-1.5 rounded-md border border-white/10 bg-white/5 text-white/80 hover:text-white hover:border-white/20 transition-all font-medium">
+          Já tenho uma conta
+        </a>
+      </div>
+
+      <!-- Corner Micro Dots -->
+      <div class="absolute -bottom-[2px] -left-[2px] w-[3px] h-[3px] bg-white/30 rounded-full"></div>
+      <div class="absolute -bottom-[2px] -right-[2px] w-[3px] h-[3px] bg-white/30 rounded-full"></div>
     </div>
   </header>
 
-  <!-- CONTAINER CENTRAL -->
-  <main class="w-full max-w-5xl relative z-10 px-4 py-8 sm:py-12 space-y-12">
-
-    <!-- HERO SECTION (ESTILO BEEFOOD) -->
-    <section class="text-center space-y-4 max-w-2xl mx-auto pt-2">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold shadow-sm">
-        <span>👑</span>
-        <span>GESTÃO COMPLETA PARA RESTAURANTES</span>
-      </div>
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: ONBOARDING / CADASTRO -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-[1240px] mx-auto w-full px-4 sm:px-6 py-12 md:py-16 relative z-10">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
       
-      <h1 class="text-3xl sm:text-5xl font-anton text-white tracking-wider leading-tight">
-        CONTROLE TUDO EM TEMPO REAL E VENDA MUITO MAIS
-      </h1>
-      
-      <p class="text-xs sm:text-sm text-brand-textMuted max-w-xl mx-auto leading-relaxed">
-        Cardápio digital com fotos, PDV balcão rápido, monitor de cozinha KDS, entregas pelo WhatsApp e recebimento no PIX sem taxas abusivas por pedido.
-      </p>
-
-      <div class="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <a href="#cadastro-section" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-sm tracking-wider shadow-orange-glow hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
-          <span>CADASTRE-SE GRÁTIS 👆</span>
-        </a>
-        <a href="https://www.pedidovale.com.br/rei-comboteste" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-200 font-semibold text-xs transition-all flex items-center justify-center gap-2">
-          <span>👀 Ver Demonstração ao Vivo</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- GRADE MODULAR DE RECURSOS (12 CARDS VISUAIS ESTILO BEEFOOD) -->
-    <section class="space-y-6">
-      <div class="text-center space-y-1.5">
-        <h2 class="text-xl sm:text-2xl font-anton text-white tracking-wider">
-          Módulos Integrados em um Único Sistema
-        </h2>
-        <p class="text-xs text-brand-textMuted">Tudo o que seu estabelecimento precisa para operar de forma profissional</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+      <!-- ===================================================================== -->
+      <!-- COLUNA ESQUERDA: RESUMO DO PLANO & LINK PREVIEW -->
+      <!-- ===================================================================== -->
+      <div class="lg:col-span-5 space-y-6">
         
-        <!-- 1. WhatsApp com IA -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            💬
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 backdrop-blur-md text-xs text-[#c6f91f] mb-4 rounded-full font-mono tracking-tight shadow-[0_0_12px_rgba(198,249,31,0.1)]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#c6f91f] shadow-[0_0_8px_#c6f91f]"></span>
+            7 Dias Grátis • Sem Cartão de Crédito
           </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">WhatsApp & Notificador</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Automatize pedidos e envie notificações instantâneas de status direto para o WhatsApp do cliente.</p>
-          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tighter text-white font-geist leading-[1.1]">
+            Crie sua loja e comece a vender <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-[#c6f91f] font-normal">em 30 segundos.</span>
+          </h1>
+
+          <p class="text-sm text-white/50 mt-4 leading-relaxed font-geist">
+            Configure seu cardápio, PDV e monitor de cozinha. Receba pedidos pelo WhatsApp e fature direto no seu PIX com 0% de taxas.
+          </p>
         </div>
 
-        <!-- 2. Cardápio Digital Interativo -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 text-brand-orange flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            📱
+        <!-- Live Link Preview Card -->
+        <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3 text-xs">
+            <span class="font-mono text-white/40 uppercase tracking-widest text-[10px]">Seu Link Exclusivo</span>
+            <span class="text-[#c6f91f] text-[10px] font-mono flex items-center gap-1 font-semibold">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#c6f91f] animate-pulse"></span>
+              PRONTO PARA O INSTAGRAM
+            </span>
           </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cardápio Digital Autoatendimento</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Seu cardápio moderno com fotos em alta definição, cálculo de entrega e opcionais completos.</p>
+
+          <div class="p-3.5 rounded-xl bg-[#05080A] border border-[#c6f91f]/30 font-mono text-sm text-white flex items-center gap-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+            <iconify-icon icon="solar:link-circle-linear" class="text-[#c6f91f] text-lg shrink-0"></iconify-icon>
+            <span class="truncate">pedidovale.com.br/<strong class="text-[#c6f91f]" id="preview-slug-text">sualoja</strong></span>
           </div>
+          <p class="text-[11px] text-white/40 mt-2 font-geist">Esse será o endereço que seus clientes acessarão para fazer pedidos.</p>
         </div>
 
-        <!-- 3. PDV / Caixa Balcão -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            💻
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">PDV & Caixa Balcão</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Lance pedidos de balcão, telefone e mesas com 2 toques, agilizando o fechamento de conta.</p>
-          </div>
-        </div>
-
-        <!-- 4. Monitor KDS de Cozinha -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            🍳
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Monitor KDS (Cozinha)</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Organize a linha de produção em tempo real com cronômetro, alertas sonoros e zero erro de comandas.</p>
-          </div>
-        </div>
-
-        <!-- 5. Gestor de Entregas & Motoboy -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            🛵
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">App Entregador & Rotas</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Despache pedidos para o motoboy com taxa automática por bairro e link de rota no Google Maps.</p>
-          </div>
-        </div>
-
-        <!-- 6. PIX & Pagamentos Diretos -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            🔑
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">PIX Instantâneo Direto</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Receba pagamentos com confirmação rápida e direto na sua conta bancária. Sem comissões.</p>
-          </div>
-        </div>
-
-        <!-- 7. Cupons & Fidelidade -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            🎁
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cupons & Fidelidade</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Crie cupons promocionais (ex: FRETEGRATIS, 10% OFF) e estimule compras recorrentes.</p>
-          </div>
-        </div>
-
-        <!-- 8. Link Oficial Personalizado -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            🔗
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Link Curto & Árvore de Links</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Seu link exclusivo e limpo: <span class="text-amber-400 font-mono">pedidovale.com.br/sualoja</span> para colocar na bio do Instagram.</p>
-          </div>
-        </div>
-
-        <!-- 9. Relatórios & Lucro -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
-            📊
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Relatórios de Vendas</h3>
-            <p class="text-xs text-stone-400 mt-1 leading-snug">Acompanhe faturamento, produtos mais vendidos, horários de pico e ticket médio com clareza.</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- FORMULÁRIO DE CADASTRO INSTANTÂNEO (30 SEGUNDOS) -->
-    <section id="cadastro-section" class="scroll-mt-24">
-      <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-10 shadow-card-dark backdrop-blur-2xl space-y-6 max-w-2xl mx-auto">
-        
-        <div class="text-center space-y-2 pb-2 border-b border-brand-darkBorder">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-            <span>✨</span>
-            <span>CRIE SEU CARDÁPIO EM 30 SEGUNDOS</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-anton text-white tracking-wider">
-            COMECE SEU TESTE GRÁTIS DE 7 DIAS
-          </h2>
-          <p class="text-xs text-brand-textMuted">Sem burocracia, sem cartão de crédito. Liberação imediata!</p>
-        </div>
-
-        <form onsubmit="handleRestaurantRegister(event)" class="space-y-4 text-xs font-poppins">
-          
-          <!-- NOME DO RESTAURANTE -->
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
-            <input 
-              type="text" 
-              id="reg-store-name" 
-              placeholder="Ex: São José Burguer" 
-              oninput="autoGenerateSlug(this.value)"
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors font-semibold" 
-              required 
-            />
-          </div>
-
-          <!-- LINK PERSONALIZADO (SLUG) & SEGMENTO -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Plan Benefit Card -->
+        <div class="border border-[#c6f91f]/30 bg-gradient-to-b from-[#c6f91f]/[0.08] to-[#0B0F12] rounded-2xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(198,249,31,0.08)]">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
             <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Seu Link no PedidoVale *</label>
-              <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus-within:border-brand-orange transition-colors">
-                <span class="text-stone-500 text-xs font-mono mr-1">/</span>
-                <input 
-                  type="text" 
-                  id="reg-store-slug" 
-                  placeholder="sao-jose" 
-                  class="w-full bg-transparent text-sm text-amber-400 font-bold font-mono focus:outline-none" 
-                  required 
-                />
+              <div class="text-xs font-mono text-[#c6f91f] uppercase tracking-wider font-bold">Plano Pro Completo</div>
+              <div class="text-2xl font-light text-white mt-1">7 Dias de Avaliação</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-mono text-white/40">Hoje</div>
+              <div class="text-xl font-bold text-[#c6f91f]">R$ 0,00</div>
+            </div>
+          </div>
+
+          <ul class="space-y-2.5 text-xs text-white/80 font-geist">
+            <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Cardápio Digital com Fotos HD & Opcionais</li>
+            <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> PDV Balcão Express (Mesas e Balcão)</li>
+            <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Monitor de Cozinha KDS em Tempo Real</li>
+            <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> Cupons de Desconto & Chave PIX Direta</li>
+            <li class="flex items-center gap-2"><iconify-icon icon="solar:check-circle-bold" class="text-[#c6f91f]"></iconify-icon> 0% de comissão por venda</li>
+          </ul>
+
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/40 font-mono">
+            <span>R$ 119/mês após o teste</span>
+            <span>Cancele quando quiser</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- COLUNA DIREITA: FORMULÁRIO DE CADASTRO -->
+      <!-- ===================================================================== -->
+      <div class="lg:col-span-7">
+        
+        <div class="group/form bg-[#0B0F12] border border-white/10 rounded-2xl p-6 sm:p-8 form-card-shadow relative flashlight-target">
+          
+          <div class="flashlight-content">
+            
+            <div class="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
+              <div>
+                <h2 class="text-xl font-light tracking-tight text-white font-geist">Dados do Restaurante</h2>
+                <p class="text-xs text-white/45 mt-0.5 font-geist">Preencha os campos abaixo para ativar seu painel administrativo.</p>
+              </div>
+              <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-mono text-xs">
+                1/1
               </div>
             </div>
 
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Segmento Principal *</label>
-              <select id="reg-store-segment" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3.5 text-sm text-white focus:outline-none focus:border-brand-orange">
-                <option value="Hamburgueria">Hamburgueria 🍔</option>
-                <option value="Pizzaria">Pizzaria 🍕</option>
-                <option value="Açaí">Açaí & Sorvetes 🍧</option>
-                <option value="Sushi">Sushi & Japonês 🍣</option>
-                <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
-                <option value="Doceria">Doceria & Bolos 🍰</option>
-                <option value="Petiscaria">Petiscaria & Bar 🍺</option>
-                <option value="Outro">Outro Delivery 🍽️</option>
-              </select>
-            </div>
+            <form onsubmit="handleRestaurantRegister(event)" class="space-y-5">
+              
+              <!-- Seção 1: Estabelecimento -->
+              <div class="space-y-4">
+                
+                <!-- Nome do Restaurante -->
+                <div>
+                  <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist">
+                    Nome do Estabelecimento <span class="text-[#c6f91f]">*</span>
+                  </label>
+                  <div class="relative">
+                    <input 
+                      type="text" 
+                      id="reg-store-name" 
+                      required 
+                      placeholder="Ex: Rei do Burger, Pizzaria Bella..." 
+                      oninput="autoGenerateSlug(this.value)"
+                      class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] focus:ring-1 focus:ring-[#c6f91f]/50 transition-all font-geist"
+                    >
+                  </div>
+                </div>
+
+                <!-- Slug / Link Exclusivo -->
+                <div>
+                  <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist flex items-center justify-between">
+                    <span>Link do Cardápio (Slug) <span class="text-[#c6f91f]">*</span></span>
+                    <span class="text-[10px] text-white/40 font-mono">Sem espaços ou acentos</span>
+                  </label>
+                  <div class="flex items-center bg-[#05080A] border border-white/10 rounded-xl overflow-hidden focus-within:border-[#c6f91f] focus-within:ring-1 focus-within:ring-[#c6f91f]/50 transition-all">
+                    <span class="px-3.5 text-xs text-white/40 font-mono border-r border-white/10 bg-white/[0.02]">
+                      pedidovale.com.br/
+                    </span>
+                    <input 
+                      type="text" 
+                      id="reg-store-slug" 
+                      required 
+                      placeholder="sualoja" 
+                      oninput="updateSlugPreview(this.value)"
+                      class="flex-1 h-11 px-3 bg-transparent text-sm text-[#c6f91f] font-mono placeholder-white/20 focus:outline-none font-semibold"
+                    >
+                  </div>
+                </div>
+
+                <!-- Segmento & Cidade (2 Cols) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist">
+                      Segmento Principal <span class="text-[#c6f91f]">*</span>
+                    </label>
+                    <select 
+                      id="reg-store-segment" 
+                      required 
+                      class="w-full h-11 px-3 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-[#c6f91f] transition-all font-geist cursor-pointer"
+                    >
+                      <option value="hamburgueria" selected>🍔 Hamburgueria / Smash</option>
+                      <option value="pizzaria">🍕 Pizzaria</option>
+                      <option value="acai">🍧 Açaí & Sorvetes</option>
+                      <option value="sushi">🍣 Sushi & Oriental</option>
+                      <option value="marmitaria">🍱 Marmitaria & Comida Caseira</option>
+                      <option value="doceria">🍰 Doceria & Confeitaria</option>
+                      <option value="pastelaria">🥟 Pastelaria</option>
+                      <option value="bebidas">🍺 Distribuidora / Adega</option>
+                      <option value="outro">🍽️ Outro Segmento</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist">
+                      Cidade & Estado <span class="text-[#c6f91f]">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      id="reg-city" 
+                      required 
+                      placeholder="Ex: São Paulo - SP" 
+                      class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] transition-all font-geist"
+                    >
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Divisor -->
+              <div class="h-px bg-white/10 my-4"></div>
+
+              <!-- Seção 2: Dados do Responsável -->
+              <div class="space-y-4">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Nome do Proprietário -->
+                  <div>
+                    <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist">
+                      Nome do Proprietário / Gerente <span class="text-[#c6f91f]">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      id="reg-owner-name" 
+                      required 
+                      placeholder="Seu nome completo" 
+                      class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] transition-all font-geist"
+                    >
+                  </div>
+
+                  <!-- WhatsApp p/ Pedidos -->
+                  <div>
+                    <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist">
+                      WhatsApp p/ Receber Pedidos <span class="text-[#c6f91f]">*</span>
+                    </label>
+                    <input 
+                      type="tel" 
+                      id="reg-owner-phone" 
+                      required 
+                      placeholder="(99) 99999-9999" 
+                      class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] transition-all font-geist"
+                    >
+                  </div>
+                </div>
+
+                <!-- Senha de Acesso -->
+                <div>
+                  <label class="block text-xs font-medium text-white/70 mb-1.5 font-geist">
+                    Senha de Acesso ao Painel <span class="text-[#c6f91f]">*</span>
+                  </label>
+                  <input 
+                    type="password" 
+                    id="reg-password" 
+                    required 
+                    placeholder="Mínimo 6 caracteres" 
+                    minlength="6"
+                    class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] transition-all font-geist"
+                  >
+                </div>
+
+              </div>
+
+              <!-- Submit Button -->
+              <div class="pt-3">
+                <button 
+                  type="submit" 
+                  class="w-full h-13 py-3.5 bg-[#c6f91f] hover:bg-[#aade17] text-black font-bold text-sm rounded-xl shadow-[0_0_25px_rgba(198,249,31,0.3)] transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+                >
+                  <span>Criar Meu Cardápio Grátis</span>
+                  <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon>
+                </button>
+
+                <div class="flex items-center justify-center gap-4 mt-3.5 text-[11px] text-white/40 font-geist">
+                  <span class="flex items-center gap-1"><iconify-icon icon="solar:shield-check-bold" class="text-emerald-400"></iconify-icon> Sem taxa de instalação</span>
+                  <span>•</span>
+                  <span>7 dias de teste grátis</span>
+                  <span>•</span>
+                  <span>Acesso imediato</span>
+                </div>
+              </div>
+
+            </form>
+
           </div>
 
-          <!-- RESPONSÁVEL & WHATSAPP -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Seu Nome Completo *</label>
-              <input 
-                type="text" 
-                id="reg-owner-name" 
-                placeholder="Ex: Thiago Siqueira" 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-                required 
-              />
-            </div>
-
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD (para receber pedidos) *</label>
-              <input 
-                type="text" 
-                id="reg-owner-phone" 
-                placeholder="Ex: 5599991040222" 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white font-mono placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-                required 
-              />
-            </div>
-          </div>
-
-          <!-- CIDADE & SENHA -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Cidade / Estado *</label>
-              <input 
-                type="text" 
-                id="reg-city" 
-                placeholder="Ex: Pedreiras - MA" 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-                required 
-              />
-            </div>
-
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Crie uma Senha de Acesso *</label>
-              <input 
-                type="password" 
-                id="reg-password" 
-                placeholder="Mínimo 6 dígitos" 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-                required 
-              />
-            </div>
-          </div>
-
-          <!-- BENEFÍCIOS -->
-          <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-1.5 text-[11px] text-stone-300">
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-400 font-bold">✓</span>
-              <span>7 Dias de Acesso Completo e Ilimitado</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-400 font-bold">✓</span>
-              <span>Cadastro ilimitado de produtos com fotos</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-400 font-bold">✓</span>
-              <span>Pedidos direto no WhatsApp com taxa 0%</span>
-            </div>
-          </div>
-
-          <button 
-            type="submit" 
-            class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4"
-          >
-            <span>CRIAR MEU CARDÁPIO & SISTEMA GRÁTIS</span>
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </button>
-
-        </form>
-
-        <div class="text-center pt-2 border-t border-brand-darkBorder/60 text-xs text-brand-textMuted">
-          Já tem uma conta cadastrada? 
-          <a href="login.html" class="text-brand-orange font-bold hover:underline ml-1">Fazer Login ➔</a>
         </div>
 
       </div>
-    </section>
 
-    <!-- FOOTER DA LANDING PAGE -->
-    <footer class="pt-8 border-t border-white/10 text-center text-xs text-stone-500 space-y-2">
-      <p>© 2026 PedidoVale Ecosystem 360 • A Plataforma Completa para Restaurantes e Deliveries.</p>
-      <p>Desenvolvido para máxima performance, agilidade e lucratividade.</p>
-    </footer>
+    </div>
 
   </main>
 
+  <!-- ========================================================================= -->
+  <!-- FOOTER -->
+  <!-- ========================================================================= -->
+  <footer class="border-t border-white/10 py-8 px-6 bg-[#05080A] text-white/40 text-xs font-geist">
+    <div class="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-white">
+        <span class="font-bold text-sm">Pedido<span class="text-[#c6f91f]">Vale</span></span>
+        <span class="text-white/30 font-mono ml-2">© 2026. Todos os direitos reservados.</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="login.html" class="hover:text-white transition-colors">Entrar</a>
+        <a href="https://wa.me/5599991040222" target="_blank" class="hover:text-white transition-colors">Suporte WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- SCRIPTS & REGISTRATION LOGIC -->
+  <!-- ========================================================================= -->
   <script>
+    // Flashlight mouse follow
+    document.querySelectorAll('.flashlight-target').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // Auto load slug from URL query if user typed on hero
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const storeParam = urlParams.get('store');
+      if (storeParam) {
+        const clean = storeParam.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        const slugEl = document.getElementById('reg-store-slug');
+        if (slugEl) {
+          slugEl.value = clean;
+          updateSlugPreview(clean);
+        }
+      }
+    });
+
     function autoGenerateSlug(name) {
+      const slug = name.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+      
       const slugInput = document.getElementById('reg-store-slug');
       if (slugInput) {
-        slugInput.value = name.toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          .replace(/[^a-z0-9]/g, '-')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '');
+        slugInput.value = slug;
+        updateSlugPreview(slug);
+      }
+    }
+
+    function updateSlugPreview(val) {
+      const preview = document.getElementById('preview-slug-text');
+      if (preview) {
+        preview.textContent = val.trim() ? val.toLowerCase().replace(/[^a-z0-9-]/g, '') : 'sualoja';
       }
     }
 
@@ -422,7 +499,7 @@
       e.preventDefault();
 
       const name = document.getElementById('reg-store-name').value.trim();
-      const slug = document.getElementById('reg-store-slug').value.trim().toLowerCase();
+      const slug = document.getElementById('reg-store-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
       const segment = document.getElementById('reg-store-segment').value;
       const owner_name = document.getElementById('reg-owner-name').value.trim();
       const owner_phone = document.getElementById('reg-owner-phone').value.trim();
@@ -466,7 +543,7 @@
         due_day: trialEnds.getDate(),
         trial_ends_at: trialEnds.toISOString(),
         created_at: new Date().toISOString(),
-        notes: "Cadastro feito pelo formulário oficial de Onboarding (7 Dias Grátis)"
+        notes: "Cadastro pelo Onboarding oficial (7 Dias Grátis)"
       };
 
       tenants.push(newTenant);
@@ -497,18 +574,64 @@
 
       // 3. Inicializar categorias padrão
       const defaultCategories = [
-        { id: "cat-combos", name: "COMBO", icon: "🔥", desc: "Combos especiais com hambúrguer, batata e refrigerante", visible: true },
-        { id: "cat-burgers", name: "HAMBÚRGUERES ARTESANAIS", icon: "🍔", desc: "Smash burgers e artesanais preparados na hora", visible: true },
-        { id: "cat-bebidas", name: "BEBIDAS & REFRIGERANTES", icon: "🥤", desc: "Sucos, refrigerantes em lata e águas", visible: true }
+        { id: "cat-combos", name: "COMBO", icon: "🔥", desc: "Combos especiais preparados na hora", visible: true },
+        { id: "cat-burgers", name: "DESTAQUES", icon: "🍔", desc: "Pratos e lanches mais pedidos", visible: true },
+        { id: "cat-bebidas", name: "BEBIDAS", icon: "🥤", desc: "Sucos, refrigerantes e águas", visible: true }
       ];
       localStorage.setItem(`STORE_${slug}_CATEGORIES`, JSON.stringify(defaultCategories));
 
       // 4. Salvar sessão do lojista
       sessionStorage.setItem('CURRENT_LOGGED_STORE', slug);
 
-      // Redirecionar direto para o Dashboard de gestão do restaurante
+      // Redirecionar direto para o Admin do restaurante
       window.location.href = `admin.html?store=${slug}`;
     }
+
+    // Hero Aura Canvas Background
+    (function () {
+      const canvas = document.getElementById('hero-aura-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let width = 0;
+      let height = 0;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const particles = [];
+      for (let i = 0; i < 35; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 2 + 0.8,
+          speedY: Math.random() * 0.4 + 0.2,
+          opacity: Math.random() * 0.5 + 0.2
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = '#c6f91f';
+
+        particles.forEach(p => {
+          p.y -= p.speedY;
+          if (p.y < 0) p.y = height;
+          ctx.globalAlpha = p.opacity;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
   </script>
 
 </body>
