@@ -2765,7 +2765,45 @@ function deleteFlavor(id) {
 // -------------------------------------------------------------------------
 // INICIALIZAÇÃO DO PAINEL
 // -------------------------------------------------------------------------
+function checkStoreBlockStatus() {
+  try {
+    const saved = localStorage.getItem('SUPERADMIN_TENANTS_DATA');
+    if (!saved) return false;
+    const tenants = JSON.parse(saved);
+    const tenant = tenants.find(t => t.slug === CURRENT_STORE_SLUG);
+    if (tenant && tenant.status === 'blocked') {
+      return true; // Loja bloqueada
+    }
+  } catch (e) {}
+  return false;
+}
+
+function showBlockedScreen() {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;background:#09090b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Inter',sans-serif;padding:24px;text-align:center">
+      <div style="max-width:480px;width:100%">
+        <div style="width:72px;height:72px;background:rgba(239,68,68,0.15);border:2px solid rgba(239,68,68,0.4);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px">🔒</div>
+        <h1 style="font-size:24px;font-weight:900;color:#fff;margin:0 0 8px;letter-spacing:-0.5px">Acesso Suspenso</h1>
+        <p style="color:#71717a;font-size:14px;margin:0 0 28px;line-height:1.6">Sua loja <strong style="color:#f59e0b">${CURRENT_STORE_SLUG}</strong> foi temporariamente suspensa por inadimplência. Entre em contato com a equipe PedidoVale para regularizar sua situação.</p>
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:20px;margin-bottom:24px">
+          <div style="font-size:11px;color:#a1a1aa;text-transform:uppercase;font-weight:700;letter-spacing:0.08em;margin-bottom:12px">Fale Conosco para Regularizar</div>
+          <a href="https://wa.me/5599991040222?text=${encodeURIComponent(`Olá! Preciso regularizar minha conta da loja ${CURRENT_STORE_SLUG} no PedidoVale.`)}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25d366;color:#fff;text-decoration:none;font-weight:700;font-size:13px;padding:12px 24px;border-radius:12px;width:100%;box-sizing:border-box">
+            💬 WhatsApp PedidoVale
+          </a>
+        </div>
+        <p style="color:#52525b;font-size:11px">Se você acredita que isso é um erro, entre em contato com o suporte imediatamente.</p>
+      </div>
+    </div>
+  `;
+}
+
 function initStoreAdmin() {
+  // 1. Verificar bloqueio ANTES de qualquer renderização
+  if (checkStoreBlockStatus()) {
+    showBlockedScreen();
+    return;
+  }
+
   loadStoreData();
   loadCoupons();
 

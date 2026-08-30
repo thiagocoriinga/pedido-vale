@@ -18,8 +18,95 @@ const DEFAULT_PLATFORM_CONFIG = {
   defaultTrialDays: 7
 };
 
-// Lojas Iniciais Padrão (Inicia limpo para novas empresas cadastradas)
-const INITIAL_TENANTS = [];
+// Lojas Demo para apresentação de beta — dados fictícios completos e profissionais
+const INITIAL_TENANTS = [
+  {
+    id: "tenant-demo-001",
+    slug: "rei-combo",
+    name: "Rei Combo • Smash Burgers",
+    segment: "Hamburgueria",
+    city: "Pedreiras - MA",
+    owner_name: "Thiago Coringa de Siqueira",
+    owner_phone: "5599991040222",
+    password: "reicmb2024",
+    plan: "vip",
+    monthly_fee: 189.00,
+    status: "active",
+    due_day: 10,
+    pixKey: "5599991040222",
+    notes: "Loja principal do dono da plataforma. Conta VIP.",
+    created_at: "2026-07-01T12:00:00.000Z"
+  },
+  {
+    id: "tenant-demo-002",
+    slug: "bella-pizza",
+    name: "Bella Pizza & Massas",
+    segment: "Pizzaria",
+    city: "São Luís - MA",
+    owner_name: "Maria Fernanda Costa",
+    owner_phone: "5598987654321",
+    password: "bellapizza2024",
+    plan: "pro",
+    monthly_fee: 119.00,
+    status: "active",
+    due_day: 15,
+    pixKey: "98.765.432/0001-99",
+    notes: "Melhor pizzaria artesanal de São Luís. Paga em dia.",
+    created_at: "2026-07-15T09:00:00.000Z"
+  },
+  {
+    id: "tenant-demo-003",
+    slug: "acai-do-norte",
+    name: "Açaí do Norte Premium",
+    segment: "Açaí",
+    city: "Imperatriz - MA",
+    owner_name: "Carlos Eduardo Moraes",
+    owner_phone: "5599881234567",
+    password: "acainorte2024",
+    plan: "pro",
+    monthly_fee: 119.00,
+    status: "trial",
+    due_day: 20,
+    pixKey: "5599881234567",
+    notes: "Novo cliente. Em período de teste de 7 dias.",
+    created_at: "2026-08-28T14:00:00.000Z",
+    trial_ends_at: "2026-09-04T14:00:00.000Z"
+  },
+  {
+    id: "tenant-demo-004",
+    slug: "sushi-zen",
+    name: "Sushi Zen • Gastronomia Japonesa",
+    segment: "Sushi",
+    city: "Teresina - PI",
+    owner_name: "Ana Koyama",
+    owner_phone: "5586991234567",
+    password: "sushizen2024",
+    plan: "vip",
+    monthly_fee: 189.00,
+    status: "active",
+    due_day: 5,
+    pixKey: "ana.koyama@sushizen.com.br",
+    notes: "Conta VIP. Quer integração com iFood.",
+    created_at: "2026-06-10T08:00:00.000Z"
+  },
+  {
+    id: "tenant-demo-005",
+    slug: "marmita-da-dora",
+    name: "Marmita da Dora • Comida Caseira",
+    segment: "Marmitaria",
+    city: "Caxias - MA",
+    owner_name: "Teodora Alves de Sousa",
+    owner_phone: "5599971112233",
+    password: "dora2024",
+    plan: "basic",
+    monthly_fee: 79.00,
+    status: "blocked",
+    due_day: 8,
+    pixKey: "5599971112233",
+    notes: "Bloqueada por 2 meses de inadimplência. Aguardando regularização.",
+    created_at: "2026-05-20T10:00:00.000Z"
+  }
+];
 
 let TENANTS = [];
 let PLATFORM_CONFIG = DEFAULT_PLATFORM_CONFIG;
@@ -48,10 +135,21 @@ function loadTenants() {
   try {
     const saved = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
     if (saved) {
-      TENANTS = JSON.parse(saved);
+      const savedTenants = JSON.parse(saved);
+      // Mesclar: manter dados do usuário, adicionar demos que não existam ainda
+      const existingSlugs = new Set(savedTenants.map(t => t.slug));
+      const missingDemos = INITIAL_TENANTS.filter(d => !existingSlugs.has(d.slug));
+      TENANTS = [...savedTenants, ...missingDemos];
+      if (missingDemos.length > 0) {
+        saveTenantsToStorage();
+        // Inicializar dados das lojas demo que ainda não existem
+        missingDemos.forEach(t => initDemoStoreData(t));
+      }
     } else {
       TENANTS = [...INITIAL_TENANTS];
       saveTenantsToStorage();
+      // Inicializar dados de todas as lojas demo
+      INITIAL_TENANTS.forEach(t => initDemoStoreData(t));
     }
   } catch (e) {
     TENANTS = [...INITIAL_TENANTS];
@@ -75,6 +173,211 @@ function loadTenants() {
 
 function saveTenantsToStorage() {
   localStorage.setItem(SUPERADMIN_TENANTS_KEY, JSON.stringify(TENANTS));
+}
+
+// -------------------------------------------------------------------------
+// INICIALIZAR DADOS COMPLETOS DE LOJAS DEMO (Cardápio fictício profissional)
+// -------------------------------------------------------------------------
+function initDemoStoreData(tenant) {
+  const slug = tenant.slug;
+
+  // Config da loja
+  if (!localStorage.getItem(`STORE_${slug}_CONFIG`)) {
+    const configs = {
+      'rei-combo': {
+        name: "Rei Combo • Smash Burgers",
+        slug: 'rei-combo',
+        segment: 'Hamburgueria',
+        isOpen: true,
+        whatsapp: '5599991040222',
+        address: 'Rua das Hamburguerias, 42 • Centro • Pedreiras - MA',
+        hours: 'Segunda a Domingo das 18h às 23h30',
+        deliveryFee: 5.00,
+        deliveryTime: '25 - 40 min',
+        minOrder: 20.00,
+        allowPickup: true,
+        pixKey: '5599991040222',
+        pixType: 'phone',
+        pixName: 'Thiago Siqueira',
+        acceptPix: true,
+        acceptCard: true,
+        acceptCash: true,
+        tagline: 'O melhor smash burger do Maranhão',
+        bannerColor: '#dc2626',
+        coverBanner: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1200&q=80'
+      },
+      'bella-pizza': {
+        name: 'Bella Pizza & Massas',
+        slug: 'bella-pizza',
+        segment: 'Pizzaria',
+        isOpen: true,
+        whatsapp: '5598987654321',
+        address: 'Av. Getúlio Vargas, 1500 • Cohama • São Luís - MA',
+        hours: 'Terça a Domingo das 19h às 23h',
+        deliveryFee: 7.00,
+        deliveryTime: '40 - 60 min',
+        minOrder: 35.00,
+        allowPickup: true,
+        pixKey: '98.765.432/0001-99',
+        pixType: 'cnpj',
+        pixName: 'Bella Pizza LTDA',
+        acceptPix: true,
+        acceptCard: true,
+        acceptCash: false,
+        tagline: 'Pizza artesanal com massa de fermentação natural',
+        bannerColor: '#c2410c',
+        coverBanner: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80'
+      },
+      'acai-do-norte': {
+        name: 'Açaí do Norte Premium',
+        slug: 'acai-do-norte',
+        segment: 'Açaí',
+        isOpen: true,
+        whatsapp: '5599881234567',
+        address: 'Rua Cônego João Paulo, 88 • Centro • Imperatriz - MA',
+        hours: 'Todos os dias das 14h às 22h',
+        deliveryFee: 4.00,
+        deliveryTime: '20 - 35 min',
+        minOrder: 15.00,
+        allowPickup: true,
+        pixKey: '5599881234567',
+        pixType: 'phone',
+        pixName: 'Carlos Eduardo Moraes',
+        acceptPix: true,
+        acceptCard: true,
+        acceptCash: true,
+        tagline: 'Açaí premium do norte com 30+ complementos',
+        bannerColor: '#7e22ce',
+        coverBanner: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=1200&q=80'
+      },
+      'sushi-zen': {
+        name: 'Sushi Zen • Gastronomia Japonesa',
+        slug: 'sushi-zen',
+        segment: 'Sushi',
+        isOpen: true,
+        whatsapp: '5586991234567',
+        address: 'Av. Jóquei Clube, 277 • Horto • Teresina - PI',
+        hours: 'Quarta a Segunda das 19h às 23h30',
+        deliveryFee: 10.00,
+        deliveryTime: '45 - 65 min',
+        minOrder: 60.00,
+        allowPickup: true,
+        pixKey: 'ana.koyama@sushizen.com.br',
+        pixType: 'email',
+        pixName: 'Ana Koyama',
+        acceptPix: true,
+        acceptCard: true,
+        acceptCash: false,
+        tagline: 'Autêntica gastronomia japonesa no coração do Piauí',
+        bannerColor: '#0f172a',
+        coverBanner: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=1200&q=80'
+      },
+      'marmita-da-dora': {
+        name: 'Marmita da Dora • Comida Caseira',
+        slug: 'marmita-da-dora',
+        segment: 'Marmitaria',
+        isOpen: false,
+        whatsapp: '5599971112233',
+        address: 'Rua do Pará, 190 • Deodara • Caxias - MA',
+        hours: 'Segunda a Sábado das 11h às 14h',
+        deliveryFee: 3.00,
+        deliveryTime: '30 - 50 min',
+        minOrder: 12.00,
+        allowPickup: true,
+        pixKey: '5599971112233',
+        pixType: 'phone',
+        pixName: 'Teodora Alves',
+        acceptPix: true,
+        acceptCard: false,
+        acceptCash: true,
+        tagline: 'Marmita caseira com amor e muito sabor',
+        bannerColor: '#065f46',
+        coverBanner: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=1200&q=80'
+      }
+    };
+    const config = configs[slug];
+    if (config) {
+      localStorage.setItem(`STORE_${slug}_CONFIG`, JSON.stringify(config));
+    }
+  }
+
+  // Categorias da loja
+  if (!localStorage.getItem(`STORE_${slug}_CATEGORIES`)) {
+    const catsBySlug = {
+      'rei-combo': [
+        { id: 'cat-combos', name: 'COMBOS ESPECIAIS', icon: '🔥', desc: 'Combos exclusivos do Rei Combo', visible: true },
+        { id: 'cat-smash', name: 'SMASH BURGERS', icon: '🍔', desc: 'Burgers artesanais na chapa quente', visible: true },
+        { id: 'cat-porcoes', name: 'PORÇÕES & FRITAS', icon: '🍟', desc: 'Batatas, anéis e porções crocantes', visible: true },
+        { id: 'cat-bebidas', name: 'BEBIDAS', icon: '🥤', desc: 'Refrigerantes, sucos e milkshakes', visible: true }
+      ],
+      'bella-pizza': [
+        { id: 'cat-trad', name: 'PIZZAS TRADICIONAIS', icon: '🍕', desc: 'Sabores clássicos que nunca saem de moda', visible: true },
+        { id: 'cat-prem', name: 'PIZZAS PREMIUM', icon: '⭐', desc: 'Ingredientes nobres e receitas exclusivas', visible: true },
+        { id: 'cat-massa', name: 'MASSAS & RISOTOS', icon: '🍝', desc: 'Massas artesanais direto da Itália', visible: true },
+        { id: 'cat-beb', name: 'BEBIDAS', icon: '🍷', desc: 'Vinhos, cervejas e refrigerantes', visible: true }
+      ],
+      'acai-do-norte': [
+        { id: 'cat-tigelas', name: 'TIGELAS PREMIUM', icon: '🫙', desc: 'Açaí batido na hora nas tigelas exclusivas', visible: true },
+        { id: 'cat-copo', name: 'COPO DO NORTE', icon: '🍹', desc: 'Porções no copo com 20+ opções de topping', visible: true },
+        { id: 'cat-acomp', name: 'ACOMPANHAMENTOS', icon: '🍌', desc: 'Complementos para montar seu açaí dos sonhos', visible: true }
+      ],
+      'sushi-zen': [
+        { id: 'cat-rolls', name: 'HOT ROLLS & URAMAKIS', icon: '🌀', desc: 'Rolinhos crocantes e recheios cremosos', visible: true },
+        { id: 'cat-sashimi', name: 'SASHIMIS & NIGIRIS', icon: '🐟', desc: 'Fatias premium de salmão, atum e peixe branco', visible: true },
+        { id: 'cat-combos', name: 'COMBOS FAMÍLIA', icon: '🎋', desc: 'Combos perfeitos para 2, 4 ou 6 pessoas', visible: true }
+      ],
+      'marmita-da-dora': [
+        { id: 'cat-mar', name: 'MARMITAS EXECUTIVAS', icon: '🍱', desc: 'Marmita completa com arroz, feijão e proteína', visible: true },
+        { id: 'cat-fit', name: 'LINHA FIT', icon: '🥗', desc: 'Opções saudáveis com menos calorias', visible: true },
+        { id: 'cat-sobr', name: 'SOBREMESAS', icon: '🍮', desc: 'Pudim, mousse e doces da casa', visible: true }
+      ]
+    };
+    const cats = catsBySlug[slug];
+    if (cats) {
+      localStorage.setItem(`STORE_${slug}_CATEGORIES`, JSON.stringify(cats));
+    }
+  }
+
+  // Produtos da loja
+  if (!localStorage.getItem(`STORE_${slug}_PRODUCTS`)) {
+    const prodsBySlug = {
+      'rei-combo': [
+        { id: 'p1', name: 'Combo Rei Total', category_id: 'cat-combos', price: 59.90, promo_price: 52.90, description: '2x Smash Burgers duplos com cheddar artesanal + Batata Frita G + 2x Coca-Cola 350ml. O combo mais pedido do Rei Combo!', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80', extras: [{name:'Batata Extra G', price:9.90},{name:'Sobremesa Cookie', price:7.90}] },
+        { id: 'p2', name: 'Combo Rei Solo', category_id: 'cat-combos', price: 34.90, promo_price: 29.90, description: '1x Smash Burger clássico + Batata Frita M + 1x Refri 350ml. Perfeito para uma refeição completa.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1596097635121-14b38e50c3eb?w=600&q=80', extras: [{name:'Adicionar Bacon Crispy', price:5.00}] },
+        { id: 'p3', name: 'Smash Duplo Cheddar Bacon', category_id: 'cat-smash', price: 32.90, promo_price: null, description: '2x smash 90g na chapa super quente com cascata de cheddar derretido, tiras grossas de bacon e onion rings crocante.', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=80', extras: [{name:'Bacon Extra', price:5.00},{name:'Ovo Estrelado', price:3.00}] },
+        { id: 'p4', name: 'Smash Monster Triplo', category_id: 'cat-smash', price: 45.90, promo_price: 39.90, description: 'MONSTRUOSO! 3x smash burgers 90g, tripla camada de cheddar, molho especial da casa, alface americana e tomate fresco.', status: 'active', featured: false, is_new: true, popular: false, image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&q=80', extras: [] },
+        { id: 'p5', name: 'Batata Frita G + Molho', category_id: 'cat-porcoes', price: 18.90, promo_price: null, description: 'Porção grande de batata frita crocante por fora e macia por dentro, acompanha 2 molhos à escolha (ketchup, maionese, bbq, mostarda honey).', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&q=80', extras: [] },
+        { id: 'p6', name: 'Coca-Cola 350ml Gelada', category_id: 'cat-bebidas', price: 7.00, promo_price: null, description: 'Lata 350ml trincando de gelada.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80', extras: [] },
+        { id: 'p7', name: 'Milkshake Nutella', category_id: 'cat-bebidas', price: 19.90, promo_price: null, description: 'Milkshake cremoso de Nutella com chantilly e raspas de chocolate belga. Irresistível!', status: 'active', featured: false, is_new: true, popular: true, image: 'https://images.unsplash.com/photo-1572490122747-3a5c8d11be57?w=600&q=80', extras: [] }
+      ],
+      'bella-pizza': [
+        { id: 'p1', name: 'Pizza Margherita Artesanal', category_id: 'cat-trad', price: 49.90, promo_price: null, description: 'Molho de tomate San Marzano, mozzarella de búfala, manjericão fresco e fio de azeite extra virgem. Clássico italiano.', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80', extras: [{name:'Borda Recheada Catupiry', price:10.00}] },
+        { id: 'p2', name: 'Pizza Calabresa Especial', category_id: 'cat-trad', price: 52.90, promo_price: 45.90, description: 'Calabresa fatiada grossa com cebola roxa caramelizada, azeitonas pretas e orégano artesanal.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&q=80', extras: [] },
+        { id: 'p3', name: 'Pizza Trufada de Cogumelos', category_id: 'cat-prem', price: 79.90, promo_price: null, description: 'Mix de cogumelos frescos (shiitake, portobello, champignon), creme de trufa negra importada e parmesão ralado na hora.', status: 'active', featured: true, is_new: false, popular: false, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80', extras: [] },
+        { id: 'p4', name: 'Espaguete alla Carbonara', category_id: 'cat-massa', price: 58.90, promo_price: null, description: 'Espaguete 100% grano duro, pancetta italiana dourada, gema de ovos caipira, parmesão DOP e pimenta-do-reino moída na hora.', status: 'active', featured: false, is_new: true, popular: true, image: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=600&q=80', extras: [] },
+        { id: 'p5', name: 'Vinho Casa Valduga Rosé', category_id: 'cat-beb', price: 89.90, promo_price: null, description: 'Garrafa 750ml. Fresco e frutado, combinação perfeita com nossas pizzas.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80', extras: [] }
+      ],
+      'acai-do-norte': [
+        { id: 'p1', name: 'Tigela Norte Grande 600ml', category_id: 'cat-tigelas', price: 28.90, promo_price: 24.90, description: 'Açaí premium batido com banana, granola crocante, leite condensado, mel e sua escolha de 3 toppings extras.', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600&q=80', extras: [{name:'Topping Extra', price:3.00},{name:'Chantilly', price:4.00}] },
+        { id: 'p2', name: 'Copo Festa 400ml', category_id: 'cat-copo', price: 18.90, promo_price: null, description: 'Açaí batido no copo com granola, banana e mel. Vai embora rápido!', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1560741792-b16b64b48e5f?w=600&q=80', extras: [] },
+        { id: 'p3', name: 'Pacote Granola Artesanal 300g', category_id: 'cat-acomp', price: 12.90, promo_price: null, description: 'Granola artesanal com aveia, mel, coco e sementes de girassol tostadas. Feita diariamente na nossa cozinha.', status: 'active', featured: false, is_new: true, popular: false, image: 'https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600&q=80', extras: [] }
+      ],
+      'sushi-zen': [
+        { id: 'p1', name: 'Hot Roll Salmão Crispy 10un', category_id: 'cat-rolls', price: 49.90, promo_price: null, description: '10 unidades de hot roll de salmão, cream cheese, pepino empanados e fritos em óleo de girassol, servidos com molho tarê e mayo de limão.', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80', extras: [] },
+        { id: 'p2', name: 'Uramaki Philadelphia 8un', category_id: 'cat-rolls', price: 42.90, promo_price: null, description: 'Arroz temperado por fora, salmão, cream cheese e pepino. Finalizado com furikake e lâminas de salmão por cima.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=600&q=80', extras: [] },
+        { id: 'p3', name: 'Combo Zen Family (50 peças)', category_id: 'cat-combos', price: 189.90, promo_price: 169.90, description: 'Mix completo de 50 peças: hot rolls, sashimis de salmão, nigiris e uramakis variados. Acompanha 2 sopas missô.', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=600&q=80', extras: [] }
+      ],
+      'marmita-da-dora': [
+        { id: 'p1', name: 'Marmita Executiva da Dora', category_id: 'cat-mar', price: 19.90, promo_price: null, description: 'Arroz branco, feijão temperado, proteína do dia (frango/carne/peixe), macarrão, salada e suco de fruta.', status: 'active', featured: true, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80', extras: [{name:'Proteína Dupla', price:5.00}] },
+        { id: 'p2', name: 'Marmita Fit Light', category_id: 'cat-fit', price: 22.90, promo_price: null, description: 'Arroz integral, quinoa, frango grelhado, legumes no vapor e salada verde. Sem fritura e sem glúten.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80', extras: [] },
+        { id: 'p3', name: 'Pudim de Leite Condensado', category_id: 'cat-sobr', price: 8.90, promo_price: null, description: 'Pudim caseiro da Dora, receita de família há 30 anos. Cremoso, com caramelo dourado.', status: 'active', featured: false, is_new: false, popular: true, image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80', extras: [] }
+      ]
+    };
+    const prods = prodsBySlug[slug];
+    if (prods) {
+      localStorage.setItem(`STORE_${slug}_PRODUCTS`, JSON.stringify(prods));
+    }
+  }
 }
 
 // -------------------------------------------------------------------------
