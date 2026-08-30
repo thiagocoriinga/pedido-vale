@@ -203,8 +203,13 @@
   <main class="flex-1 max-w-[1360px] mx-auto w-full relative z-10">
     <section id="hero" class="w-full border-b border-white/10 pt-20 md:pt-28 pb-16 px-6 relative overflow-hidden">
       
-      <!-- Top Glow Radial -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#c6f91f]/[0.05] blur-[150px] pointer-events-none z-0"></div>
+      <!-- HERO AURA WEBGL/CANVAS ANIMATION (NEON GREEN WAVES & PARTICLES) -->
+      <canvas id="hero-aura-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-90"></canvas>
+
+      <!-- Ambient Glow Spotlights -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#c6f91f]/[0.08] blur-[160px] pointer-events-none z-0"></div>
+      <div class="absolute -top-10 left-0 w-[450px] h-[600px] bg-[#c6f91f]/[0.06] blur-[140px] pointer-events-none z-0"></div>
+      <div class="absolute -top-10 right-0 w-[450px] h-[600px] bg-[#c6f91f]/[0.06] blur-[140px] pointer-events-none z-0"></div>
 
       <div class="flex flex-col z-10 relative items-center">
         
@@ -1046,7 +1051,126 @@
         }
       });
     })();
+
+    // 3. Hero Aura Green Wave & Particles Canvas Animation
+    (function () {
+      const canvas = document.getElementById('hero-aura-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let width = 0;
+      let height = 0;
+      let mouseX = 0.5;
+      let mouseY = 0.5;
+      let targetMouseX = 0.5;
+      let targetMouseY = 0.5;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        width = canvas.width = rect.width;
+        height = canvas.height = rect.height;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        if (rect.height > 0 && rect.width > 0) {
+          targetMouseX = (e.clientX - rect.left) / rect.width;
+          targetMouseY = (e.clientY - rect.top) / rect.height;
+        }
+      });
+
+      // Partículas flutuantes da aura
+      const particles = [];
+      const numParticles = 45;
+      for (let i = 0; i < numParticles; i++) {
+        particles.push({
+          x: Math.random(),
+          y: Math.random(),
+          size: Math.random() * 2.5 + 0.8,
+          speedY: Math.random() * 0.0008 + 0.0003,
+          speedX: (Math.random() - 0.5) * 0.0004,
+          opacity: Math.random() * 0.7 + 0.2,
+          pulse: Math.random() * Math.PI * 2,
+        });
+      }
+
+      let time = 0;
+
+      function drawAura() {
+        time += 0.015;
+        mouseX += (targetMouseX - mouseX) * 0.05;
+        mouseY += (targetMouseY - mouseY) * 0.05;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Curvas da Aura Esquerda e Direita (Neon Green #c6f91f)
+        const renderWaveSide = (isLeft) => {
+          const baseSideX = isLeft ? width * 0.05 : width * 0.95;
+          const curveDir = isLeft ? 1 : -1;
+
+          for (let layer = 0; layer < 4; layer++) {
+            ctx.beginPath();
+            const layerOffset = layer * 0.25;
+            const alpha = (0.28 - layer * 0.05);
+
+            ctx.strokeStyle = `rgba(198, 249, 31, ${alpha})`;
+            ctx.lineWidth = 2 + layer * 1.5;
+            ctx.shadowColor = '#c6f91f';
+            ctx.shadowBlur = 20 + layer * 10;
+
+            const startX = baseSideX;
+            const startY = height * 1.1;
+            const cp1X = baseSideX + curveDir * (width * 0.28 + Math.sin(time + layerOffset) * 40 + (mouseX - 0.5) * 80);
+            const cp1Y = height * 0.65 + Math.cos(time * 0.8 + layer) * 50;
+            const cp2X = baseSideX + curveDir * (width * 0.12 + Math.cos(time * 1.2 + layerOffset) * 30);
+            const cp2Y = height * 0.25;
+            const endX = baseSideX + curveDir * (width * 0.02);
+            const endY = -50;
+
+            ctx.moveTo(startX, startY);
+            ctx.bezierCurveTo(cp1X, cp1Y, cp2X, cp2Y, endX, endY);
+            ctx.stroke();
+          }
+        };
+
+        // Renderizar auras laterais
+        renderWaveSide(true);
+        renderWaveSide(false);
+
+        // Resetar sombras para partículas
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#c6f91f';
+
+        // Partículas verdes flutuantes
+        particles.forEach((p) => {
+          p.y -= p.speedY;
+          p.x += p.speedX;
+          p.pulse += 0.03;
+
+          if (p.y < -0.05) p.y = 1.05;
+          if (p.x < -0.05) p.x = 1.05;
+          if (p.x > 1.05) p.x = -0.05;
+
+          const currentOpacity = (Math.sin(p.pulse) * 0.3 + 0.7) * p.opacity;
+          const px = p.x * width;
+          const py = p.y * height;
+
+          ctx.fillStyle = `rgba(198, 249, 31, ${currentOpacity})`;
+          ctx.beginPath();
+          ctx.arc(px, py, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        requestAnimationFrame(drawAura);
+      }
+
+      drawAura();
+    })();
   </script>
 
 </body>
 </html>
+
