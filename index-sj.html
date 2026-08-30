@@ -2980,7 +2980,7 @@
       msg += `------------------------------------------\n\n`;
       msg += `Por favor, confirmem o pedido e o tempo estimado!`;
 
-      // Salvar pedido no localStorage para o Painel do Admin
+      // Salvar pedido no localStorage para o Painel do Admin e Cozinha KDS
       try {
         let orderAddress = "Retirada no Balcão";
         if (orderMode === 'delivery') {
@@ -2989,27 +2989,61 @@
           orderAddress = `Consumo no Local ${tableNumber ? `(Mesa ${tableNumber})` : ''}`;
         }
 
-        const orderObj = {
-          id: "PED-" + (Math.floor(Math.random() * 9000) + 1000),
-          date: new Date().toISOString(),
-          customer: { name: name, phone: phone },
+        const storeSlug = (STORE_DATA && STORE_DATA.slug) || (new URLSearchParams(window.location.search).get('store')) || 'demo-burger';
+        
+        // Itens formatados com clareza para a comanda da cozinha
+        const formattedItemsStr = cart.map(c => {
+          let itemStr = `${c.quantity}x ${c.title}`;
+          if (c.adicionais && c.adicionais.length > 0) {
+            itemStr += ` (${c.adicionais.join(', ')})`;
+          }
+          if (c.notes) {
+            itemStr += ` [Obs: ${c.notes}]`;
+          }
+          return itemStr;
+        }).join(', ');
+
+        const orderNum = "#B" + (Math.floor(Math.random() * 9000) + 1000);
+
+        // Objeto de Pedido Completo e Otimizado para Cozinha (KDS) & Painel
+        const kitchenOrderObj = {
+          id: orderNum,
+          customer_name: `${name} (${orderMode === 'delivery' ? 'Delivery' : (orderMode === 'dine_in' ? `Mesa ${tableNumber || 'Salão'}` : 'Balcão')})`,
+          customer_phone: phone,
           address: orderAddress,
-          mode: orderMode,
-          deliveryFee: deliveryFee,
-          neighborhood: neighborhood,
-          bairro: bairroText,
-          table: tableNumber,
-          payment: selectedPayment.toUpperCase(),
-          items: cart.map(c => ({ title: c.title, qty: c.quantity, price: c.price })),
-          subtotal: subtotal,
+          items: formattedItemsStr,
           total: grandTotal,
-          status: 'pending',
-          isPaid: false
+          payment_method: payLabel,
+          status: 'prep', // VAI DIRETO PARA A COZINHA (KDS)!
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          created_at: Date.now()
         };
 
-        // Salvar pedido e cliente no Supabase (Nuvem) com fallback seguro
+        // Salvar na chave da loja atual no localStorage
+        const storeOrdersKey = `STORE_${storeSlug}_ORDERS`;
+        const currentStoreOrders = JSON.parse(localStorage.getItem(storeOrdersKey) || '[]');
+        currentStoreOrders.unshift(kitchenOrderObj);
+        if (currentStoreOrders.length > 100) currentStoreOrders.length = 100;
+        localStorage.setItem(storeOrdersKey, JSON.stringify(currentStoreOrders));
+
+        // Compatibilidade com chave legado
+        const saoJoseOrders = JSON.parse(localStorage.getItem('SAO_JOSE_ORDERS') || '[]');
+        saoJoseOrders.unshift(kitchenOrderObj);
+        if (saoJoseOrders.length > 100) saoJoseOrders.length = 100;
+        localStorage.setItem('SAO_JOSE_ORDERS', JSON.stringify(saoJoseOrders));
+
+        // Disparar evento instantâneo para o Painel Admin / KDS aberto em outra aba
+        try {
+          const storeChannel = new BroadcastChannel('store_orders_channel');
+          storeChannel.postMessage({ type: 'NEW_KITCHEN_ORDER', store: storeSlug, order: kitchenOrderObj });
+          
+          const legacyChannel = new BroadcastChannel('sao_jose_channel');
+          legacyChannel.postMessage({ type: 'NEW_ORDER', order: kitchenOrderObj });
+        } catch (err) {}
+
+        // Salvar no Supabase se configurado
         if (window.SAO_JOSE_SUPABASE) {
-          window.SAO_JOSE_SUPABASE.saveOrder(orderObj);
+          window.SAO_JOSE_SUPABASE.saveOrder(kitchenOrderObj);
           window.SAO_JOSE_SUPABASE.saveCustomer({
             name: name,
             phone: phone,
@@ -3017,28 +3051,7 @@
             neighborhood: neighborhood,
             city: selectedNeighborhoodName
           });
-        } else {
-          const existingOrders = JSON.parse(localStorage.getItem('SAO_JOSE_ORDERS') || '[]');
-          existingOrders.unshift(orderObj);
-          if (existingOrders.length > 200) existingOrders.length = 200;
-          localStorage.setItem('SAO_JOSE_ORDERS', JSON.stringify(existingOrders));
         }
-
-        // Disparar evento para o painel Admin aberto em outra aba
-        try {
-          const channel = new BroadcastChannel('sao_jose_channel');
-          channel.postMessage({ type: 'NEW_ORDER', order: orderObj });
-        } catch (err) {}
-
-        // Transmitir pedido em tempo real pela Nuvem (para qualquer computador ou celular)
-        try {
-          fetch('https://ntfy.sh/sao_jose_burguer_pedidos', {
-            method: 'POST',
-            headers: { 'Title': 'Novo Pedido!', 'Priority': 'high' },
-            body: JSON.stringify(orderObj),
-            keepalive: true
-          }).catch(() => {});
-        } catch (err) {}
       } catch (e) {}
 
       // Se for PIX, copiar a chave PIX automaticamente

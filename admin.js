@@ -2462,10 +2462,38 @@ function initStoreAdmin() {
   const urlTab = new URLSearchParams(window.location.search).get('tab');
   switchStoreTab(urlTab || 'dashboard');
 
-  // Atualização periódica do KDS a cada 10 segundos
+  // Listener para novos pedidos em tempo real (KDS & Kanban)
+  try {
+    const storeChannel = new BroadcastChannel('store_orders_channel');
+    storeChannel.onmessage = (event) => {
+      if (event.data && event.data.type === 'NEW_KITCHEN_ORDER') {
+        const orderStore = event.data.store;
+        if (!orderStore || orderStore === CURRENT_STORE_SLUG || orderStore === STORE_DATA.slug) {
+          loadStoreData();
+          renderOrdersKanban();
+          renderKdsOrders();
+          playKitchenAlertSound();
+          showToast(`🔔 NOVO PEDIDO ${event.data.order ? event.data.order.id : ''} recebido na cozinha!`);
+        }
+      }
+    };
+  } catch (e) {}
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === getStoreKey('ORDERS') || e.key === 'SAO_JOSE_ORDERS') {
+      loadStoreData();
+      renderOrdersKanban();
+      renderKdsOrders();
+      playKitchenAlertSound();
+    }
+  });
+
+  // Atualização periódica do KDS e Kanban a cada 5 segundos
   setInterval(() => {
+    loadStoreData();
     renderKdsOrders();
-  }, 10000);
+    renderOrdersKanban();
+  }, 5000);
 }
 
 document.addEventListener('DOMContentLoaded', initStoreAdmin);
