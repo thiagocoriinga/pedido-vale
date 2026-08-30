@@ -49,26 +49,6 @@ let currentEditingProductId = null;
 let currentEditingCategoryId = null;
 let currentUploadedProductImage = "";
 
-// -------------------------------------------------------------------------
-// INICIALIZAÇÃO DO PAINEL DO RESTAURANTE
-// -------------------------------------------------------------------------
-function initStoreAdmin() {
-  loadStoreData();
-  // Garante que as categorias iniciais fiquem salvas no LocalStorage para o cardápio público
-  if (!localStorage.getItem(getStoreKey('CATEGORIES'))) {
-    saveCategories();
-  }
-  if (!localStorage.getItem(getStoreKey('CONFIG'))) {
-    saveStoreConfig();
-  }
-  renderStoreTopbar();
-  renderTrialInfo();
-  renderCategorySelects();
-  renderCategoryAccordionList();
-  renderOrdersKanban();
-  populateSettingsInputs();
-}
-
 function loadStoreData() {
   try {
     // 1. Tentar sincronizar do Super Admin Tenants
@@ -406,12 +386,21 @@ function closeCategoryModal() {
 }
 
 function saveCategoryForm(e) {
-  e.preventDefault();
+  if (e && e.preventDefault) e.preventDefault();
 
-  const name = document.getElementById('cat-name').value.trim();
-  const icon = document.getElementById('cat-icon').value.trim() || '📁';
-  const desc = document.getElementById('cat-desc').value.trim();
-  const visible = document.getElementById('cat-visible-switch').checked;
+  const nameEl = document.getElementById('cat-name');
+  if (!nameEl) return false;
+  const name = nameEl.value.trim();
+
+  if (!name) {
+    showToast("⚠️ Por favor informe o Nome da categoria!");
+    nameEl.focus();
+    return false;
+  }
+
+  const icon = document.getElementById('cat-icon')?.value.trim() || '📁';
+  const desc = document.getElementById('cat-desc')?.value.trim() || '';
+  const visible = document.getElementById('cat-visible-switch')?.checked ?? true;
 
   if (currentEditingCategoryId) {
     const idx = CATEGORIES.findIndex(c => c.id === currentEditingCategoryId);
@@ -435,6 +424,7 @@ function saveCategoryForm(e) {
   renderCategorySelects();
   renderCategoryAccordionList();
   closeCategoryModal();
+  return false;
 }
 
 function toggleCategoryVisibility(id) {
