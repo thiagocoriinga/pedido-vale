@@ -262,6 +262,11 @@ function updateSwitchOrdersButton() {
   const topbarBtn = document.getElementById('topbar-store-status-btn');
   const topbarText = document.getElementById('topbar-store-status-text');
   const dashBadge = document.getElementById('dash-store-status-badge');
+  const manualBadge = document.getElementById('manual-status-indicator-badge');
+  const manualBadgeText = document.getElementById('manual-status-indicator-text');
+  const manualDesc = document.getElementById('manual-status-description');
+  const btnForceOpen = document.getElementById('btn-force-open');
+  const btnForceClose = document.getElementById('btn-force-close');
 
   if (STORE_DATA.isOpen) {
     if (btn) {
@@ -278,6 +283,23 @@ function updateSwitchOrdersButton() {
       dashBadge.className = "px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold";
       dashBadge.innerText = "ONLINE";
     }
+    if (manualBadge) {
+      manualBadge.className = "px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-1.5 shadow-sm";
+    }
+    if (manualBadgeText) {
+      manualBadgeText.innerText = "LOJA ABERTA (ONLINE)";
+    }
+    if (manualDesc) {
+      manualDesc.innerHTML = `Sua loja está <strong class="text-emerald-400">aberta e recebendo novos pedidos</strong> pelo cardápio. Você pode fechar a qualquer instante clicando no botão ao lado.`;
+    }
+    if (btnForceOpen) {
+      btnForceOpen.className = "px-5 py-3 rounded-2xl bg-emerald-600 text-white font-anton tracking-wider text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/30 ring-2 ring-emerald-400 pointer-events-none opacity-90";
+      btnForceOpen.innerHTML = `<span>✓ LOJA ABERTA AGORA</span>`;
+    }
+    if (btnForceClose) {
+      btnForceClose.className = "px-5 py-3 rounded-2xl bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-300 hover:text-white font-anton tracking-wider text-xs flex items-center gap-2 active:scale-95 transition-all cursor-pointer";
+      btnForceClose.innerHTML = `<span>🔴 FECHAR LOJA AGORA</span>`;
+    }
   } else {
     if (btn) {
       btn.className = "px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-rose-500 hover:bg-rose-600 text-white shadow-lg flex items-center gap-1.5";
@@ -293,21 +315,42 @@ function updateSwitchOrdersButton() {
       dashBadge.className = "px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold";
       dashBadge.innerText = "FECHADA";
     }
+    if (manualBadge) {
+      manualBadge.className = "px-3.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 text-xs font-bold flex items-center gap-1.5 shadow-sm";
+    }
+    if (manualBadgeText) {
+      manualBadgeText.innerText = "LOJA FECHADA (PAUSADA)";
+    }
+    if (manualDesc) {
+      manualDesc.innerHTML = `Sua loja está <strong class="text-rose-400">temporariamente fechada</strong> para novos pedidos. O cardápio está bloqueado para compras. Clique em "ABRIR LOJA AGORA" para voltar a vender.`;
+    }
+    if (btnForceOpen) {
+      btnForceOpen.className = "px-5 py-3 rounded-2xl bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/40 text-emerald-300 hover:text-white font-anton tracking-wider text-xs flex items-center gap-2 active:scale-95 transition-all cursor-pointer";
+      btnForceOpen.innerHTML = `<span>🟢 ABRIR LOJA AGORA</span>`;
+    }
+    if (btnForceClose) {
+      btnForceClose.className = "px-5 py-3 rounded-2xl bg-rose-600 text-white font-anton tracking-wider text-xs flex items-center gap-2 shadow-lg shadow-rose-500/30 ring-2 ring-rose-400 pointer-events-none opacity-90";
+      btnForceClose.innerHTML = `<span>✕ LOJA FECHADA AGORA</span>`;
+    }
   }
 }
 
-function toggleStoreOpenStatus() {
-  STORE_DATA.isOpen = !STORE_DATA.isOpen;
+function setStoreStatus(isOpen) {
+  STORE_DATA.isOpen = isOpen;
   saveStoreConfig();
   updateSwitchOrdersButton();
 
-  // Notificar cardápio e abas abertas via BroadcastChannel
+  // Notificar cardápio e abas abertas em tempo real
   try {
     const channel = new BroadcastChannel('store_orders_channel');
     channel.postMessage({ type: 'STORE_STATUS_CHANGED', store: CURRENT_STORE_SLUG, isOpen: STORE_DATA.isOpen });
   } catch (e) {}
 
-  showToast(STORE_DATA.isOpen ? "🟢 Loja Aberta (Aceitando Pedidos Online)!" : "🔴 Loja Fechada (Novos pedidos pausados)!");
+  showToast(STORE_DATA.isOpen ? "🟢 Loja ABERTA com sucesso! Agora aceitando pedidos online." : "🔴 Loja FECHADA com sucesso! Novos pedidos pausados.");
+}
+
+function toggleStoreOpenStatus() {
+  setStoreStatus(!STORE_DATA.isOpen);
 }
 
 function copyStoreMenuLink() {

@@ -527,6 +527,36 @@ function renderDashboardGrid() {
   }).join('');
 }
 
+function getStoreOpenStatus(slug) {
+  try {
+    const saved = localStorage.getItem(`STORE_${slug}_CONFIG`);
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      return cfg.isOpen !== false;
+    }
+  } catch(e) {}
+  return true;
+}
+
+function toggleStoreOpenFromSuper(slug) {
+  try {
+    const key = `STORE_${slug}_CONFIG`;
+    const saved = localStorage.getItem(key);
+    let cfg = saved ? JSON.parse(saved) : { slug: slug };
+    cfg.isOpen = !(cfg.isOpen !== false);
+    localStorage.setItem(key, JSON.stringify(cfg));
+    
+    // Broadcast para cardápio e painel
+    try {
+      const channel = new BroadcastChannel('store_orders_channel');
+      channel.postMessage({ type: 'STORE_STATUS_CHANGED', store: slug, isOpen: cfg.isOpen });
+    } catch(e) {}
+
+    renderSuperAdminDashboard();
+    showSuperToast(cfg.isOpen ? `🟢 Loja /${slug} ABERTA para pedidos online!` : `🔴 Loja /${slug} FECHADA para novos pedidos!`);
+  } catch(e) {}
+}
+
 // -------------------------------------------------------------------------
 // GESTÃO DE EMPRESAS / TENANTS (TABELA & CRUD)
 // -------------------------------------------------------------------------
@@ -570,6 +600,11 @@ function renderTenantsTable() {
       statusBadge = '<span class="px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[10px] font-bold">🔴 Bloqueado</span>';
     }
 
+    const isStoreOpen = getStoreOpenStatus(t.slug);
+    const openBadge = isStoreOpen
+      ? `<button onclick="toggleStoreOpenFromSuper('${t.slug}')" class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all" title="Clique para fechar a loja"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Aberta</button>`
+      : `<button onclick="toggleStoreOpenFromSuper('${t.slug}')" class="px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all" title="Clique para abrir a loja">🔴 Fechada</button>`;
+
     const planBadge = `<span class="px-2 py-0.5 rounded-full bg-white/10 text-stone-300 uppercase font-anton text-[9px]">${t.plan || 'pro'}</span>`;
     const segmentIcon = getSegmentIcon(t.segment);
 
@@ -602,8 +637,9 @@ function renderTenantsTable() {
           </div>
           <div class="text-[10px] text-stone-400 mt-0.5">Vencimento todo dia ${t.due_day || 10}</div>
         </td>
-        <td class="p-4">
-          ${statusBadge}
+        <td class="p-4 space-y-1">
+          <div>${statusBadge}</div>
+          <div>${openBadge}</div>
         </td>
         <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
           <a href="admin.html?store=${t.slug}" target="_blank" class="p-2 rounded-xl bg-white/10 hover:bg-brand-orange hover:text-white text-stone-200 text-xs inline-block font-semibold transition-all" title="Acessar Painel do Restaurante">

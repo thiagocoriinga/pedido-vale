@@ -453,6 +453,37 @@
         </button>
       </div>
 
+      <!-- ⚡ CONTROLE MANUAL INSTANTÂNEO DE ABERTURA & FECHAMENTO (ABRIR/FECHAR A HORA QUE QUISER) -->
+      <div class="bg-gradient-to-br from-[#1c140e] via-[#140e0a] to-[#0d0907] border-2 border-brand-orange/40 rounded-3xl p-6 shadow-2xl space-y-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-72 h-72 bg-brand-orange/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
+          <div class="space-y-1.5 flex-1">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="text-2xl">⚡</span>
+              <h3 class="font-anton text-lg sm:text-xl text-white tracking-wide">STATUS DA LOJA (ONLINE / FECHADA)</h3>
+              <span id="manual-status-indicator-badge" class="px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="manual-status-indicator-text">LOJA ABERTA (ONLINE)</span>
+              </span>
+            </div>
+            <p id="manual-status-description" class="text-xs text-stone-300 font-poppins leading-relaxed">
+              Sua loja está <strong>aberta e aceitando novos pedidos</strong> online pelo cardápio. Você pode fechar ou reabrir a qualquer momento com apenas 1 clique nos botões abaixo.
+            </p>
+          </div>
+
+          <!-- BOTÕES DE CONTROLE RÁPIDO -->
+          <div class="flex items-center gap-3 shrink-0 flex-wrap">
+            <button type="button" onclick="setStoreStatus(true)" id="btn-force-open" class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-anton tracking-wider text-xs flex items-center gap-2 shadow-lg hover:shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer">
+              <span>🟢 ABRIR LOJA AGORA</span>
+            </button>
+            <button type="button" onclick="setStoreStatus(false)" id="btn-force-close" class="px-5 py-3 rounded-2xl bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-300 hover:text-white font-anton tracking-wider text-xs flex items-center gap-2 active:scale-95 transition-all cursor-pointer">
+              <span>🔴 FECHAR LOJA AGORA</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- HUB DE MÓDULOS 360 (ESTILO BEEFOOD APP HUB) -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
@@ -1610,7 +1641,7 @@
     <span id="admin-toast-text">Ação executada!</span>
   </div>
 
-  <script src="admin.js?v=20260830_V35"></script>
+  <script src="admin.js?v=20260830_V40"></script>
 
   <script>
     // Sidebar mobile helpers
