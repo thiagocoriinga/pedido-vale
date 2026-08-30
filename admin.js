@@ -1435,10 +1435,6 @@ function saveStoreGeneralSettingsForm(e) {
   showToast("⚙️ Dados, capa e banners do restaurante atualizados!");
 }
 
-  renderStoreTopbar();
-  showToast("⚙️ Dados e Logomarca do restaurante atualizados!");
-}
-
 function logoutStoreAdmin() {
   sessionStorage.removeItem('CURRENT_LOGGED_STORE');
   window.location.href = 'login.html';
