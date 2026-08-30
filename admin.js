@@ -2161,6 +2161,10 @@ function initStoreAdmin() {
   renderCouponsList();
   populateSettingsInputs();
 
+  // Ativar aba inicial correta
+  const urlTab = new URLSearchParams(window.location.search).get('tab');
+  switchStoreTab(urlTab || 'dashboard');
+
   // Atualização periódica do KDS a cada 10 segundos
   setInterval(() => {
     renderKdsOrders();
