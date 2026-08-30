@@ -209,8 +209,8 @@ function renderDashboardGrid() {
             <span>⚙️</span>
             <span>GERENCIAR PRODUTOS</span>
           </a>
-          <a href="index-sj.html?store=${t.slug}" target="_blank" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-brand-orange border border-brand-orange/30 text-xs transition-all" title="Ver Cardápio do Cliente">
-            🍔
+          <a href="cardapio.html?store=${t.slug}" target="_blank" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-brand-orange border border-brand-orange/30 text-xs transition-all" title="Ver Cardápio do Cliente">
+            ↗️
           </a>
           <button onclick="sendWhatsAppBilling('${t.id}')" class="p-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs transition-all" title="Cobrar no WhatsApp">
             💬

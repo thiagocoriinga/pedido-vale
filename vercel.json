@@ -1,11 +1,12 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/admin(.*)", "dest": "/admin.html" },
-    { "src": "/login", "dest": "/login.html" },
-    { "src": "/cadastro", "dest": "/cadastro.html" },
-    { "src": "/superadmin(.*)", "dest": "/superadmin.html" },
-    { "src": "/(.*)", "dest": "/index-sj.html" }
+  "rewrites": [
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/cadastro", "destination": "/cadastro.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/superadmin", "destination": "/superadmin.html" },
+    { "source": "/cardapio", "destination": "/cardapio.html" },
+    { "source": "/cardapio.html", "destination": "/cardapio.html" },
+    { "source": "/index-sj.html", "destination": "/cardapio.html" },
+    { "source": "/:storeSlug((?!admin|login|cadastro|superadmin|assets|referencia|api|_next|favicon).*)/?", "destination": "/cardapio.html" }
   ]
 }
-

@@ -139,7 +139,7 @@ function renderStoreTopbar() {
 
   const domain = (window.location.hostname || 'pedidovale.com.br').replace(/^www\./, '');
   const cleanLink = `${domain}/${STORE_DATA.slug}`;
-  const directMenuUrl = `${window.location.origin}/index-sj.html?store=${STORE_DATA.slug}`;
+  const directMenuUrl = `${window.location.origin}/cardapio.html?store=${STORE_DATA.slug}`;
 
   if (nameEl) nameEl.innerText = (STORE_DATA.name || "MEU ESTABELECIMENTO").toUpperCase();
   if (dashNameEl) dashNameEl.innerText = (STORE_DATA.name || "MEU ESTABELECIMENTO").toUpperCase();

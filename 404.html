@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Carregando Cardápio • PedidoVale</title>
+  <script>
+    // Roteamento Dinâmico de URLs Limpas (ex: pedidovale.com.br/rei-combo)
+    (function() {
+      const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+      const segments = path.split('/');
+      const firstSegment = segments[0];
+
+      const reserved = ['admin', 'login', 'cadastro', 'superadmin', 'assets', 'referencia', 'api', 'index', 'cardapio'];
+
+      if (firstSegment && !reserved.includes(firstSegment.toLowerCase()) && !firstSegment.includes('.html')) {
+        // Redireciona para o cardápio da loja mantendo os parâmetros
+        const search = window.location.search;
+        const newSearch = search ? `${search}&store=${encodeURIComponent(firstSegment)}` : `?store=${encodeURIComponent(firstSegment)}`;
+        window.location.replace(`/cardapio.html${newSearch}`);
+      } else {
+        window.location.replace('/');
+      }
+    })();
+  </script>
+</head>
+<body style="background:#080504; color:#fff; font-family:sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;">
+  <div style="text-align:center;">
+    <div style="font-size:32px; margin-bottom:12px;">🍔</div>
+    <div style="font-size:16px; font-weight:bold;">Carregando cardápio...</div>
+  </div>
+</body>
+</html>
