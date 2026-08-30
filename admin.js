@@ -1107,6 +1107,33 @@ function populateSettingsInputs() {
     if (logoPlaceholder) logoPlaceholder.classList.remove('hidden');
     if (btnRemoveLogo) btnRemoveLogo.classList.add('hidden');
   }
+
+  // Capa e Cor do Topo
+  const coverPreview = document.getElementById('store-cover-preview');
+  const coverPlaceholder = document.getElementById('store-cover-placeholder');
+  const btnRemoveCover = document.getElementById('btn-remove-cover');
+  const bannerColorEl = document.getElementById('store-banner-color');
+
+  if (bannerColorEl) bannerColorEl.value = STORE_DATA.bannerColor || '#dc2626';
+
+  if (STORE_DATA.coverBanner) {
+    if (coverPreview) {
+      coverPreview.src = STORE_DATA.coverBanner;
+      coverPreview.classList.remove('hidden');
+    }
+    if (coverPlaceholder) coverPlaceholder.classList.add('hidden');
+    if (btnRemoveCover) btnRemoveCover.classList.remove('hidden');
+  } else {
+    if (coverPreview) {
+      coverPreview.src = '';
+      coverPreview.classList.add('hidden');
+    }
+    if (coverPlaceholder) coverPlaceholder.classList.remove('hidden');
+    if (btnRemoveCover) btnRemoveCover.classList.add('hidden');
+  }
+
+  // Renderizar Banners Promocionais
+  renderPromoBannerRows();
 }
 
 function handleStoreLogoUpload(event) {
@@ -1178,6 +1205,166 @@ function removeStoreLogo() {
   showToast("🗑️ Logomarca removida.");
 }
 
+function handleStoreCoverUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX_W = 1000;
+      const MAX_H = 450;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > MAX_W) {
+        height = Math.round((height * MAX_W) / width);
+        width = MAX_W;
+      }
+      if (height > MAX_H) {
+        width = Math.round((width * MAX_H) / height);
+        height = MAX_H;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      STORE_DATA.coverBanner = compressedDataUrl;
+
+      const preview = document.getElementById('store-cover-preview');
+      const placeholder = document.getElementById('store-cover-placeholder');
+      const btnRemove = document.getElementById('btn-remove-cover');
+
+      if (preview) {
+        preview.src = compressedDataUrl;
+        preview.classList.remove('hidden');
+      }
+      if (placeholder) placeholder.classList.add('hidden');
+      if (btnRemove) btnRemove.classList.remove('hidden');
+
+      showToast("🖼️ Foto de Capa enviada com sucesso!");
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeStoreCover() {
+  STORE_DATA.coverBanner = "";
+  const preview = document.getElementById('store-cover-preview');
+  const placeholder = document.getElementById('store-cover-placeholder');
+  const btnRemove = document.getElementById('btn-remove-cover');
+  const fileInput = document.getElementById('store-cover-file-input');
+
+  if (preview) {
+    preview.src = "";
+    preview.classList.add('hidden');
+  }
+  if (placeholder) placeholder.classList.remove('hidden');
+  if (btnRemove) btnRemove.classList.add('hidden');
+  if (fileInput) fileInput.value = "";
+
+  showToast("Foto de capa removida. O cardápio usará a cor de fundo.");
+}
+
+function addPromoBannerRow(title = '', image = '', url = '') {
+  const container = document.getElementById('promo-banners-container');
+  if (!container) return;
+
+  const div = document.createElement('div');
+  div.className = "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 promo-banner-row bg-white/[0.03] border border-white/10 rounded-2xl p-2.5 transition-all";
+  const uniqueId = `promo-banner-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+
+  div.innerHTML = `
+    <div class="flex items-center gap-2 flex-1">
+      <div class="relative w-14 h-10 rounded-xl overflow-hidden bg-black/40 border border-white/10 shrink-0 flex items-center justify-center group cursor-pointer" onclick="document.getElementById('${uniqueId}-file').click()">
+        <img src="${image}" class="w-full h-full object-cover banner-img-preview ${image ? '' : 'hidden'}" onerror="this.classList.add('hidden')" />
+        <span class="text-xs text-white/50 ${image ? 'hidden' : ''} banner-img-icon">🖼️</span>
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[9px] text-white transition-opacity font-bold">Foto</div>
+      </div>
+      <input type="file" id="${uniqueId}-file" accept="image/*" class="hidden" onchange="handlePromoBannerUpload(event, this)" />
+
+      <input type="text" placeholder="Título / Oferta (ex: Combo Smash por R$ 29,90)" value="${title}" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white banner-title focus:outline-none focus:border-brand-orange" />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <input type="hidden" value="${image}" class="banner-image-data" />
+      <input type="url" placeholder="Ou URL da Foto" value="${image && image.startsWith('http') ? image : ''}" oninput="handlePromoBannerUrl(this)" class="hidden sm:block w-36 bg-white/5 border border-white/10 rounded-xl px-2.5 py-2 text-[11px] text-white/70 banner-image-url focus:outline-none focus:border-brand-orange" />
+      <button type="button" onclick="this.closest('.promo-banner-row').remove()" class="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs transition-colors shrink-0" title="Remover Banner">✕</button>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function handlePromoBannerUpload(e, inputEl) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX_W = 800;
+      let width = img.width;
+      let height = img.height;
+      if (width > MAX_W) {
+        height = Math.round((height * MAX_W) / width);
+        width = MAX_W;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressed = canvas.toDataURL('image/jpeg', 0.85);
+      const row = inputEl.closest('.promo-banner-row');
+      if (row) {
+        const preview = row.querySelector('.banner-img-preview');
+        const icon = row.querySelector('.banner-img-icon');
+        const hiddenData = row.querySelector('.banner-image-data');
+        if (preview) { preview.src = compressed; preview.classList.remove('hidden'); }
+        if (icon) icon.classList.add('hidden');
+        if (hiddenData) hiddenData.value = compressed;
+      }
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handlePromoBannerUrl(inputEl) {
+  const url = inputEl.value.trim();
+  const row = inputEl.closest('.promo-banner-row');
+  if (row) {
+    const preview = row.querySelector('.banner-img-preview');
+    const icon = row.querySelector('.banner-img-icon');
+    const hiddenData = row.querySelector('.banner-image-data');
+    if (url) {
+      if (preview) { preview.src = url; preview.classList.remove('hidden'); }
+      if (icon) icon.classList.add('hidden');
+      if (hiddenData) hiddenData.value = url;
+    } else {
+      if (preview) { preview.src = ''; preview.classList.add('hidden'); }
+      if (icon) icon.classList.remove('hidden');
+      if (hiddenData) hiddenData.value = '';
+    }
+  }
+}
+
+function renderPromoBannerRows() {
+  const container = document.getElementById('promo-banners-container');
+  if (!container) return;
+  container.innerHTML = '';
+  const banners = STORE_DATA.promoBanners || [];
+  banners.forEach(b => addPromoBannerRow(b.title || '', b.image || '', b.url || ''));
+}
+
 function saveDeliverySettingsForm(e) {
   e.preventDefault();
   STORE_DATA.deliveryFee = parseFloat(document.getElementById('setting-delivery-fee').value) || 0;
@@ -1211,6 +1398,21 @@ function saveStoreGeneralSettingsForm(e) {
   STORE_DATA.address = document.getElementById('store-address-input').value.trim();
   STORE_DATA.hours = document.getElementById('store-hours-input').value.trim();
 
+  const colorEl = document.getElementById('store-banner-color');
+  if (colorEl) STORE_DATA.bannerColor = colorEl.value;
+
+  // Coletar Banners Promocionais
+  const bannerRows = document.querySelectorAll('#promo-banners-container .promo-banner-row');
+  const promoBanners = [];
+  bannerRows.forEach(row => {
+    const title = row.querySelector('.banner-title')?.value.trim() || '';
+    const image = row.querySelector('.banner-image-data')?.value || row.querySelector('.banner-image-url')?.value || '';
+    if (image || title) {
+      promoBanners.push({ id: `banner-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`, title, image });
+    }
+  });
+  STORE_DATA.promoBanners = promoBanners;
+
   saveStoreConfig();
 
   // Sincronizar também no Super Admin Tenants se existir
@@ -1228,6 +1430,10 @@ function saveStoreGeneralSettingsForm(e) {
       }
     }
   } catch (err) {}
+
+  renderStoreTopbar();
+  showToast("⚙️ Dados, capa e banners do restaurante atualizados!");
+}
 
   renderStoreTopbar();
   showToast("⚙️ Dados e Logomarca do restaurante atualizados!");

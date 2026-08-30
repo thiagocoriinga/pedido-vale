@@ -1000,8 +1000,54 @@
                       Remover
                     </button>
                   </div>
-                  <p class="text-[11px] text-stone-400">Recomendado: imagem quadrada (PNG ou JPG). Ficará visível no cabeçalho e rodapé do seu cardápio.</p>
+                  <p class="text-[11px] text-stone-400">Recomendado: imagem quadrada (PNG ou JPG). Ficará visível no cabeçalho e perfil do cardápio.</p>
                 </div>
+              </div>
+            </div>
+
+            <!-- Upload do Banner de Capa do Topo (Cover Banner) -->
+            <div class="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="block text-stone-300 font-bold">Banner de Capa do Topo (Header Cover):</label>
+                <div class="flex items-center gap-2">
+                  <label class="text-[11px] text-stone-400">Cor do Topo:</label>
+                  <input type="color" id="store-banner-color" value="#dc2626" onchange="STORE_DATA.bannerColor = this.value" class="w-7 h-7 rounded-lg border border-white/20 bg-transparent cursor-pointer" />
+                </div>
+              </div>
+
+              <div class="w-full h-28 rounded-2xl bg-gradient-to-r from-red-600 to-red-800 border border-white/10 overflow-hidden relative flex items-center justify-center group" id="cover-banner-preview-box">
+                <img id="store-cover-preview" src="" alt="Capa" class="w-full h-full object-cover hidden" />
+                <div id="store-cover-placeholder" class="text-center p-3">
+                  <span class="text-xs text-white/80 font-bold block">Banner de Capa (Opcional)</span>
+                  <span class="text-[10px] text-white/60">Recomendado: 1200x400 ou imagem panorâmica</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input type="file" id="store-cover-file-input" accept="image/*" onchange="handleStoreCoverUpload(event)" class="hidden" />
+                <button type="button" onclick="document.getElementById('store-cover-file-input').click()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all">
+                  📷 Enviar Foto de Capa
+                </button>
+                <button type="button" onclick="removeStoreCover()" id="btn-remove-cover" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition-all hidden">
+                  Remover Foto (Usar Cor)
+                </button>
+              </div>
+            </div>
+
+            <!-- Banners Promocionais / Carrossel de Ofertas -->
+            <div class="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="block text-stone-300 font-bold">Banners de Promoção / Carrossel:</label>
+                  <p class="text-[11px] text-stone-400">Banners que aparecem no topo para destacar promoções do dia</p>
+                </div>
+                <button type="button" onclick="addPromoBannerRow()" class="px-3 py-1.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold transition-all shadow-sm">
+                  + Adicionar Banner
+                </button>
+              </div>
+
+              <div id="promo-banners-container" class="space-y-2.5">
+                <!-- Injetado via JS -->
               </div>
             </div>
 
