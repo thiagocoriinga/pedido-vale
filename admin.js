@@ -387,6 +387,40 @@ function renderProductCard(p) {
 }
 
 // -------------------------------------------------------------------------
+// TOAST NOTIFICATIONS (GLOBAL & ROBUSTO)
+// -------------------------------------------------------------------------
+function showToast(msg, type = 'info') {
+  console.log("[PedidoVale Toast]:", msg);
+  let toastContainer = document.getElementById('admin-toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'admin-toast-container';
+    toastContainer.className = 'fixed bottom-6 right-6 z-[99999] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'pointer-events-auto bg-[#18120E]/95 border border-brand-orange/40 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl flex items-center gap-3 transform translate-y-4 opacity-0 transition-all duration-300';
+  toast.innerHTML = `
+    <span class="text-base shrink-0">🔔</span>
+    <span class="flex-1 text-stone-200 leading-snug">${msg}</span>
+  `;
+
+  toastContainer.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.remove('translate-y-4', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('translate-y-0', 'opacity-100');
+    toast.classList.add('translate-y-4', 'opacity-0');
+    setTimeout(() => toast.remove(), 350);
+  }, 3200);
+}
+
+// -------------------------------------------------------------------------
 // MODAL CATEGORIA
 // -------------------------------------------------------------------------
 function openCreateCategoryModal() {
@@ -417,7 +451,7 @@ function openEditCategoryModal(id) {
   document.getElementById('cat-icon').value = cat.icon || '';
   document.getElementById('cat-desc').value = cat.desc || '';
   document.getElementById('cat-visible-switch').checked = cat.visible !== false;
-  document.getElementById('category-modal').classList.remove('hidden');
+  document.getElementById('category-modal')?.classList.remove('hidden');
 }
 
 function closeCategoryModal() {
@@ -426,39 +460,45 @@ function closeCategoryModal() {
 
 function saveCategoryForm(e) {
   if (e && e.preventDefault) e.preventDefault();
+  if (e && e.stopPropagation) e.stopPropagation();
 
-  const nameEl = document.getElementById('cat-name');
-  const name = nameEl ? nameEl.value.trim() : '';
+  try {
+    const nameEl = document.getElementById('cat-name');
+    const name = nameEl ? nameEl.value.trim() : '';
 
-  if (!name) {
-    showToast('⚠️ Informe o nome da categoria!');
-    if (nameEl) {
-      nameEl.classList.add('border-rose-500');
-      nameEl.focus();
-      setTimeout(() => nameEl.classList.remove('border-rose-500'), 2000);
+    if (!name) {
+      showToast('⚠️ Por favor, informe o Nome da categoria!');
+      if (nameEl) {
+        nameEl.classList.add('border-rose-500');
+        nameEl.focus();
+        setTimeout(() => nameEl.classList.remove('border-rose-500'), 2000);
+      }
+      return false;
     }
-    return false;
-  }
 
-  const icon = document.getElementById('cat-icon')?.value.trim() || '📁';
-  const desc = document.getElementById('cat-desc')?.value.trim() || '';
-  const visible = document.getElementById('cat-visible-switch')?.checked ?? true;
+    const icon = document.getElementById('cat-icon')?.value.trim() || '📁';
+    const desc = document.getElementById('cat-desc')?.value.trim() || '';
+    const visible = document.getElementById('cat-visible-switch')?.checked ?? true;
 
-  if (currentEditingCategoryId) {
-    const idx = CATEGORIES.findIndex(c => c.id === currentEditingCategoryId);
-    if (idx !== -1) {
-      CATEGORIES[idx] = { ...CATEGORIES[idx], name, icon, desc, visible };
-      showToast(`✅ Categoria "${name}" atualizada!`);
+    if (currentEditingCategoryId) {
+      const idx = CATEGORIES.findIndex(c => c.id === currentEditingCategoryId);
+      if (idx !== -1) {
+        CATEGORIES[idx] = { ...CATEGORIES[idx], name, icon, desc, visible };
+        showToast(`✅ Categoria "${name}" atualizada com sucesso!`);
+      }
+    } else {
+      CATEGORIES.push({ id: `cat-${Date.now()}`, name, icon, desc, visible });
+      showToast(`📂 Categoria "${name}" criada com sucesso!`);
     }
-  } else {
-    CATEGORIES.push({ id: `cat-${Date.now()}`, name, icon, desc, visible });
-    showToast(`📂 Categoria "${name}" criada!`);
-  }
 
-  saveCategories();
-  renderCategorySelects();
-  renderCategoryAccordionList();
-  closeCategoryModal();
+    saveCategories();
+    renderCategorySelects();
+    renderCategoryAccordionList();
+    closeCategoryModal();
+  } catch (err) {
+    console.error("Erro ao salvar categoria:", err);
+    showToast("Erro ao salvar categoria: " + err.message);
+  }
   return false;
 }
 

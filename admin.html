@@ -1083,8 +1083,8 @@
           <button type="button" onclick="closeCategoryModal()" class="flex-1 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs transition-colors">
             Cancelar
           </button>
-          <button type="submit" class="flex-1 bg-brand-orange hover:bg-brand-orangeHover text-white font-bold py-3 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
-            Salvar
+          <button type="button" id="btn-save-category" onclick="saveCategoryForm(event)" class="flex-1 bg-brand-orange hover:bg-brand-orangeHover text-white font-bold py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs cursor-pointer flex items-center justify-center gap-1.5">
+            <span>💾 Salvar Categoria</span>
           </button>
         </div>
       </form>
@@ -1236,7 +1236,7 @@
           <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold transition-colors">
             Cancelar
           </button>
-          <button type="submit" class="px-8 py-2.5 bg-brand-orange hover:bg-brand-orangeHover text-white font-bold rounded-xl shadow-orange-glow active:scale-95 transition-all text-xs flex items-center gap-2">
+          <button type="button" id="btn-save-product" onclick="saveProductForm(event)" class="px-8 py-3 bg-brand-orange hover:bg-brand-orangeHover text-white font-bold rounded-xl shadow-orange-glow active:scale-95 transition-all text-xs flex items-center gap-2 cursor-pointer">
             <span>💾 Salvar Produto</span>
           </button>
         </div>
@@ -1249,11 +1249,11 @@
   <!-- MODAL DE CRIAR CUPOM DE DESCONTO -->
   <!-- ========================================================================= -->
   <div id="coupon-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-md w-full overflow-hidden shadow-2xl">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col">
       <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
         <div>
-          <h3 class="font-bold text-lg text-white">Criar Cupom de Desconto</h3>
-          <p class="text-xs text-brand-textMuted">Estimule novos pedidos com descontos atrativos</p>
+          <h3 class="font-bold text-lg text-white">🎟️ Novo Cupom de Desconto</h3>
+          <p class="text-xs text-brand-textMuted">Crie cupons promocionais para seus clientes</p>
         </div>
         <button onclick="closeCouponModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
       </div>
@@ -1423,7 +1423,7 @@
     <span id="admin-toast-text">Ação executada!</span>
   </div>
 
-  <script src="admin.js"></script>
+  <script src="admin.js?v=20260830_07"></script>
 
   <script>
     // Sidebar mobile helpers
