@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#080504">
-  <title>Login do Restaurante • PedidoVale</title>
-  <meta name="description" content="Acesse o painel do seu restaurante para gerenciar cardápio, produtos e pedidos.">
+  <meta name="theme-color" content="#05080A">
+  <title>Acesso do Lojista • PedidoVale</title>
+  <meta name="description" content="Acesse o painel administrativo do seu restaurante para gerenciar cardápio, produtos, PDV e pedidos em tempo real.">
 
   <!-- Forçar HTTPS Automático em Produção -->
   <script>
@@ -14,10 +14,13 @@
     }
   </script>
 
-  <!-- Google Fonts: Anton & Poppins -->
+  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Iconify Icons CDN -->
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,26 +30,17 @@
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand: {
-              cream: '#FBF5ED',
-              orange: '#FF5E1E',
-              orangeHover: '#E54A0D',
-              amber: '#FF9E1B',
-              dark: '#080504',
-              darkSurface: '#120D0A',
-              darkCard: '#18120E',
-              darkBorder: '#29211C',
-              textMuted: '#8C827A',
-            }
-          },
           fontFamily: {
-            anton: ['Anton', 'sans-serif'],
-            poppins: ['Poppins', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            geist: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
-          boxShadow: {
-            'card-dark': '0 20px 40px -15px rgba(0, 0, 0, 0.8)',
-            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
+          colors: {
+            lumigreen: '#c6f91f',
+            lumigreenDark: '#aade17',
+            lumibg: '#05080A',
+            lumicard: '#0B0F12',
+            lumisurface: '#080D10',
           }
         }
       }
@@ -54,110 +48,250 @@
   </script>
 
   <style>
+    html {
+      font-family: 'Inter', system-ui, sans-serif;
+      color-scheme: dark;
+      background-color: #05080A;
+    }
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #080504;
-      color: #F3EBE1;
+      background-color: #05080A;
+      color: #ffffff;
+      overflow-x: hidden;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
     }
-    h1, h2, h3, h4, .font-anton {
-      font-family: 'Anton', sans-serif;
-      letter-spacing: 0.035em;
-      text-transform: uppercase;
+    ::selection {
+      background-color: #c6f91f;
+      color: #000000;
     }
-    .stars {
-      background-image:
-        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
-      background-size: 200px 200px;
+
+    /* Flashlight hover glow effect */
+    .flashlight-target {
+      position: relative;
+      overflow: hidden;
     }
-    .grid-bg-dark {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
+    .flashlight-target::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(
+        450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(198, 249, 31, 0.15),
+        transparent 40%
+      );
+      border-radius: inherit;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .flashlight-target:hover::before {
+      opacity: 1;
+    }
+    .flashlight-content {
+      position: relative;
+      z-index: 2;
+      background-color: transparent;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+    }
+
+    .form-card-shadow {
+      box-shadow: 0 40px 100px -20px rgba(0,0,0,0.85), 0 0 35px rgba(198,249,31,0.08);
     }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden stars">
+<body class="bg-[#05080A] text-white antialiased font-sans min-h-screen flex flex-col justify-between items-center relative p-4">
 
-  <!-- AURA BACKGROUND GLOW -->
-  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div class="grid-bg-dark absolute inset-0"></div>
-    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/15 blur-[150px] rounded-full"></div>
-    <div class="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-amber-600/15 blur-[140px] rounded-full"></div>
+  <!-- Background Vertical Guides & Canvas Aura -->
+  <div class="fixed inset-0 pointer-events-none z-0 flex justify-center max-w-[1360px] mx-auto w-full border-x border-white/5">
+    <div class="absolute left-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
   </div>
 
-  <div class="w-full max-w-md relative z-10 space-y-6">
+  <canvas id="login-aura-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-75"></canvas>
+  <div class="fixed top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#c6f91f]/[0.05] blur-[150px] pointer-events-none z-0"></div>
 
-    <!-- HEADER BRAND -->
-    <div class="text-center space-y-2">
-      <div class="w-16 h-16 rounded-2xl mx-auto bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-3xl shadow-orange-glow border border-white/20">
-        🍔
+  <!-- TOP HEADER SIMPLE -->
+  <header class="w-full max-w-5xl py-4 flex items-center justify-between relative z-10">
+    <a href="/" class="flex items-center gap-2.5 group">
+      <div class="w-8 h-8 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] shadow-[0_0_12px_rgba(198,249,31,0.25)] group-hover:scale-105 transition-transform">
+        <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="text-xl"></iconify-icon>
       </div>
-      <h1 class="text-3xl font-anton text-white tracking-wider">
-        ACESSO DO RESTAURANTE
+      <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5 font-geist">
+        Pedido<span class="text-[#c6f91f]">Vale</span>
+        <span class="px-1.5 py-0.5 text-[9px] font-mono font-medium bg-[#c6f91f]/10 text-[#c6f91f] border border-[#c6f91f]/20 rounded">LOGIN</span>
+      </span>
+    </a>
+
+    <a href="/" class="text-xs text-white/60 hover:text-white transition-colors font-geist">
+      ← Voltar para o Site
+    </a>
+  </header>
+
+  <!-- MAIN LOGIN CARD -->
+  <main class="w-full max-w-md my-auto relative z-10 py-6">
+    
+    <div class="text-center space-y-2 mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 backdrop-blur-md text-xs text-[#c6f91f] rounded-full font-mono tracking-tight shadow-[0_0_12px_rgba(198,249,31,0.1)]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#c6f91f] shadow-[0_0_8px_#c6f91f]"></span>
+        Painel do Restaurante
+      </div>
+
+      <h1 class="text-3xl font-light tracking-tighter text-white font-geist">
+        Acesse sua conta
       </h1>
-      <p class="text-xs text-brand-textMuted">
-        Gerencie seu cardápio, produtos e pedidos em tempo real
+      <p class="text-xs text-white/50 font-geist">
+        Gerencie seu cardápio, produtos, PDV e pedidos em tempo real.
       </p>
     </div>
 
-    <!-- CARD FORMULÁRIO -->
-    <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark backdrop-blur-2xl space-y-6">
-      
-      <form onsubmit="handleRestaurantLogin(event)" class="space-y-4 text-xs font-poppins">
+    <!-- Card Form -->
+    <div class="bg-[#0B0F12] border border-white/10 rounded-2xl p-6 sm:p-8 form-card-shadow relative flashlight-target">
+      <div class="flashlight-content space-y-5">
         
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Link (Slug) ou WhatsApp da Loja *</label>
-          <input 
-            type="text" 
-            id="login-identifier" 
-            placeholder="ex: sao-jose ou seu WhatsApp" 
-            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors" 
-            required 
-            autofocus
-          />
+        <form onsubmit="handleRestaurantLogin(event)" class="space-y-4 text-xs font-geist">
+          
+          <div>
+            <label class="block text-white/70 font-medium mb-1.5">
+              Link da Loja (Slug) ou WhatsApp *
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="login-identifier" 
+                placeholder="ex: demo-burger ou seu WhatsApp" 
+                class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] focus:ring-1 focus:ring-[#c6f91f]/50 transition-all font-mono"
+                required 
+                autofocus
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-white/70 font-medium mb-1.5">
+              Senha de Acesso *
+            </label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="login-password" 
+                placeholder="Digite sua senha" 
+                class="w-full h-11 px-3.5 bg-[#05080A] border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#c6f91f] focus:ring-1 focus:ring-[#c6f91f]/50 transition-all font-mono"
+                required 
+              />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="w-full h-12 mt-2 bg-[#c6f91f] hover:bg-[#aade17] text-black font-bold text-sm rounded-xl shadow-[0_0_25px_rgba(198,249,31,0.3)] transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+          >
+            <span>Entrar no Painel</span>
+            <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon>
+          </button>
+
+        </form>
+
+        <!-- Quick Demo Fill Box -->
+        <div class="pt-4 border-t border-white/10 space-y-2.5">
+          <div class="text-[11px] font-mono text-white/40 flex items-center justify-between">
+            <span>Credenciais de Teste:</span>
+            <span class="text-[#c6f91f] font-semibold">1-Clique</span>
+          </div>
+
+          <button 
+            type="button" 
+            onclick="fillDemoAccount()" 
+            class="w-full py-2.5 px-3 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-[#c6f91f]/40 rounded-xl text-xs font-mono text-white/80 transition-all flex items-center justify-between group cursor-pointer"
+          >
+            <div class="flex items-center gap-2 text-left">
+              <span class="text-base">🍔</span>
+              <div>
+                <div class="font-bold text-white group-hover:text-[#c6f91f] transition-colors">demo-burger</div>
+                <div class="text-[10px] text-white/40">senha: 123456</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-sans font-semibold text-[#c6f91f] bg-[#c6f91f]/10 border border-[#c6f91f]/20 px-2 py-1 rounded">
+              Preencher Dados
+            </span>
+          </button>
         </div>
 
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Senha de Acesso *</label>
-          <input 
-            type="password" 
-            id="login-password" 
-            placeholder="Digite sua senha" 
-            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors" 
-            required 
-          />
+        <div class="text-center pt-2 text-xs text-white/40 font-geist">
+          Ainda não tem cardápio digital? 
+          <a href="cadastro.html" class="text-[#c6f91f] font-semibold hover:underline ml-1">Criar Loja Grátis →</a>
         </div>
 
-        <button 
-          type="submit" 
-          class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4"
-        >
-          <span>ENTRAR NO MEU PAINEL</span>
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-        </button>
-
-      </form>
-
-      <div class="text-center pt-2 border-t border-brand-darkBorder/60 text-xs text-brand-textMuted">
-        Ainda não tem cardápio digital? 
-        <a href="cadastro.html" class="text-brand-orange font-bold hover:underline ml-1">Criar Loja Grátis ➔</a>
       </div>
-
     </div>
 
-  </div>
+  </main>
 
+  <!-- FOOTER SIMPLE -->
+  <footer class="w-full max-w-5xl py-4 text-center text-xs text-white/30 font-mono relative z-10">
+    © 2026 PedidoVale • Todos os direitos reservados.
+  </footer>
+
+  <!-- SCRIPT -->
   <script>
+    // Flashlight mouse follow
+    document.querySelectorAll('.flashlight-target').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // Seed Demo Tenant if missing
+    function ensureDemoTenantExists() {
+      const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
+      let tenants = [];
+      try {
+        const saved = localStorage.getItem(SUPERADMIN_TENANTS_KEY);
+        if (saved) tenants = JSON.parse(saved);
+      } catch (e) {}
+
+      if (!tenants.some(t => t.slug === 'demo-burger')) {
+        const trialEnds = new Date();
+        trialEnds.setDate(trialEnds.getDate() + 30);
+
+        tenants.push({
+          id: 'tenant-demo',
+          slug: 'demo-burger',
+          name: 'Rei do Burger & Smash 🍔',
+          segment: 'hamburgueria',
+          owner_name: 'Thiago Dono',
+          owner_phone: '11999999999',
+          city: 'São Paulo - SP',
+          password: '123456',
+          plan: 'pro',
+          monthly_fee: 119.00,
+          status: 'active',
+          trial_ends_at: trialEnds.toISOString(),
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem(SUPERADMIN_TENANTS_KEY, JSON.stringify(tenants));
+      }
+    }
+    ensureDemoTenantExists();
+
+    function fillDemoAccount() {
+      document.getElementById('login-identifier').value = 'demo-burger';
+      document.getElementById('login-password').value = '123456';
+    }
+
     function handleRestaurantLogin(e) {
       e.preventDefault();
 
-      const identifier = document.getElementById('login-identifier').value.trim().toLowerCase().replace(/\D/g, '') || document.getElementById('login-identifier').value.trim().toLowerCase();
       const rawInput = document.getElementById('login-identifier').value.trim().toLowerCase();
+      const identifierPhone = rawInput.replace(/\D/g, '');
       const password = document.getElementById('login-password').value;
 
       const SUPERADMIN_TENANTS_KEY = 'SUPERADMIN_TENANTS_DATA';
@@ -170,7 +304,7 @@
       // Procurar nos tenants cadastrados
       const found = tenants.find(t => 
         t.slug === rawInput || 
-        (t.owner_phone && t.owner_phone.replace(/\D/g, '') === identifier) || 
+        (t.owner_phone && t.owner_phone.replace(/\D/g, '') === identifierPhone && identifierPhone.length > 5) || 
         t.owner_phone === rawInput
       );
 
@@ -179,14 +313,67 @@
           sessionStorage.setItem('CURRENT_LOGGED_STORE', found.slug);
           window.location.href = `admin.html?store=${found.slug}`;
         } else {
-          alert('Senha incorreta!');
+          alert('Senha incorreta! Por favor verifique sua senha de acesso.');
         }
       } else {
-        // Redirecionar direto para o slug digitado
-        sessionStorage.setItem('CURRENT_LOGGED_STORE', rawInput);
-        window.location.href = `admin.html?store=${rawInput}`;
+        // Se for o slug de teste direto
+        if (rawInput === 'demo-burger' || rawInput === 'demo' || rawInput === 'reidoburger') {
+          sessionStorage.setItem('CURRENT_LOGGED_STORE', rawInput);
+          window.location.href = `admin.html?store=${rawInput}`;
+          return;
+        }
+
+        if (confirm(`Restaurante "${rawInput}" não encontrado. Deseja criar sua loja agora?`)) {
+          window.location.href = `cadastro.html?store=${encodeURIComponent(rawInput)}`;
+        }
       }
     }
+
+    // Canvas Background
+    (function () {
+      const canvas = document.getElementById('login-aura-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let width = 0;
+      let height = 0;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const particles = [];
+      for (let i = 0; i < 30; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 2 + 0.8,
+          speedY: Math.random() * 0.4 + 0.15,
+          opacity: Math.random() * 0.5 + 0.15
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = '#c6f91f';
+
+        particles.forEach(p => {
+          p.y -= p.speedY;
+          if (p.y < 0) p.y = height;
+          ctx.globalAlpha = p.opacity;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
   </script>
 
 </body>
