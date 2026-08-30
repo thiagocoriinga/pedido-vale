@@ -1439,6 +1439,8 @@
       const storeAddr = (storeConfig && storeConfig.address) ? storeConfig.address : "Atendimento Online";
       const storePix = (storeConfig && storeConfig.pixKey) ? storeConfig.pixKey : "";
 
+      STORE_DATA.slug = storeSlug;
+      STORE_DATA.store.slug = storeSlug;
       STORE_DATA.store.name = storeName;
       STORE_DATA.store.whatsapp = storeZap;
       STORE_DATA.store.address = storeAddr;
