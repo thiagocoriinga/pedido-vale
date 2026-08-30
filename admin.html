@@ -10,6 +10,13 @@
   <title>Gerenciador de Cardápio • PedidoVale</title>
   <meta name="description" content="Gerenciador completo de cardápio: categorias, produtos com fotos, opcionais, adicionais e controle de pedidos em tempo real.">
 
+  <!-- Forçar HTTPS Automático em Produção -->
+  <script>
+    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.location.href = window.location.href.replace('http:', 'https:');
+    }
+  </script>
+
   <!-- Google Fonts: Inter, Anton & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
