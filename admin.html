@@ -1508,6 +1508,89 @@
     </button>
   </nav>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL DE REJEITAR / CANCELAR PEDIDO COM MOTIVO -->
+  <!-- ========================================================================= -->
+  <div id="reject-order-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[#120D0A] border border-rose-500/30 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div>
+          <h3 class="font-bold text-base text-white flex items-center gap-2">
+            <span class="text-rose-500">❌</span>
+            <span>Rejeitar / Cancelar Pedido</span>
+          </h3>
+          <p id="reject-modal-order-id" class="text-xs text-stone-400">Pedido #B0000</p>
+        </div>
+        <button onclick="closeRejectOrderModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-rose-500 text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <label class="block text-stone-300 font-semibold mb-1">Selecione o motivo do cancelamento:</label>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-rose-500/50 cursor-pointer transition-all">
+            <input type="radio" name="reject-reason-radio" value="Cliente desistiu ou pediu cancelamento" checked class="accent-rose-500" />
+            <span class="text-white">🚫 Cliente desistiu ou pediu cancelamento</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-rose-500/50 cursor-pointer transition-all">
+            <input type="radio" name="reject-reason-radio" value="Item ou ingrediente esgotado no estoque" class="accent-rose-500" />
+            <span class="text-white">⚠️ Item ou ingrediente esgotado no estoque</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-rose-500/50 cursor-pointer transition-all">
+            <input type="radio" name="reject-reason-radio" value="Endereço fora da área de entrega" class="accent-rose-500" />
+            <span class="text-white">📍 Endereço fora da área de entrega</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-rose-500/50 cursor-pointer transition-all">
+            <input type="radio" name="reject-reason-radio" value="Erro ou duplicidade no pedido" class="accent-rose-500" />
+            <span class="text-white">❌ Erro ou duplicidade no pedido</span>
+          </label>
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <input type="checkbox" id="reject-notify-whatsapp" checked class="accent-emerald-500 rounded" />
+          <label for="reject-notify-whatsapp" class="text-stone-300 text-xs cursor-pointer">Avisar cliente no WhatsApp sobre o cancelamento</label>
+        </div>
+
+        <div class="flex items-center gap-2 pt-3 border-t border-white/10">
+          <button type="button" onclick="closeRejectOrderModal()" class="flex-1 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs transition-colors">
+            Voltar
+          </button>
+          <button type="button" onclick="confirmRejectOrder()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-xs">
+            Confirmar Rejeição
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANNER NOTIFICAÇÃO FLUTUANTE DE NOVO PEDIDO -->
+  <div id="new-order-floating-banner" class="fixed top-5 left-1/2 -translate-x-1/2 z-[250] max-w-lg w-[92%] bg-[#150F0B] border-2 border-brand-orange rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(255,94,30,0.5)] hidden transform transition-all duration-300">
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange border border-brand-orange/40 flex items-center justify-center text-xl shrink-0 animate-pulse">
+          🔔
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm text-white">NOVO PEDIDO RECEBIDO!</span>
+            <span id="float-order-id" class="px-2 py-0.5 rounded-full bg-brand-orange text-white font-mono font-bold text-[10px]">#B0000</span>
+          </div>
+          <p id="float-order-customer" class="text-xs text-amber-300 font-semibold mt-0.5">Cliente • R$ 0,00</p>
+          <p id="float-order-items" class="text-[11px] text-stone-400 mt-1 line-clamp-1">1x Combo Smash...</p>
+        </div>
+      </div>
+      <button onclick="dismissFloatingOrderAlert()" class="text-stone-400 hover:text-white text-xs p-1">✕</button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 mt-3.5 pt-3 border-t border-white/10">
+      <button id="float-reject-btn" onclick="openRejectOrderModalFromFloat()" class="py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-xs transition-colors">
+        ❌ Rejeitar
+      </button>
+      <button id="float-accept-btn" onclick="acceptFloatingOrder()" class="py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs shadow-orange-glow transition-all">
+        ✅ Aceitar Pedido
+      </button>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION -->
   <div id="admin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] bg-[#111113] text-white text-xs font-semibold px-5 py-3.5 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none" style="bottom: 80px;">
     <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>

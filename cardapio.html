@@ -3016,13 +3016,14 @@
         // Objeto de Pedido Completo e Otimizado para Cozinha (KDS) & Painel
         const kitchenOrderObj = {
           id: orderNum,
+          order_mode: orderMode,
           customer_name: `${name} (${orderMode === 'delivery' ? 'Delivery' : (orderMode === 'dine_in' ? `Mesa ${tableNumber || 'Salão'}` : 'Balcão')})`,
           customer_phone: phone,
           address: orderAddress,
           items: formattedItemsStr,
           total: grandTotal,
           payment_method: payLabel,
-          status: 'prep', // VAI DIRETO PARA A COZINHA (KDS)!
+          status: 'new', // NOVO PEDIDO AGUARDANDO ACEITE!
           time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
           created_at: Date.now()
         };

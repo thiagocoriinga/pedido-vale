@@ -998,12 +998,110 @@ function renderOrdersKanban() {
   colDelivery.innerHTML = deliveryOrders.map(o => renderOrderCard(o, 'done', 'Finalizar Pedido ✅')).join('') || '<div class="text-xs text-stone-500 p-6 text-center">Nenhum pedido em rota.</div>';
 }
 
+let currentRejectOrderId = null;
+let currentFloatingOrderId = null;
+
+function openRejectOrderModal(orderId) {
+  currentRejectOrderId = orderId;
+  const order = ORDERS.find(o => o.id === orderId);
+  const titleEl = document.getElementById('reject-modal-order-id');
+  if (titleEl) titleEl.innerText = `Pedido ${orderId} • ${order ? order.customer_name : ''}`;
+
+  const modal = document.getElementById('reject-order-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeRejectOrderModal() {
+  currentRejectOrderId = null;
+  const modal = document.getElementById('reject-order-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function confirmRejectOrder() {
+  if (!currentRejectOrderId) return;
+  const order = ORDERS.find(o => o.id === currentRejectOrderId);
+  if (!order) {
+    closeRejectOrderModal();
+    return;
+  }
+
+  const reasonRadios = document.getElementsByName('reject-reason-radio');
+  let selectedReason = "Pedido cancelado pelo restaurante.";
+  for (const r of reasonRadios) {
+    if (r.checked) {
+      selectedReason = r.value;
+      break;
+    }
+  }
+
+  const notifyZap = document.getElementById('reject-notify-whatsapp')?.checked;
+
+  // Remover pedido ou marcar como cancelado
+  ORDERS = ORDERS.filter(o => o.id !== currentRejectOrderId);
+  saveOrders();
+  renderOrdersKanban();
+  renderKdsOrders();
+  dismissFloatingOrderAlert();
+
+  if (notifyZap && order.customer_phone) {
+    const phone = cleanPhone(order.customer_phone);
+    const storeName = STORE_DATA.name || "Restaurante";
+    const msg = encodeURIComponent(`Olá, *${order.customer_name}*! 👋\n\nInformamos que o seu pedido *${order.id}* no *${storeName}* não pôde ser aceito pelo seguinte motivo:\n\n👉 *${selectedReason}*\n\nPedimos sinceras desculpas pelo inconveniente! Caso tenha dúvidas, estamos à disposição.`);
+    window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${msg}`, '_blank');
+  }
+
+  showToast(`❌ Pedido ${order.id} cancelado/rejeitado.`);
+  closeRejectOrderModal();
+}
+
+function showFloatingOrderAlert(order) {
+  if (!order) return;
+  currentFloatingOrderId = order.id;
+
+  const banner = document.getElementById('new-order-floating-banner');
+  const idEl = document.getElementById('float-order-id');
+  const custEl = document.getElementById('float-order-customer');
+  const itemsEl = document.getElementById('float-order-items');
+
+  if (idEl) idEl.innerText = order.id;
+  if (custEl) custEl.innerText = `${order.customer_name} • ${formatCurrency(order.total || 0)}`;
+  if (itemsEl) itemsEl.innerText = order.items;
+
+  if (banner) banner.classList.remove('hidden');
+  playKitchenAlertSound();
+}
+
+function dismissFloatingOrderAlert() {
+  currentFloatingOrderId = null;
+  const banner = document.getElementById('new-order-floating-banner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function acceptFloatingOrder() {
+  if (!currentFloatingOrderId) return;
+  advanceOrderStatus(currentFloatingOrderId, 'prep');
+  dismissFloatingOrderAlert();
+  showToast(`✅ Pedido aceito e enviado para a Cozinha KDS!`);
+}
+
+function openRejectOrderModalFromFloat() {
+  const targetId = currentFloatingOrderId;
+  dismissFloatingOrderAlert();
+  if (targetId) openRejectOrderModal(targetId);
+}
+
 function renderOrderCard(o, nextStatus, nextLabel) {
   const modeInfo = getOrderModeInfo(o);
+  const isNew = o.status === 'new';
+  const isPrep = o.status === 'prep';
+
   return `
-    <div class="bg-black/60 border border-white/10 rounded-2xl p-4 space-y-3 shadow-lg">
+    <div class="bg-black/60 border ${isNew ? 'border-brand-orange/60 shadow-[0_0_20px_rgba(255,94,30,0.25)]' : 'border-white/10'} rounded-2xl p-4 space-y-3 shadow-lg relative">
       <div class="flex items-center justify-between pb-2 border-b border-white/5">
-        <span class="font-bold text-sm text-brand-orange">${o.id}</span>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-sm text-brand-orange">${o.id}</span>
+          ${isNew ? `<span class="px-2 py-0.5 rounded-full bg-brand-orange text-white text-[9px] font-bold animate-pulse">NOVO</span>` : ''}
+        </div>
         <span class="text-[10px] text-stone-400 font-medium">${o.time}</span>
       </div>
 
@@ -1022,16 +1120,41 @@ function renderOrderCard(o, nextStatus, nextLabel) {
         <span class="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-stone-300">${o.payment_method || 'A Combinar'}</span>
       </div>
 
-      <div class="flex items-center gap-1.5 pt-1">
-        <button onclick="printOrderReceipt('${o.id}')" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs border border-white/10" title="Imprimir Comanda">
-          🖨️
-        </button>
-        <button onclick="sendOrderWhatsApp('${o.id}')" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs border border-emerald-500/20" title="Avisar no WhatsApp">
-          💬
-        </button>
-        <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95">
-          ${nextLabel}
-        </button>
+      <div class="space-y-1.5 pt-1">
+        <!-- Ação Principal de Avanço / Aceite -->
+        ${isNew ? `
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1">
+              <span>✅</span>
+              <span>Aceitar ➔</span>
+            </button>
+            <button onclick="openRejectOrderModal('${o.id}')" class="py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 font-bold text-xs transition-colors flex items-center justify-center gap-1">
+              <span>❌</span>
+              <span>Rejeitar</span>
+            </button>
+          </div>
+        ` : `
+          <div class="flex items-center gap-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', '${nextStatus}')" class="flex-1 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs tracking-wide transition-all shadow-sm active:scale-95">
+              ${nextLabel}
+            </button>
+            <button onclick="openRejectOrderModal('${o.id}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs border border-rose-500/20" title="Cancelar Pedido">
+              ❌
+            </button>
+          </div>
+        `}
+
+        <!-- Botões Utilitários (Imprimir e Zap) -->
+        <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+          <button onclick="printOrderReceipt('${o.id}')" class="py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-[11px] font-semibold border border-white/10 flex items-center justify-center gap-1" title="Imprimir Comanda">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+          <button onclick="sendOrderWhatsApp('${o.id}')" class="py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-[11px] font-semibold border border-emerald-500/20 flex items-center justify-center gap-1" title="Avisar no WhatsApp">
+            <span>💬</span>
+            <span>WhatsApp</span>
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -1046,11 +1169,18 @@ function advanceOrderStatus(orderId, newStatus) {
     showToast(`✅ Pedido ${order.id} concluído!`);
   } else {
     order.status = newStatus;
-    showToast(`🔄 Pedido ${order.id} avançado para a próxima etapa!`);
+    if (newStatus === 'prep') {
+      showToast(`👨‍🍳 Pedido ${order.id} aceito e enviado para a Cozinha!`);
+    } else if (newStatus === 'delivery') {
+      showToast(`🛵 Pedido ${order.id} despachado para entrega!`);
+    } else {
+      showToast(`🔄 Pedido ${order.id} atualizado.`);
+    }
   }
 
   saveOrders();
   renderOrdersKanban();
+  renderKdsOrders();
 }
 
 function clearCompletedOrders() {
@@ -1763,7 +1893,7 @@ function createTestOrderForKitchen() {
     items: randomItem,
     total: Math.floor(25 + Math.random() * 60) + 0.90,
     payment_method: 'PIX (Aprovado)',
-    status: 'prep',
+    status: 'new', // NOVO PEDIDO AGUARDANDO ACEITE!
     time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     created_at: Date.now()
   };
@@ -1772,8 +1902,8 @@ function createTestOrderForKitchen() {
   saveOrders();
   renderOrdersKanban();
   renderKdsOrders();
-  playKitchenAlertSound();
-  showToast(`🔔 Pedido ${randomMod.label} ${orderId} criado e enviado para a cozinha!`);
+  showFloatingOrderAlert(newOrder);
+  showToast(`🔔 NOVO PEDIDO ${randomMod.label} ${orderId} RECEBIDO!`);
 }
 
 function renderKdsOrders() {
@@ -2552,8 +2682,12 @@ function initStoreAdmin() {
           loadStoreData();
           renderOrdersKanban();
           renderKdsOrders();
-          playKitchenAlertSound();
-          showToast(`🔔 NOVO PEDIDO ${event.data.order ? event.data.order.id : ''} recebido na cozinha!`);
+          if (event.data.order) {
+            showFloatingOrderAlert(event.data.order);
+          } else {
+            playKitchenAlertSound();
+          }
+          showToast(`🔔 NOVO PEDIDO ${event.data.order ? event.data.order.id : ''} recebido!`);
         }
       }
     };
@@ -2561,10 +2695,15 @@ function initStoreAdmin() {
 
   window.addEventListener('storage', (e) => {
     if (e.key === getStoreKey('ORDERS') || e.key === 'SAO_JOSE_ORDERS') {
+      const prevCount = ORDERS.length;
       loadStoreData();
       renderOrdersKanban();
       renderKdsOrders();
-      playKitchenAlertSound();
+      if (ORDERS.length > prevCount && ORDERS[0] && ORDERS[0].status === 'new') {
+        showFloatingOrderAlert(ORDERS[0]);
+      } else {
+        playKitchenAlertSound();
+      }
     }
   });
 
