@@ -999,6 +999,7 @@ function renderOrdersKanban() {
 }
 
 function renderOrderCard(o, nextStatus, nextLabel) {
+  const modeInfo = getOrderModeInfo(o);
   return `
     <div class="bg-black/60 border border-white/10 rounded-2xl p-4 space-y-3 shadow-lg">
       <div class="flex items-center justify-between pb-2 border-b border-white/5">
@@ -1006,10 +1007,14 @@ function renderOrderCard(o, nextStatus, nextLabel) {
         <span class="text-[10px] text-stone-400 font-medium">${o.time}</span>
       </div>
 
+      <div class="px-2.5 py-1 rounded-xl ${modeInfo.badgeClass} flex items-center justify-between text-[11px] font-bold">
+        <span class="flex items-center gap-1">${modeInfo.icon} ${modeInfo.title}</span>
+        <span class="text-[10px] font-semibold opacity-90 truncate max-w-[130px]">${modeInfo.destination}</span>
+      </div>
+
       <div>
         <div class="font-bold text-white text-xs">${o.customer_name}</div>
         <div class="text-xs text-stone-300 font-medium">${o.items}</div>
-        <div class="text-[11px] text-stone-400 mt-1">📍 ${o.address || 'Balcão'}</div>
       </div>
 
       <div class="flex items-center justify-between pt-1 text-xs">
@@ -1630,6 +1635,7 @@ function submitPdvOrder() {
 // -------------------------------------------------------------------------
 let KDS_SOUND_ACTIVE = true;
 let KDS_ACTIVE_FILTER = 'all';
+let KDS_ACTIVE_MODE = 'all';
 
 function toggleKdsSound() {
   KDS_SOUND_ACTIVE = !KDS_SOUND_ACTIVE;
@@ -1649,7 +1655,7 @@ function playKitchenAlertSound() {
     const gain = audioCtx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Nota Lá (A5)
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.35);
 
     gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
@@ -1666,7 +1672,7 @@ function playKitchenAlertSound() {
 function filterKdsStatus(status) {
   KDS_ACTIVE_FILTER = status;
   document.querySelectorAll('.kds-filter-btn').forEach(btn => {
-    btn.classList.remove('bg-brand-orange', 'text-white');
+    btn.classList.remove('bg-brand-orange', 'text-white', 'bg-white/10');
     btn.classList.add('bg-white/5', 'text-stone-300');
   });
 
@@ -1679,6 +1685,56 @@ function filterKdsStatus(status) {
   renderKdsOrders();
 }
 
+function filterKdsMode(mode) {
+  KDS_ACTIVE_MODE = mode;
+  document.querySelectorAll('.kds-mode-btn').forEach(btn => {
+    btn.classList.remove('bg-brand-orange', 'text-white');
+    btn.classList.add('bg-white/5', 'text-stone-300');
+  });
+
+  const activeBtn = document.getElementById(`kds-mode-${mode}`);
+  if (activeBtn) {
+    activeBtn.classList.add('bg-brand-orange', 'text-white');
+    activeBtn.classList.remove('bg-white/5', 'text-stone-300');
+  }
+
+  renderKdsOrders();
+}
+
+function getOrderModeInfo(o) {
+  const mode = (o.order_mode || '').toLowerCase();
+  const name = (o.customer_name || '').toLowerCase();
+  const addr = (o.address || '').toLowerCase();
+
+  if (mode === 'dine_in' || name.includes('mesa') || name.includes('salão') || addr.includes('mesa') || addr.includes('consumo no local')) {
+    const tableMatch = (o.customer_name || '' + o.address || '').match(/mesa\s*(\d+)/i);
+    const tableNum = tableMatch ? tableMatch[1] : (o.table_number || '');
+    return {
+      type: 'dine_in',
+      icon: '🍽️',
+      title: tableNum ? `SALÃO • MESA ${tableNum}` : 'SALÃO / MESA',
+      badgeClass: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
+      destination: tableNum ? `🍽️ Servir na Mesa ${tableNum}` : `🍽️ Consumo no Local`
+    };
+  } else if (mode === 'pickup' || name.includes('balcão') || name.includes('retirada') || addr.includes('balcão') || addr.includes('retirada')) {
+    return {
+      type: 'pickup',
+      icon: '🛍️',
+      title: 'RETIRADA NO BALCÃO',
+      badgeClass: 'bg-purple-500/20 text-purple-300 border border-purple-500/40',
+      destination: '🛍️ Embalar p/ Retirada no Balcão'
+    };
+  } else {
+    return {
+      type: 'delivery',
+      icon: '🛵',
+      title: 'DELIVERY',
+      badgeClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/40',
+      destination: `📍 ${o.address || 'Entrega a Domicílio'}`
+    };
+  }
+}
+
 function createTestOrderForKitchen() {
   const sampleItems = [
     "1x Combo Smash Bacon + Batata Frita M + Coca-Cola 350ml (Sem cebola)",
@@ -1687,18 +1743,23 @@ function createTestOrderForKitchen() {
     "1x Pizza Calabresa Especial Grande + 1x Guaraná 2L"
   ];
   const sampleNames = ["Lucas Ferreira", "Mariana Silva", "Carlos Eduardo", "Fernanda Santos", "Rodrigo Costa"];
-  const sampleTypes = ["Delivery", "Balcão / Retirada", "Mesa 04"];
+  const modalities = [
+    { mode: 'delivery', label: 'Delivery', address: 'Rua das Flores, 240 - Centro' },
+    { mode: 'pickup', label: 'Balcão / Retirada', address: 'Retirada no Balcão' },
+    { mode: 'dine_in', label: 'Mesa 04 (Salão)', address: 'Mesa 04' }
+  ];
 
   const randomItem = sampleItems[Math.floor(Math.random() * sampleItems.length)];
   const randomName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
-  const randomType = sampleTypes[Math.floor(Math.random() * sampleTypes.length)];
+  const randomMod = modalities[Math.floor(Math.random() * modalities.length)];
   const orderId = `#B${Math.floor(1000 + Math.random() * 9000)}`;
 
   const newOrder = {
     id: orderId,
-    customer_name: `${randomName} (${randomType})`,
+    order_mode: randomMod.mode,
+    customer_name: `${randomName} (${randomMod.label})`,
     customer_phone: STORE_DATA.whatsapp || '5599991040222',
-    address: randomType === 'Delivery' ? 'Rua das Flores, 240 - Centro' : 'Consumo / Retirada no Local',
+    address: randomMod.address,
     items: randomItem,
     total: Math.floor(25 + Math.random() * 60) + 0.90,
     payment_method: 'PIX (Aprovado)',
@@ -1712,7 +1773,7 @@ function createTestOrderForKitchen() {
   renderOrdersKanban();
   renderKdsOrders();
   playKitchenAlertSound();
-  showToast(`🔔 Pedido teste ${orderId} criado e enviado para a cozinha!`);
+  showToast(`🔔 Pedido ${randomMod.label} ${orderId} criado e enviado para a cozinha!`);
 }
 
 function renderKdsOrders() {
@@ -1721,12 +1782,22 @@ function renderKdsOrders() {
   if (!grid) return;
 
   let kitchenOrders = ORDERS;
+  
+  // Filtro por Etapa
   if (KDS_ACTIVE_FILTER === 'prep') {
-    kitchenOrders = ORDERS.filter(o => o.status === 'new' || o.status === 'prep');
+    kitchenOrders = kitchenOrders.filter(o => o.status === 'new' || o.status === 'prep');
   } else if (KDS_ACTIVE_FILTER === 'ready') {
-    kitchenOrders = ORDERS.filter(o => o.status === 'delivery');
+    kitchenOrders = kitchenOrders.filter(o => o.status === 'delivery');
   } else {
-    kitchenOrders = ORDERS.filter(o => o.status === 'new' || o.status === 'prep' || o.status === 'delivery');
+    kitchenOrders = kitchenOrders.filter(o => o.status === 'new' || o.status === 'prep' || o.status === 'delivery');
+  }
+
+  // Filtro por Modalidade (Delivery, Balcão, Salão/Mesa)
+  if (KDS_ACTIVE_MODE !== 'all') {
+    kitchenOrders = kitchenOrders.filter(o => {
+      const modeInfo = getOrderModeInfo(o);
+      return modeInfo.type === KDS_ACTIVE_MODE;
+    });
   }
 
   const pendingCount = ORDERS.filter(o => o.status === 'new' || o.status === 'prep').length;
@@ -1736,8 +1807,8 @@ function renderKdsOrders() {
     grid.innerHTML = `
       <div class="col-span-full py-16 text-center space-y-3 bg-[#120D0A]/80 border border-brand-darkBorder rounded-3xl p-8">
         <span class="text-5xl block">👨‍🍳</span>
-        <h4 class="font-bold text-lg text-white">Cozinha 100% em dia!</h4>
-        <p class="text-xs text-stone-400 max-w-sm mx-auto">Nenhum pedido pendente nesta visualização. Novos pedidos aparecerão automaticamente aqui com alerta sonoro.</p>
+        <h4 class="font-bold text-lg text-white">Nenhum pedido nesta modalidade!</h4>
+        <p class="text-xs text-stone-400 max-w-sm mx-auto">Nenhum pedido pendente nesta visualização. Novos pedidos aparecerão automaticamente com alerta sonoro.</p>
         <button onclick="createTestOrderForKitchen()" class="px-5 py-2.5 rounded-2xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold shadow-orange-glow active:scale-95 transition-all">
           + Criar Pedido Teste
         </button>
@@ -1753,6 +1824,7 @@ function renderKdsOrders() {
 
     const elapsedMinutes = Math.floor((Date.now() - (o.created_at || Date.now())) / 60000);
     const isLate = elapsedMinutes >= 20;
+    const modeInfo = getOrderModeInfo(o);
 
     let borderColor = 'border-amber-500/50';
     let badgeColor = 'bg-amber-500 text-black';
@@ -1773,10 +1845,10 @@ function renderKdsOrders() {
         
         <div class="space-y-3">
           
-          <!-- Cabeçalho do Card -->
+          <!-- Cabeçalho do Card (Número + Modalidade + Tempo) -->
           <div class="flex items-center justify-between pb-3 border-b border-white/10">
             <div class="flex items-center gap-2">
-              <span class="font-anton text-xl text-white tracking-wide">${o.id}</span>
+              <span class="font-bold text-xl text-white tracking-wide">${o.id}</span>
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${badgeColor}">
                 ${badgeText}
               </span>
@@ -1788,11 +1860,19 @@ function renderKdsOrders() {
             </div>
           </div>
 
-          <!-- Cliente e Tipo -->
+          <!-- Destaque de Modalidade (Delivery / Balcão / Salão Mesa) -->
+          <div class="p-2.5 rounded-2xl ${modeInfo.badgeClass} flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">${modeInfo.icon}</span>
+              <span class="font-bold text-xs tracking-wide">${modeInfo.title}</span>
+            </div>
+            <span class="text-[10px] font-semibold opacity-90">${modeInfo.destination}</span>
+          </div>
+
+          <!-- Cliente -->
           <div>
-            <span class="text-[11px] text-stone-400 block font-medium">Cliente & Destino:</span>
+            <span class="text-[11px] text-stone-400 block font-medium">Cliente:</span>
             <h4 class="font-bold text-white text-sm leading-tight mt-0.5">${o.customer_name}</h4>
-            <span class="text-[11px] text-stone-400 block mt-1">📍 ${o.address || 'Balcão / Retirada'}</span>
           </div>
 
           <!-- Itens do Pedido -->
@@ -1811,17 +1891,17 @@ function renderKdsOrders() {
           
           <!-- Botão Principal de Avanço -->
           ${isNew ? `
-            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', 'prep')" class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-bold tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
               <span>👨‍🍳</span>
               <span>INICIAR PREPARO</span>
             </button>
           ` : (isPrep ? `
-            <button onclick="advanceOrderStatus('${o.id}', 'delivery')" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', 'delivery')" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
               <span>✅</span>
               <span>MARCAR PRONTO / DESPACHO 🛵</span>
             </button>
           ` : `
-            <button onclick="advanceOrderStatus('${o.id}', 'done')" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 text-white font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
+            <button onclick="advanceOrderStatus('${o.id}', 'done')" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 text-white font-bold tracking-wider text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5">
               <span>🏁</span>
               <span>FINALIZAR / ENTREGUE</span>
             </button>

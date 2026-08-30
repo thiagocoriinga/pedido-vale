@@ -783,17 +783,40 @@
         </div>
       </div>
 
-      <!-- Filtros Rápidos do KDS -->
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-        <button onclick="filterKdsStatus('all')" id="kds-filter-all" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-brand-orange text-white kds-filter-btn">
-          🍳 Todos em Produção
-        </button>
-        <button onclick="filterKdsStatus('prep')" id="kds-filter-prep" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-filter-btn">
-          ⏳ Em Preparo
-        </button>
-        <button onclick="filterKdsStatus('ready')" id="kds-filter-ready" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-filter-btn">
-          🛵 Prontos p/ Entrega / Balcão
-        </button>
+      <!-- Filtros Rápidos do KDS por Modalidade e Etapa -->
+      <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#120D0A]/95 border border-brand-darkBorder rounded-2xl">
+        
+        <!-- Filtro por Modalidade (Delivery, Balcão, Salão/Mesa) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <span class="text-[11px] text-stone-400 font-bold uppercase tracking-wider mr-1">Modalidade:</span>
+          <button onclick="filterKdsMode('all')" id="kds-mode-all" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-brand-orange text-white kds-mode-btn">
+            📋 Todos
+          </button>
+          <button onclick="filterKdsMode('delivery')" id="kds-mode-delivery" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-mode-btn">
+            🛵 Delivery
+          </button>
+          <button onclick="filterKdsMode('pickup')" id="kds-mode-pickup" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-mode-btn">
+            🛍️ Balcão / Retirada
+          </button>
+          <button onclick="filterKdsMode('dine_in')" id="kds-mode-dine_in" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-mode-btn">
+            🍽️ Mesa / Salão
+          </button>
+        </div>
+
+        <!-- Filtro por Etapa -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <span class="text-[11px] text-stone-400 font-bold uppercase tracking-wider mr-1">Fila:</span>
+          <button onclick="filterKdsStatus('all')" id="kds-filter-all" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/10 text-white kds-filter-btn">
+            Ativos
+          </button>
+          <button onclick="filterKdsStatus('prep')" id="kds-filter-prep" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-filter-btn">
+            Em Preparo
+          </button>
+          <button onclick="filterKdsStatus('ready')" id="kds-filter-ready" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 text-stone-300 hover:bg-white/10 kds-filter-btn">
+            Prontos
+          </button>
+        </div>
+
       </div>
 
       <!-- Grade de Comandas da Cozinha -->
