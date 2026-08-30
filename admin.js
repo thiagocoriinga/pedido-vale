@@ -160,8 +160,15 @@ function renderStoreTopbar() {
   if (custMenuBtn) custMenuBtn.href = directMenuUrl;
   if (prodsCountEl) prodsCountEl.innerText = `${PRODUCTS.length} ${PRODUCTS.length === 1 ? 'Produto cadastrado' : 'Produtos cadastrados'}`;
 
+  // Atualiza sidebar footer com info da loja
+  const sideNameEl = document.getElementById('sidebar-store-name');
+  const sideLinkEl = document.getElementById('sidebar-store-link');
+  if (sideNameEl) sideNameEl.textContent = STORE_DATA.name || 'Minha Loja';
+  if (sideLinkEl) sideLinkEl.textContent = cleanLink;
+
   updateSwitchOrdersButton();
 }
+
 
 function renderTrialInfo() {
   const trialDaysEl = document.getElementById('trial-days-left');
@@ -1424,20 +1431,47 @@ function deleteCoupon(code) {
 // NAVEGAÇÃO DE ABAS
 // -------------------------------------------------------------------------
 function switchStoreTab(tabName) {
+  // Hide all panes
   document.querySelectorAll('.store-tab-pane').forEach(el => el.classList.add('hidden'));
+
+  // Deactivate all nav buttons (sidebar + any old buttons)
   document.querySelectorAll('.store-nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+    // also handle legacy tailwind classes just in case
     btn.classList.remove('bg-brand-orange', 'text-white', 'shadow-orange-glow');
     btn.classList.add('text-brand-textMuted');
   });
 
+  // Show target pane
   const targetPane = document.getElementById(`store-view-${tabName}`);
-  const targetBtn = document.getElementById(`tab-btn-${tabName}`);
-
   if (targetPane) targetPane.classList.remove('hidden');
+
+  // Activate target sidebar button
+  const targetBtn = document.getElementById(`tab-btn-${tabName}`);
   if (targetBtn) {
-    targetBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-orange-glow');
+    targetBtn.classList.add('active');
     targetBtn.classList.remove('text-brand-textMuted');
   }
+
+  // Update topbar title
+  const PAGE_TITLES = {
+    'dashboard': 'Início — Visão Geral',
+    'menu-editor': 'Cardápio Digital',
+    'orders': 'Pedidos ao Vivo',
+    'pdv': 'PDV Balcão Express',
+    'kds': 'Monitor de Cozinha (KDS)',
+    'coupons': 'Cupons & Promoções',
+    'delivery': 'Taxas & Entrega',
+    'payments': 'Chave PIX & Pagamentos',
+    'settings': 'Configurações da Loja',
+  };
+  const titleEl = document.getElementById('topbar-page-title');
+  if (titleEl) titleEl.textContent = PAGE_TITLES[tabName] || tabName;
+
+  // Update mobile bottom nav active
+  document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+  const mBtn = document.getElementById('mnav-' + tabName);
+  if (mBtn) mBtn.classList.add('active');
 
   // Ações específicas de renderização por aba
   if (tabName === 'pdv') {
@@ -1450,6 +1484,14 @@ function switchStoreTab(tabName) {
     renderCouponsList();
   }
 }
+
+function logoutStoreAdmin() {
+  if (confirm('Deseja sair do painel?')) {
+    sessionStorage.removeItem('CURRENT_LOGGED_STORE');
+    window.location.href = 'login.html';
+  }
+}
+
 
 function openSubscriptionModal() {
   const msg = encodeURIComponent(`Olá! Gostaria de assinar o plano oficial do PedidoVale para o meu restaurante (${STORE_DATA.name} - ${STORE_DATA.slug}).`);

@@ -4,7 +4,8 @@
     { "src": "/admin(.*)", "dest": "/admin.html" },
     { "src": "/login", "dest": "/login.html" },
     { "src": "/cadastro", "dest": "/cadastro.html" },
-    { "src": "/superadmin", "dest": "/index.html" },
+    { "src": "/superadmin(.*)", "dest": "/superadmin.html" },
     { "src": "/(.*)", "dest": "/index-sj.html" }
   ]
 }
+

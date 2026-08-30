@@ -1,677 +1,777 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark scroll-smooth">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#080504">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>PedidoVale • Super Admin Master 👑</title>
-  <meta name="description" content="Painel de Controle Central PedidoVale - Gestão de Restaurantes, Faturamento e Mensalidades.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09090b">
+  <title>PedidoVale — Cardápio Digital & Gestão Completa para Restaurantes</title>
+  <meta name="description" content="Crie seu cardápio digital profissional em minutos. Sistema completo de pedidos, PDV, cozinha KDS e entregas. Teste grátis por 7 dias, sem cartão de crédito.">
+  <meta property="og:title" content="PedidoVale — Venda mais com seu cardápio digital">
+  <meta property="og:description" content="Sistema completo para restaurantes: cardápio digital, pedidos por WhatsApp, PDV, cozinha KDS e muito mais.">
 
-  <!-- Google Fonts: Inter, Anton & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
-
-  <!-- Supabase JS Client CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              cream: '#FBF5ED',
-              creamDark: '#F2E8DA',
-              orange: '#FF5E1E',
-              orangeHover: '#E54A0D',
-              orangeLight: '#FFF0EA',
-              amber: '#FF9E1B',
-              dark: '#080504',
-              darkSurface: '#120D0A',
-              darkCard: '#18120E',
-              darkBorder: '#29211C',
-              cardDark: '#1E1713',
-              textMuted: '#9E938A',
-              textDark: '#2B211B',
-              surface: '#FFFFFF',
-              border: '#EFE6DB',
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            inter: ['Inter', 'sans-serif'],
-            anton: ['Anton', 'sans-serif'],
-            poppins: ['Poppins', 'sans-serif'],
-          },
-          boxShadow: {
-            'card-dark': '0 10px 30px -10px rgba(0, 0, 0, 0.7)',
-            'card-light': '0 10px 30px -10px rgba(140, 90, 60, 0.1)',
-            'electric': '0 0 35px rgba(249, 115, 22, 0.3), inset 0 0 20px rgba(249, 115, 22, 0.08)',
-            'orange-glow': '0 10px 25px -5px rgba(255, 94, 30, 0.45)',
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --orange: #FF5E1E;
+      --orange-dark: #E54A0D;
+      --amber: #F59E0B;
+      --bg: #09090b;
+      --bg-card: #111113;
+      --bg-surface: #18181b;
+      --border: rgba(255,255,255,0.08);
+      --text: #fafafa;
+      --muted: #71717a;
+      --muted-light: #a1a1aa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      background-color: #080504;
-      color: #F3EBE1;
     }
 
-    h1, h2, h3, h4, .font-anton, .title-anton {
-      font-family: 'Anton', sans-serif;
-      letter-spacing: 0.035em;
-      text-transform: uppercase;
-    }
+    h1, h2, h3 { font-family: 'Sora', sans-serif; }
 
-    .price-tag, .price-anton {
-      font-family: 'Anton', sans-serif;
-      letter-spacing: 0.025em;
+    /* ── UTILS ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 100px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
     }
+    .badge-orange { background: rgba(255,94,30,0.12); border: 1px solid rgba(255,94,30,0.3); color: var(--orange); }
+    .badge-green  { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+    .badge-white  { background: rgba(255,255,255,0.07); border: 1px solid var(--border); color: var(--muted-light); }
 
-    .font-poppins, p, span, input, textarea, button, label {
-      font-family: 'Poppins', sans-serif;
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 28px; border-radius: 14px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px;
+      transition: all 0.2s ease; text-decoration: none; white-space: nowrap;
     }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: #fff;
+      box-shadow: 0 8px 24px -4px rgba(255,94,30,0.4);
+    }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 12px 32px -4px rgba(255,94,30,0.5); }
+    .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--muted-light); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .btn:active { transform: scale(0.98); }
 
-    .stars {
+    /* ── BACKGROUND EFFECTS ── */
+    .glow-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .glow-1 {
+      position: absolute; width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,94,30,0.07) 0%, transparent 70%);
+      top: -200px; right: -100px;
+    }
+    .glow-2 {
+      position: absolute; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%);
+      bottom: 20%; left: -150px;
+    }
+    .grid-lines {
+      position: absolute; inset: 0;
       background-image:
-        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
-      background-size: 200px 200px;
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
     }
 
-    .grid-bg-dark {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
+    /* ── NAVBAR ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,9,11,0.85); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; box-shadow: 0 4px 12px rgba(255,94,30,0.4);
+    }
+    .nav-logo-text { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 18px; }
+    .nav-logo-text span { color: var(--orange); }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-link { 
+      padding: 8px 14px; border-radius: 10px; color: var(--muted-light);
+      font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
+    .nav-cta { display: flex; align-items: center; gap: 8px; }
+    .nav-login { 
+      padding: 8px 16px; border-radius: 10px; color: var(--muted-light);
+      font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-login:hover { color: #fff; }
+    .btn-nav { padding: 9px 20px; font-size: 13px; border-radius: 10px; }
+    .nav-mobile-hidden { display: none; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-mobile-hidden { display: flex; }
+      .nav-login { display: none; }
     }
 
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      padding: 100px 0 80px;
+      text-align: center;
     }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin: 18px 0;
+    }
+    .hero h1 em { 
+      font-style: normal; 
+      background: linear-gradient(135deg, var(--orange) 0%, var(--amber) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 19px); color: var(--muted-light);
+      max-width: 560px; margin: 0 auto 36px; line-height: 1.6;
+    }
+    .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .hero-note { margin-top: 16px; font-size: 12px; color: var(--muted); }
+    .hero-note span { color: #22c55e; }
+
+    /* ── SOCIAL PROOF BAR ── */
+    .proof-bar {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 18px 0; background: rgba(255,255,255,0.02);
+    }
+    .proof-inner {
+      display: flex; align-items: center; justify-content: center;
+      gap: 32px; flex-wrap: wrap;
+    }
+    .proof-item { display: flex; align-items: center; gap: 8px; }
+    .proof-num { font-weight: 800; font-size: 18px; color: #fff; }
+    .proof-label { font-size: 12px; color: var(--muted); }
+    .proof-divider { width: 1px; height: 32px; background: var(--border); }
+
+    /* ── SECTIONS COMMON ── */
+    section { position: relative; z-index: 1; }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(26px, 4vw, 44px); font-weight: 800;
+      line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 14px;
+    }
+    .section-sub { font-size: 16px; color: var(--muted-light); max-width: 520px; line-height: 1.6; }
+
+    /* ── FEATURES GRID ── */
+    .features { padding: 100px 0; }
+    .features-header { text-align: center; margin-bottom: 60px; }
+    .features-header .section-sub { margin: 0 auto; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px;
+      transition: all 0.25s ease; cursor: default;
+    }
+    .feature-card:hover {
+      border-color: rgba(255,94,30,0.3);
+      background: rgba(255,94,30,0.03);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5);
+    }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 16px;
+    }
+    .feature-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .feature-desc { font-size: 13px; color: var(--muted-light); line-height: 1.6; }
+
+    /* ── HOW IT WORKS ── */
+    .how { padding: 100px 0; background: linear-gradient(180deg, transparent, rgba(255,94,30,0.03), transparent); }
+    .how-header { text-align: center; margin-bottom: 64px; }
+    .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .how-step {
+      text-align: center; padding: 40px 28px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+    }
+    .how-step-num {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: #fff; font-family: 'Sora', sans-serif; font-weight: 800; font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 24px -4px rgba(255,94,30,0.4);
+    }
+    .how-step-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .how-step-desc { font-size: 13px; color: var(--muted-light); line-height: 1.7; }
+
+    @media (max-width: 640px) {
+      .how-steps { grid-template-columns: 1fr; }
     }
 
-    @media screen and (max-width: 768px) {
-      input, select, textarea {
-        font-size: 16px !important;
-        line-height: 1.4 !important;
-        transform: translateZ(0);
-        touch-action: manipulation;
-      }
+    /* ── PRICING ── */
+    .pricing { padding: 100px 0; }
+    .pricing-header { text-align: center; margin-bottom: 60px; }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 780px; margin: 0 auto; }
+    .price-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 36px;
+    }
+    .price-card.featured {
+      border-color: rgba(255,94,30,0.4);
+      background: linear-gradient(145deg, rgba(255,94,30,0.06), rgba(255,94,30,0.02));
+      box-shadow: 0 0 0 1px rgba(255,94,30,0.2), 0 24px 48px -12px rgba(0,0,0,0.5);
+    }
+    .price-plan { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .price-amount { display: flex; align-items: baseline; gap: 4px; margin: 14px 0; }
+    .price-currency { font-size: 20px; font-weight: 700; color: var(--muted-light); margin-top: 8px; }
+    .price-value { font-family: 'Sora', sans-serif; font-size: 52px; font-weight: 800; line-height: 1; }
+    .price-period { font-size: 14px; color: var(--muted); }
+    .price-desc { font-size: 13px; color: var(--muted-light); margin-bottom: 24px; line-height: 1.6; }
+    .price-features { list-style: none; space-y: 10px; margin-bottom: 28px; }
+    .price-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--muted-light); padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .price-features li:last-child { border-bottom: none; }
+    .price-features li .check { color: #22c55e; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+    .price-features li .x { color: var(--muted); flex-shrink: 0; }
+    .btn-price { width: 100%; }
+
+    @media (max-width: 600px) {
+      .pricing-grid { grid-template-columns: 1fr; }
     }
 
-    .ease-spring {
-      transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* ── TESTIMONIALS ── */
+    .testimonials { padding: 100px 0; }
+    .testimonials-header { text-align: center; margin-bottom: 60px; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .testimonial-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px;
     }
+    .testimonial-text { font-size: 14px; color: var(--muted-light); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; background: var(--bg-surface);
+    }
+    .testimonial-name { font-size: 13px; font-weight: 700; }
+    .testimonial-role { font-size: 12px; color: var(--muted); }
+    .stars { color: var(--amber); font-size: 13px; margin-bottom: 14px; }
+
+    @media (max-width: 768px) {
+      .testimonials-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── FAQ ── */
+    .faq { padding: 100px 0; }
+    .faq-header { text-align: center; margin-bottom: 60px; }
+    .faq-list { max-width: 680px; margin: 0 auto; }
+    .faq-item {
+      border-bottom: 1px solid var(--border); overflow: hidden;
+    }
+    .faq-q {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0; background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600;
+      color: #fff; text-align: left; gap: 16px;
+    }
+    .faq-q .icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(255,255,255,0.06); display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; transition: transform 0.2s;
+      font-size: 16px; color: var(--muted-light);
+    }
+    .faq-item.open .faq-q .icon { transform: rotate(45deg); background: rgba(255,94,30,0.15); color: var(--orange); }
+    .faq-a { 
+      font-size: 14px; color: var(--muted-light); line-height: 1.7;
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.open .faq-a { max-height: 300px; padding-bottom: 20px; }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 100px 0;
+      text-align: center;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(255,94,30,0.1), rgba(245,158,11,0.05));
+      border: 1px solid rgba(255,94,30,0.2);
+      border-radius: 32px; padding: 72px 40px;
+      max-width: 680px; margin: 0 auto;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% -30%, rgba(255,94,30,0.15) 0%, transparent 70%);
+    }
+    .cta-box h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; margin-bottom: 14px; position: relative; }
+    .cta-box p { font-size: 16px; color: var(--muted-light); margin-bottom: 32px; position: relative; }
+    .cta-box .hero-ctas { position: relative; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0 32px;
+      position: relative; z-index: 1;
+    }
+    .footer-inner {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 24px; text-align: center;
+    }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+    .footer-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    .footer-link:hover { color: #fff; }
+    .footer-copy { font-size: 12px; color: var(--muted); }
+    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 20px; }
+    .footer-logo span { color: var(--orange); }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col relative overflow-x-hidden stars">
-
-  <!-- AURA BACKGROUND GLOW -->
-  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div class="grid-bg-dark absolute inset-0"></div>
-    <div class="absolute -top-32 right-1/4 w-[650px] h-[650px] bg-orange-600/10 blur-[150px] rounded-full"></div>
-    <div class="absolute bottom-10 left-1/4 w-[550px] h-[550px] bg-amber-600/10 blur-[140px] rounded-full"></div>
+<body>
+  <!-- Background effects -->
+  <div class="glow-bg">
+    <div class="grid-lines"></div>
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- 1. TELA DE LOGIN / AUTENTICAÇÃO DO SUPER ADMIN -->
-  <!-- ========================================================================= -->
-  <div id="superadmin-login-screen" class="fixed inset-0 z-[200] bg-[#080504] flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark space-y-6 relative overflow-hidden backdrop-blur-2xl">
-      <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-orange/20 blur-3xl rounded-full pointer-events-none"></div>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- NAVBAR -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">⚡</div>
+        <span class="nav-logo-text">Pedido<span>Vale</span></span>
+      </a>
 
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl mx-auto bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-3xl shadow-orange-glow border border-white/20">
-          👑
-        </div>
-        <h2 class="text-3xl font-anton tracking-wider text-white">PEDIDOVALE MASTER</h2>
-        <p class="text-xs text-brand-textMuted">Controle Global de Restaurantes & Mensalidades</p>
+      <div class="nav-links">
+        <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
+        <a href="#como-funciona" class="nav-link">Como Funciona</a>
+        <a href="#precos" class="nav-link">Preços</a>
+        <a href="#faq" class="nav-link">FAQ</a>
       </div>
 
-      <form onsubmit="handleSuperAdminLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-anton text-brand-cream tracking-wider mb-1.5">SENHA MESTRE:</label>
-          <input 
-            type="password" 
-            id="superadmin-password-input" 
-            placeholder="Digite a senha mestre" 
-            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 transition-all"
-            required
-            autofocus
-          />
+      <div class="nav-cta">
+        <a href="login.html" class="nav-login">Entrar</a>
+        <a href="cadastro.html" class="btn btn-primary btn-nav">
+          Teste Grátis 7 Dias
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- HERO -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge badge-green">
+        <span>●</span> Teste grátis por 7 dias • Sem cartão de crédito
+      </div>
+
+      <h1>
+        Seu restaurante vendendo mais<br>
+        com um sistema <em>completo</em>
+      </h1>
+
+      <p class="hero-sub">
+        Cardápio digital profissional, pedidos pelo WhatsApp com taxa zero, PDV rápido, monitor de cozinha e muito mais. Tudo em um só lugar.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="cadastro.html" class="btn btn-primary" style="font-size:15px; padding: 16px 36px;">
+          Criar Meu Cardápio Grátis →
+        </a>
+        <a href="cadastro.html" class="btn btn-secondary" style="font-size:15px; padding: 16px 28px;">
+          👀 Ver Demonstração
+        </a>
+      </div>
+
+      <p class="hero-note">
+        <span>✓</span> Sem instalação &nbsp;&nbsp;
+        <span>✓</span> Funciona no celular &nbsp;&nbsp;
+        <span>✓</span> Suporte via WhatsApp
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SOCIAL PROOF BAR -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="proof-bar">
+    <div class="container">
+      <div class="proof-inner">
+        <div class="proof-item">
+          <span class="proof-num">500+</span>
+          <span class="proof-label">Restaurantes ativos</span>
         </div>
-
-        <button 
-          type="submit" 
-          class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
-        >
-          <span>ENTRAR NO SUPER ADMIN</span>
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-        </button>
-      </form>
-
-      <div class="text-center">
-        <span class="text-[11px] text-stone-500">Senha padrão: <code class="text-brand-orange font-bold">admin</code></span>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+          <span class="proof-num">R$0</span>
+          <span class="proof-label">Taxa por pedido</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+          <span class="proof-num">30s</span>
+          <span class="proof-label">Para criar sua loja</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+          <span class="proof-num">4.9★</span>
+          <span class="proof-label">Avaliação dos clientes</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- 2. LAYOUT PRINCIPAL DO SUPER ADMIN (SIDEBAR + CONTEÚDO) -->
-  <!-- ========================================================================= -->
-  <div id="superadmin-main-layout" class="hidden flex-1 flex flex-col md:flex-row relative z-10 min-h-screen">
-    
-    <!-- SIDEBAR PERSISTENTE -->
-    <aside class="w-full md:w-72 bg-[#0E0A08]/95 backdrop-blur-2xl border-b md:border-b-0 md:border-r border-brand-darkBorder flex md:flex-col justify-between p-4 md:p-6 sticky top-0 z-40 md:h-screen">
-      
-      <!-- Brand & Navigation -->
-      <div class="space-y-6 w-full flex md:block items-center justify-between">
-        
-        <!-- Logo & Titulo -->
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-2xl shadow-orange-glow border border-white/20 shrink-0">
-            👑
-          </div>
-          <div>
-            <h1 class="font-anton text-lg text-white tracking-wider leading-none">PEDIDOVALE</h1>
-            <div class="flex items-center gap-1.5 mt-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Super Admin OS</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Menu Links -->
-        <nav class="hidden md:flex flex-col space-y-2 pt-4">
-          <button onclick="switchSuperTab('dashboard')" id="super-btn-dashboard" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-white bg-brand-orange shadow-orange-glow transition-all">
-            <span class="text-base">📊</span>
-            <span>Visão Geral & MRR</span>
-          </button>
-          
-          <button onclick="switchSuperTab('tenants')" id="super-btn-tenants" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-brand-textMuted hover:text-white hover:bg-white/5 transition-all">
-            <span class="text-base">🏢</span>
-            <span>Restaurantes & Lojas</span>
-          </button>
-
-          <button onclick="switchSuperTab('financial')" id="super-btn-financial" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-brand-textMuted hover:text-white hover:bg-white/5 transition-all">
-            <span class="text-base">💰</span>
-            <span>Mensalidades & Pix</span>
-          </button>
-
-          <button onclick="openClientAppSimulator()" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 border border-amber-500/20 transition-all">
-            <span class="text-base">📱</span>
-            <span>Simulador App Cliente</span>
-          </button>
-
-          <button onclick="switchSuperTab('settings')" id="super-btn-settings" class="super-sidebar-btn flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-semibold text-brand-textMuted hover:text-white hover:bg-white/5 transition-all">
-            <span class="text-base">⚙️</span>
-            <span>Configurações Master</span>
-          </button>
-        </nav>
-
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FUNCIONALIDADES -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="features" id="funcionalidades">
+    <div class="container">
+      <div class="features-header">
+        <p class="section-label">Funcionalidades</p>
+        <h2 class="section-title">Tudo que seu negócio precisa,<br>sem complicação</h2>
+        <p class="section-sub">Cada módulo foi criado pensando na praticidade do dia a dia do restaurante.</p>
       </div>
 
-      <!-- Quick Actions / Links -->
-      <div class="hidden md:flex flex-col space-y-2 pt-6 border-t border-brand-darkBorder">
-        <a href="cadastro.html" target="_blank" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-amber-400 hover:text-white bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-colors">
-          <span class="flex items-center gap-2">
-            <span>✨</span>
-            <span>Criar Loja (7 Dias Grátis)</span>
-          </span>
-          <span class="text-[10px] font-anton">NOVO ↗</span>
-        </a>
-        <a href="admin.html?store=sao-jose" target="_blank" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-stone-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">
-          <span class="flex items-center gap-2">
-            <span>⚙️</span>
-            <span>Painel do Restaurante</span>
-          </span>
-          <span class="text-[10px] text-brand-orange font-anton">ABRIR ↗</span>
-        </a>
-        <a href="index-sj.html" target="_blank" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-stone-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">
-          <span class="flex items-center gap-2">
-            <span>🍔</span>
-            <span>Cardápio do Cliente</span>
-          </span>
-          <span class="text-[10px] text-brand-orange font-anton">VER ↗</span>
-        </a>
-        <button onclick="handleSuperAdminLogout()" class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-left">
-          <span>🚪</span>
-          <span>Sair do Super Admin</span>
-        </button>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(255,94,30,0.12);">📱</div>
+          <h3 class="feature-title">Cardápio Digital com Fotos</h3>
+          <p class="feature-desc">Seu menu profissional com fotos em alta definição, opcionais, combos e badges de destaque (🔥 Popular, ✨ Novo).</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(34,197,94,0.12);">💬</div>
+          <h3 class="feature-title">Pedidos pelo WhatsApp</h3>
+          <p class="feature-desc">O cliente faz o pedido direto pelo cardápio e você recebe tudo organizado no WhatsApp. Zero taxa por transação.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(245,158,11,0.12);">💻</div>
+          <h3 class="feature-title">PDV Balcão Express</h3>
+          <p class="feature-desc">Lance pedidos de balcão, mesa ou telefone em 2 toques. Funciona no celular, tablet ou computador.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(239,68,68,0.12);">🍳</div>
+          <h3 class="feature-title">Monitor de Cozinha (KDS)</h3>
+          <p class="feature-desc">Tela dedicada para a cozinha com cronômetro de preparo, alertas sonoros e botões grandes. Fim das comandas de papel.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(59,130,246,0.12);">🛵</div>
+          <h3 class="feature-title">Gestão de Entregas</h3>
+          <p class="feature-desc">Calcule taxas por bairro, defina tempo estimado e despache pedidos para o entregador com rota no Google Maps.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(168,85,247,0.12);">🎁</div>
+          <h3 class="feature-title">Cupons & Fidelidade</h3>
+          <p class="feature-desc">Crie cupons promocionais (FRETEGRATIS, 10% OFF) e estimule clientes a voltarem sempre.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(20,184,166,0.12);">🔑</div>
+          <h3 class="feature-title">PIX Direto na Conta</h3>
+          <p class="feature-desc">Receba pagamentos instantâneos direto na sua chave PIX, sem intermediários e sem taxas ocultas.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(255,94,30,0.12);">🔗</div>
+          <h3 class="feature-title">Link Exclusivo da Loja</h3>
+          <p class="feature-desc">Seu cardápio em um link curto e memorável: <strong style="color:var(--amber)">pedidovale.com.br/sualoja</strong> — pronto para o Instagram.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- COMO FUNCIONA -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="how" id="como-funciona">
+    <div class="container">
+      <div class="how-header">
+        <p class="section-label">Como Funciona</p>
+        <h2 class="section-title">Comece a vender em 3 passos</h2>
+        <p class="section-sub" style="margin:0 auto;">Sem complicação. Sem técnico. Sem instalação. Você mesmo configura tudo em minutos.</p>
       </div>
 
-      <!-- MOBILE BOTTOM NAV -->
-      <div class="md:hidden flex items-center gap-2">
-        <button onclick="switchSuperTab('dashboard')" class="p-2.5 rounded-xl bg-white/5 text-white">📊</button>
-        <button onclick="switchSuperTab('tenants')" class="p-2.5 rounded-xl bg-white/5 text-white">🏢</button>
-        <button onclick="switchSuperTab('financial')" class="p-2.5 rounded-xl bg-white/5 text-white">💰</button>
-        <button onclick="openClientAppSimulator()" class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400">📱</button>
-        <button onclick="switchSuperTab('settings')" class="p-2.5 rounded-xl bg-white/5 text-white">⚙️</button>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <h3 class="how-step-title">Crie sua conta grátis</h3>
+          <p class="how-step-desc">Preencha o nome do seu restaurante, WhatsApp e cidade. Em 30 segundos sua loja já está ativa no ar.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <h3 class="how-step-title">Monte seu cardápio</h3>
+          <p class="how-step-desc">Adicione categorias, produtos com fotos e preços. Nosso painel guiado torna tudo simples e intuitivo.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <h3 class="how-step-title">Compartilhe e venda</h3>
+          <p class="how-step-desc">Copie seu link exclusivo, cole no Instagram e WhatsApp. Os pedidos chegam organizados pra você.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- PREÇOS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="pricing" id="precos">
+    <div class="container">
+      <div class="pricing-header">
+        <p class="section-label">Planos</p>
+        <h2 class="section-title">Preço justo, sem surpresas</h2>
+        <p class="section-sub" style="margin:0 auto;">Comece grátis. Assine quando quiser. Cancele quando quiser.</p>
       </div>
 
-    </aside>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
-      
-      <!-- ========================================================================= -->
-      <!-- TAB 1: VISÃO GERAL & MRR -->
-      <!-- ========================================================================= -->
-      <div id="super-view-dashboard" class="super-tab-content space-y-6">
-        
-        <!-- HERO BANNER -->
-        <div class="bg-gradient-to-r from-[#18120E] to-[#120D0A] border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark relative overflow-hidden">
-          <div class="absolute -top-16 -right-16 w-56 h-56 bg-brand-orange/15 blur-3xl rounded-full pointer-events-none"></div>
-          
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-            <div class="space-y-2">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>PLATAFORMA 100% OPERACIONAL</span>
-              </div>
-              <h2 class="text-3xl sm:text-4xl font-anton text-white tracking-wider">
-                CENTRAL DE COMANDO PEDIDOVALE
-              </h2>
-              <p class="text-xs sm:text-sm text-brand-textMuted max-w-xl">
-                Monitore sua receita recorrente mensal (MRR), restaurantes ativos, novos testes gratuitos e realize cobranças automáticas no WhatsApp.
-              </p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3">
-              <button onclick="openCreateTenantModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2">
-                <span class="text-sm">+</span>
-                <span>NOVA EMPRESA</span>
-              </button>
-              <button onclick="openClientAppSimulator()" class="px-5 py-3 rounded-2xl bg-[#1E1713] hover:bg-[#29211C] border border-white/10 text-white font-anton text-xs tracking-wider active:scale-95 transition-all flex items-center gap-2">
-                <span>📱</span>
-                <span>VER CARDÁPIO CLIENTE</span>
-              </button>
-            </div>
+      <div class="pricing-grid">
+        <!-- Plano Grátis -->
+        <div class="price-card">
+          <p class="price-plan">Avaliação Gratuita</p>
+          <div class="price-amount">
+            <span class="price-value">R$0</span>
+            <span class="price-period">/7 dias</span>
           </div>
+          <p class="price-desc">Teste todas as funcionalidades por 7 dias sem precisar de cartão de crédito.</p>
+          <ul class="price-features">
+            <li><span class="check">✓</span> Cardápio digital completo</li>
+            <li><span class="check">✓</span> Produtos ilimitados</li>
+            <li><span class="check">✓</span> Pedidos pelo WhatsApp</li>
+            <li><span class="check">✓</span> Link exclusivo da loja</li>
+            <li><span class="x">—</span> PDV Balcão Express</li>
+            <li><span class="x">—</span> Monitor de Cozinha KDS</li>
+            <li><span class="x">—</span> Cupons de desconto</li>
+          </ul>
+          <a href="cadastro.html" class="btn btn-secondary btn-price">Começar Grátis</a>
         </div>
 
-        <!-- 4 KPIS DO SUPER ADMIN -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          <!-- MRR -->
-          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
-            <div class="flex items-center justify-between text-brand-textMuted text-xs">
-              <span>Faturamento Mensal (MRR)</span>
-              <span class="w-9 h-9 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">💰</span>
-            </div>
-            <div id="kpi-mrr" class="text-3xl font-anton text-white tracking-wide">R$ 0,00</div>
-            <div class="flex items-center justify-between text-[11px] text-emerald-400 font-medium">
-              <span class="flex items-center gap-1">● Receita Recorrente</span>
-              <span class="text-stone-400 font-normal">Meta: R$ 5.000</span>
-            </div>
+        <!-- Plano Pro -->
+        <div class="price-card featured">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <p class="price-plan" style="margin:0; color: var(--orange);">PRO — Mais Popular</p>
+            <span class="badge badge-orange">RECOMENDADO</span>
           </div>
-
-          <!-- Lojas Ativas -->
-          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
-            <div class="flex items-center justify-between text-brand-textMuted text-xs">
-              <span>Lojas Ativas (Assinantes)</span>
-              <span class="w-9 h-9 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 text-brand-orange flex items-center justify-center text-base">🏢</span>
-            </div>
-            <div id="kpi-active-stores" class="text-3xl font-anton text-white tracking-wide">0 lojas</div>
-            <p class="text-[11px] text-stone-400">Mensalidades em dia</p>
+          <div class="price-amount">
+            <span class="price-currency">R$</span>
+            <span class="price-value" style="color:var(--orange)">119</span>
+            <span class="price-period">/mês</span>
           </div>
-
-          <!-- Em Teste Grátis (Trial) -->
-          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-amber-500/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
-            <div class="flex items-center justify-between text-brand-textMuted text-xs">
-              <span>Em Teste Grátis (7 Dias)</span>
-              <span class="w-9 h-9 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-base">⏳</span>
-            </div>
-            <div id="kpi-trial-stores" class="text-3xl font-anton text-white tracking-wide">0 em teste</div>
-            <p class="text-[11px] text-amber-400">Novos clientes em potencial</p>
-          </div>
-
-          <!-- Lojas Bloqueadas -->
-          <div class="bg-[#120D0A]/90 backdrop-blur-xl border border-brand-darkBorder hover:border-rose-500/40 rounded-3xl p-5 shadow-card-dark space-y-3 transition-all">
-            <div class="flex items-center justify-between text-brand-textMuted text-xs">
-              <span>Lojas Bloqueadas</span>
-              <span class="w-9 h-9 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-base">🔒</span>
-            </div>
-            <div id="kpi-blocked-stores" class="text-3xl font-anton text-white tracking-wide">0 bloqueadas</div>
-            <p class="text-[11px] text-rose-400">Por inadimplência</p>
-          </div>
-
+          <p class="price-desc">Acesso completo a todos os módulos do Ecosystem PedidoVale 360 para escalar suas vendas.</p>
+          <ul class="price-features">
+            <li><span class="check">✓</span> Cardápio digital completo</li>
+            <li><span class="check">✓</span> Produtos e categorias ilimitados</li>
+            <li><span class="check">✓</span> Pedidos pelo WhatsApp (taxa 0%)</li>
+            <li><span class="check">✓</span> PDV Balcão Express</li>
+            <li><span class="check">✓</span> Monitor de Cozinha KDS</li>
+            <li><span class="check">✓</span> Cupons & fidelização</li>
+            <li><span class="check">✓</span> Suporte via WhatsApp</li>
+          </ul>
+          <a href="cadastro.html" class="btn btn-primary btn-price">Testar 7 Dias Grátis →</a>
         </div>
-
-        <!-- LISTA RÁPIDA DE RESTAURANTES RECENTES -->
-        <div class="space-y-4 pt-2">
-          <div class="flex items-center justify-between">
-            <h3 class="font-anton text-lg text-white tracking-wide flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-orange"></span>
-              RESTAURANTES NA PLATAFORMA
-            </h3>
-            <button onclick="switchSuperTab('tenants')" class="text-xs text-brand-orange hover:underline font-semibold">
-              Ver Todos ➔
-            </button>
-          </div>
-
-          <div id="dashboard-tenants-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Injetado via Javascript -->
-          </div>
-        </div>
-
       </div>
 
-      <!-- ========================================================================= -->
-      <!-- TAB 2: GESTÃO DE EMPRESAS & RESTAURANTES -->
-      <!-- ========================================================================= -->
-      <div id="super-view-tenants" class="super-tab-content hidden space-y-6">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-2xl sm:text-3xl font-anton text-white tracking-wider flex items-center gap-2">
-              <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-              EMPRESAS & CLIENTES CADASTRADOS
-            </h2>
-            <p class="text-xs text-brand-textMuted mt-1">Gerencie hamburguerias, pizzarias, adicione novas lojas e controle o status</p>
-          </div>
+      <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--muted);">
+        Precisa de mais de uma loja? <a href="https://wa.me/5599991040222" style="color:var(--orange); text-decoration:none; font-weight:600;">Fale conosco</a> sobre planos multi-unidades.
+      </p>
+    </div>
+  </section>
 
-          <button onclick="openCreateTenantModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-xs tracking-wider shadow-orange-glow active:scale-95 transition-all flex items-center gap-2 self-start sm:self-auto">
-            <span>+</span>
-            <span>CADASTRAR EMPRESA</span>
-          </button>
-        </div>
-
-        <!-- Filtros & Busca de Empresas -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <input 
-            type="text" 
-            id="tenant-search-input"
-            oninput="renderTenantsTable()"
-            placeholder="Buscar por restaurante, responsável ou slug..." 
-            class="bg-[#120D0A] border border-brand-darkBorder rounded-2xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange"
-          />
-          <select id="tenant-filter-segment" onchange="renderTenantsTable()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white">
-            <option value="all">Todos os Segmentos</option>
-            <option value="Hamburgueria">Hamburguerias 🍔</option>
-            <option value="Pizzaria">Pizzarias 🍕</option>
-            <option value="Açaí">Açaí & Sorvetes 🍧</option>
-            <option value="Sushi">Sushi & Japonês 🍣</option>
-            <option value="Marmitaria">Marmitarias & Restaurantes 🍛</option>
-            <option value="Doceria">Docerias & Bolos 🍰</option>
-          </select>
-          <select id="tenant-filter-status" onchange="renderTenantsTable()" class="bg-[#18120E] border border-brand-darkBorder rounded-2xl px-3.5 py-3 text-xs text-white">
-            <option value="all">Todos os Status</option>
-            <option value="active">🟢 Ativos (Pagos)</option>
-            <option value="trial">⏳ Em Teste Grátis (7D)</option>
-            <option value="blocked">🔴 Bloqueados (Inadimplência)</option>
-          </select>
-        </div>
-
-        <!-- Tabela de Empresas -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl overflow-hidden shadow-card-dark backdrop-blur-xl">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-stone-300">
-              <thead class="bg-black/50 text-brand-textMuted uppercase font-anton tracking-wider text-[11px] border-b border-brand-darkBorder">
-                <tr>
-                  <th class="p-4">Empresa / Slug</th>
-                  <th class="p-4">Responsável & WhatsApp</th>
-                  <th class="p-4">Plano & Valor</th>
-                  <th class="p-4">Status</th>
-                  <th class="p-4 text-right">Ações Rápidas</th>
-                </tr>
-              </thead>
-              <tbody id="tenants-table-body" class="divide-y divide-white/5">
-                <!-- Injetado via Javascript -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- DEPOIMENTOS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="testimonials-header">
+        <p class="section-label">Depoimentos</p>
+        <h2 class="section-title">Restaurantes que já vendem mais</h2>
       </div>
 
-      <!-- ========================================================================= -->
-      <!-- TAB 3: MENSALIDADES & COBRANÇA WHATSAPP -->
-      <!-- ========================================================================= -->
-      <div id="super-view-financial" class="super-tab-content hidden space-y-6">
-        
-        <div>
-          <h2 class="text-2xl sm:text-3xl font-anton text-white tracking-wider flex items-center gap-2">
-            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-            CONTROLE DE MENSALIDADES & COBRANÇAS
-          </h2>
-          <p class="text-xs text-brand-textMuted mt-1">Dispare cobranças formatadas com sua chave Pix direto no WhatsApp do comerciante</p>
-        </div>
-
-        <!-- Resumo Rápido PIX -->
-        <div class="bg-[#18120E] border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
-              🔑
-            </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Em uma semana já aumentamos 40% os pedidos online. O cardápio ficou muito mais bonito e profissional. Nossos clientes adoraram!"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">🍔</div>
             <div>
-              <span class="text-[11px] text-brand-textMuted uppercase font-semibold">Chave PIX Master Cadastrada:</span>
-              <div id="summary-pix-key" class="font-anton text-white text-base tracking-wide">99991040222</div>
+              <p class="testimonial-name">Marcos Vieira</p>
+              <p class="testimonial-role">Dono • Burguer House</p>
             </div>
           </div>
-          <button onclick="copyMasterPixKey()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold flex items-center gap-2 transition-colors">
-            <span>📋</span>
-            <span>Copiar Chave PIX</span>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"O PDV balcão mudou nossa operação. Antes perdíamos tempo anotando pedidos em papel. Agora tudo vai direto pra cozinha automaticamente."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">🍕</div>
+            <div>
+              <p class="testimonial-name">Fernanda Lima</p>
+              <p class="testimonial-role">Gerente • Pizzaria Del Forno</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Migrei do iFood e parei de pagar comissão absurda. Agora 100% dos pedidos chegam pelo meu link e o dinheiro vai direto no meu PIX."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">🍧</div>
+            <div>
+              <p class="testimonial-name">Juliana Santos</p>
+              <p class="testimonial-role">Proprietária • Açaí & Cia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FAQ -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="faq-header">
+        <p class="section-label">Dúvidas Frequentes</p>
+        <h2 class="section-title">Respostas rápidas para você</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item" id="faq-1">
+          <button class="faq-q" onclick="toggleFaq('faq-1')">
+            Preciso instalar algum aplicativo?
+            <span class="icon">+</span>
           </button>
+          <div class="faq-a">Não! O PedidoVale funciona 100% pelo navegador do celular ou computador. Nada para instalar, nada para atualizar manualmente.</div>
         </div>
 
-        <!-- Tabela Financeira -->
-        <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl overflow-hidden shadow-card-dark">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-stone-300">
-              <thead class="bg-black/50 text-brand-textMuted uppercase font-anton tracking-wider text-[11px] border-b border-brand-darkBorder">
-                <tr>
-                  <th class="p-4">Empresa</th>
-                  <th class="p-4">Dono / Contato</th>
-                  <th class="p-4">Mensalidade</th>
-                  <th class="p-4">Vencimento</th>
-                  <th class="p-4">Situação</th>
-                  <th class="p-4 text-right">Cobrança WhatsApp</th>
-                </tr>
-              </thead>
-              <tbody id="financial-table-body" class="divide-y divide-white/5">
-                <!-- Injetado via Javascript -->
-              </tbody>
-            </table>
-          </div>
+        <div class="faq-item" id="faq-2">
+          <button class="faq-q" onclick="toggleFaq('faq-2')">
+            Quanto tempo leva para criar minha loja?
+            <span class="icon">+</span>
+          </button>
+          <div class="faq-a">Menos de 30 segundos para criar a conta e ter seu link ativo. Para montar um cardápio completo com fotos, a maioria dos nossos clientes leva entre 30 minutos a 2 horas.</div>
         </div>
 
+        <div class="faq-item" id="faq-3">
+          <button class="faq-q" onclick="toggleFaq('faq-3')">
+            Tem taxa por pedido ou comissão?
+            <span class="icon">+</span>
+          </button>
+          <div class="faq-a">Absolutamente zero! Você paga apenas a mensalidade fixa do plano. Cada pedido que seu cliente faz, 100% do valor vai direto para você. Nenhuma comissão, nenhuma taxa oculta.</div>
+        </div>
+
+        <div class="faq-item" id="faq-4">
+          <button class="faq-q" onclick="toggleFaq('faq-4')">
+            Como funciona o pagamento pelo PIX?
+            <span class="icon">+</span>
+          </button>
+          <div class="faq-a">Você cadastra sua chave PIX no painel e ela aparece para o cliente no momento do pedido. O cliente paga direto para você, sem intermediário. O dinheiro cai na sua conta bancária imediatamente.</div>
+        </div>
+
+        <div class="faq-item" id="faq-5">
+          <button class="faq-q" onclick="toggleFaq('faq-5')">
+            Posso cancelar quando quiser?
+            <span class="icon">+</span>
+          </button>
+          <div class="faq-a">Sim, sem multa e sem burocracia. Você pode cancelar a qualquer momento. Seu plano fica ativo até o fim do período pago.</div>
+        </div>
+
+        <div class="faq-item" id="faq-6">
+          <button class="faq-q" onclick="toggleFaq('faq-6')">
+            O sistema funciona para qualquer tipo de restaurante?
+            <span class="icon">+</span>
+          </button>
+          <div class="faq-a">Sim! Hamburguerias, pizzarias, açaí, sushi, marmitaria, doceria, petiscaria e muito mais. O PedidoVale se adapta a qualquer segmento de alimentação.</div>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <!-- ========================================================================= -->
-      <!-- TAB 4: CONFIGURAÇÕES MASTER DA PLATAFORMA -->
-      <!-- ========================================================================= -->
-      <div id="super-view-settings" class="super-tab-content hidden space-y-6">
-        
-        <div>
-          <h2 class="text-2xl sm:text-3xl font-anton text-white tracking-wider flex items-center gap-2">
-            <span class="w-3 h-6 bg-brand-orange rounded-full"></span>
-            CONFIGURAÇÕES GLOBAIS DA PLATAFORMA
-          </h2>
-          <p class="text-xs text-brand-textMuted mt-1">Configure o nome da plataforma, chave Pix master e senha do Super Admin</p>
-        </div>
-
-        <div class="max-w-xl bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark space-y-4">
-          <form onsubmit="savePlatformSettingsForm(event)" class="space-y-4 text-xs font-poppins">
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Nome da Plataforma / Agência:</label>
-              <input type="text" id="setting-platform-name" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
-            </div>
-
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Sua Chave PIX (Para receber as mensalidades):</label>
-              <input type="text" id="setting-platform-pix" placeholder="Ex: 99991040222 ou CNPJ/E-mail" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" />
-            </div>
-
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Nome do Favorecido do PIX:</label>
-              <input type="text" id="setting-platform-beneficiary" placeholder="Ex: Thiago Siqueira" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
-            </div>
-
-            <div>
-              <label class="block text-stone-300 font-semibold mb-1.5">Nova Senha Mestre do Super Admin:</label>
-              <input type="password" id="setting-platform-password" placeholder="Deixe em branco para não alterar" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" />
-            </div>
-
-            <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs">
-              SALVAR CONFIGURAÇÕES DA PLATAFORMA
-            </button>
-          </form>
-        </div>
-
-      </div>
-
-    </main>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- MODAL: SIMULADOR INTERATIVO DO APP DO CLIENTE -->
-  <!-- ========================================================================= -->
-  <div id="client-simulator-modal" class="fixed inset-0 z-[250] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl w-full max-w-4xl max-h-[95vh] flex flex-col overflow-hidden shadow-2xl">
-      <div class="p-4 border-b border-brand-darkBorder flex items-center justify-between bg-black/50">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-xl bg-brand-orange/20 text-brand-orange flex items-center justify-center text-sm font-bold">
-            📱
-          </div>
-          <div>
-            <h3 class="font-anton text-sm sm:text-base text-white tracking-wide">SIMULADOR DO APP DO CLIENTE</h3>
-            <p class="text-[10px] text-brand-textMuted">Visualizando o cardápio interativo e fluxo de checkout</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <a href="index-sj.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-stone-200 text-xs font-semibold flex items-center gap-1">
-            <span>Tela Cheia ↗</span>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CTA FINAL -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Pronto para vender mais?</h2>
+        <p>Crie sua conta grátis agora e receba seu primeiro pedido ainda hoje.</p>
+        <div class="hero-ctas">
+          <a href="cadastro.html" class="btn btn-primary" style="font-size:15px; padding:16px 36px;">
+            Criar Meu Cardápio Grátis →
           </a>
-          <button onclick="closeClientAppSimulator()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+          <a href="https://wa.me/5599991040222" target="_blank" class="btn btn-secondary" style="font-size:15px; padding:16px 28px;">
+            💬 Falar no WhatsApp
+          </a>
         </div>
-      </div>
-
-      <div class="flex-1 bg-[#080504] flex items-center justify-center p-2 sm:p-6 overflow-hidden">
-        <!-- Moldura de Smartphone -->
-        <div class="w-full max-w-sm h-[680px] bg-[#0E0A08] border-4 border-stone-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col relative">
-          <!-- Notch -->
-          <div class="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-4 bg-stone-900 rounded-full z-20"></div>
-          
-          <iframe id="simulator-iframe" src="index-sj.html" class="w-full h-full border-0 z-10 pt-4" title="Cardápio do Cliente"></iframe>
-        </div>
+        <p style="margin-top:16px; font-size:12px; color:var(--muted);">7 dias grátis • Sem cartão de crédito • Cancele quando quiser</p>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: CADASTRAR / EDITAR EMPRESA -->
-  <!-- ========================================================================= -->
-  <div id="tenant-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col font-poppins">
-      <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
-        <h3 id="modal-tenant-title" class="font-anton text-lg text-white tracking-wide">CADASTRAR EMPRESA</h3>
-        <button onclick="closeTenantModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">Pedido<span>Vale</span></div>
+        <div class="footer-links">
+          <a href="#funcionalidades" class="footer-link">Funcionalidades</a>
+          <a href="#precos" class="footer-link">Preços</a>
+          <a href="cadastro.html" class="footer-link">Criar Conta</a>
+          <a href="login.html" class="footer-link">Entrar</a>
+          <a href="https://wa.me/5599991040222" class="footer-link">Suporte</a>
+        </div>
+        <p class="footer-copy">© 2026 PedidoVale. Todos os direitos reservados. Feito com ❤️ para restaurantes brasileiros.</p>
       </div>
-
-      <form id="form-tenant" onsubmit="saveTenantForm(event)" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs no-scrollbar">
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
-          <input type="text" id="tenant-name-input" placeholder="Ex: São José Burguer" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Slug / URL da Loja *</label>
-            <input type="text" id="tenant-slug-input" placeholder="ex: sao-jose" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3.5 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Segmento *</label>
-            <select id="tenant-segment-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange">
-              <option value="Hamburgueria">Hamburgueria 🍔</option>
-              <option value="Pizzaria">Pizzaria 🍕</option>
-              <option value="Açaí">Açaí & Sorvetes 🍧</option>
-              <option value="Sushi">Sushi & Japonês 🍣</option>
-              <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
-              <option value="Doceria">Doceria & Bolos 🍰</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Dono / Contato *</label>
-            <input type="text" id="tenant-owner-name-input" placeholder="Ex: Thiago Silva" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD *</label>
-            <input type="text" id="tenant-owner-phone-input" placeholder="Ex: 5599991040222" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Plano</label>
-            <select id="tenant-plan-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-2.5 py-3 text-white">
-              <option value="pro">Pro (R$ 119)</option>
-              <option value="basic">Básico (R$ 79)</option>
-              <option value="vip">VIP (R$ 189)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Mensalidade R$ *</label>
-            <input type="number" step="0.5" id="tenant-fee-input" placeholder="119.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-brand-orange" required />
-          </div>
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Vencimento (Dia)</label>
-            <input type="number" min="1" max="31" id="tenant-due-day-input" placeholder="10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-brand-orange" required />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Status da Loja</label>
-          <select id="tenant-status-select" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3 text-white">
-            <option value="active">🟢 Ativo (Assinante Pago)</option>
-            <option value="trial">⏳ Teste Grátis (7 Dias)</option>
-            <option value="blocked">🔴 Bloqueado (Inadimplente)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Observações Internas</label>
-          <textarea id="tenant-notes-input" rows="2" placeholder="Ex: Fechou no plano anual, faturamento bom..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-white resize-none focus:outline-none focus:border-brand-orange"></textarea>
-        </div>
-
-        <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton tracking-wider py-3.5 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-xs mt-2">
-          SALVAR RESTAURANTE
-        </button>
-      </form>
     </div>
-  </div>
+  </footer>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="superadmin-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] bg-[#120D0A] text-white text-xs font-poppins font-semibold px-5 py-3.5 rounded-2xl shadow-2xl border border-brand-orange/30 flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
-    <span id="superadmin-toast-text">Ação executada!</span>
-  </div>
-
-  <!-- Script do Super Admin -->
-  <script src="superadmin.js"></script>
-
+  <script>
+    function toggleFaq(id) {
+      const item = document.getElementById(id);
+      const wasOpen = item.classList.contains('open');
+      // Fecha todos
+      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+      // Abre o clicado se estava fechado
+      if (!wasOpen) item.classList.add('open');
+    }
+  </script>
 </body>
 </html>
