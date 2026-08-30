@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PedidoVale • Sistema & Cardápio Digital para Restaurantes</title>
-  <meta name="description" content="A plataforma SaaS mais moderna e completa para restaurantes, hamburguerias e delivery. Cardápio digital com pedidos pelo WhatsApp taxa 0%, PDV balcão, cozinha KDS e PIX direto.">
+  <title>PedidoVale • Cardápio Digital & Sistema Completo para Restaurantes</title>
+  <meta name="description" content="A plataforma SaaS mais moderna para restaurantes, hamburguerias e delivery. Cardápio digital com pedidos pelo WhatsApp taxa 0%, PDV balcão, monitor KDS e PIX direto.">
   <meta name="theme-color" content="#05080A">
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Iconify Icons CDN -->
-  <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+  <!-- Iconify Icons CDN (Web Component <iconify-icon>) -->
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,7 +34,6 @@
             lumibg: '#05080A',
             lumicard: '#0B0F12',
             lumisurface: '#080D10',
-            brandOrange: '#FF5E1E',
           }
         }
       }
@@ -42,12 +41,11 @@
   </script>
 
   <style>
-    /* Reset & Base */
+    /* Reset & Tokens Base */
     html {
       font-family: 'Inter', system-ui, sans-serif;
       color-scheme: dark;
       background-color: #05080A;
-      scroll-behavior: smooth;
     }
     body {
       background-color: #05080A;
@@ -55,21 +53,21 @@
       overflow-x: hidden;
       margin: 0;
       -webkit-font-smoothing: antialiased;
-      selection-background-color: #c6f91f;
-      selection-color: #000000;
     }
     ::selection {
       background-color: #c6f91f;
       color: #000000;
     }
 
-    /* Custom Scrollbar */
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 20px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 20px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(198,249,31,0.4); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Flashlight hover glow effect */
+    /* EFEITO FLASHLIGHT (Borda e fundo que seguem o cursor) */
     .flashlight-target {
       position: relative;
       overflow: hidden;
@@ -79,87 +77,102 @@
       position: absolute;
       inset: -1px;
       background: radial-gradient(
-        450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
         rgba(198, 249, 31, 0.15),
         transparent 40%
       );
       border-radius: inherit;
       z-index: 0;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s ease;
       pointer-events: none;
     }
     .flashlight-target:hover::before {
       opacity: 1;
     }
-
-    /* Subtle grid background */
-    .grid-bg-pattern {
-      background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 36px 36px;
+    .flashlight-content {
+      position: relative;
+      z-index: 2;
+      background-color: transparent;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
     }
 
-    /* Character and slide animations */
+    /* Animação de caracteres clip */
     .char-clip-wrap {
       display: inline-flex;
       overflow: hidden;
       line-height: 1.2;
       vertical-align: bottom;
     }
-    .animate-blur-in {
-      animation: blurFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .char-slide-down {
+      display: inline-block;
+      transform: translateY(-100%);
+      animation: charSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    @keyframes blurFadeIn {
-      from { opacity: 0; filter: blur(10px); transform: translateY(16px); }
-      to { opacity: 1; filter: blur(0); transform: translateY(0); }
+    @keyframes charSlideDown {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
     }
 
-    /* Smartphone device float & glow */
-    .phone-mockup-shadow {
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px rgba(198, 249, 31, 0.15);
+    /* Revelação de palavras mascarada (GSAP) */
+    .gsap-reveal-wrapper {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
     }
-    .desktop-mockup-shadow {
-      box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), 0 0 50px rgba(198, 249, 31, 0.08);
+    .gsap-word-reveal {
+      display: inline-block;
+      transform: translateY(110%);
+      will-change: transform, filter, opacity;
+    }
+
+    /* Sombras dos Mockups */
+    .desktop-window-shadow {
+      box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8), 0 0 50px rgba(198,249,31,0.06);
+    }
+    .phone-device-shadow {
+      box-shadow: 0 25px 60px -15px rgba(0,0,0,0.9), 0 0 35px rgba(198,249,31,0.12);
     }
   </style>
 </head>
 
-<body class="bg-[#05080A] text-white antialiased">
+<body class="bg-[#05080A] text-white antialiased font-sans">
 
   <!-- ========================================================================= -->
-  <!-- BACKGROUND GRID & VERTICAL GUIDES -->
+  <!-- VERTICAL GRID GUIDES (LUMIMOTION SIGNATURE) -->
   <!-- ========================================================================= -->
   <div class="fixed inset-0 pointer-events-none z-0 flex justify-center max-w-[1360px] mx-auto w-full border-x border-white/5">
     <div class="absolute left-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
     <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/[0.02] -translate-x-1/2 hidden md:block">
-      <div class="absolute top-[35vh] left-4 text-[10px] text-white/20 font-mono tracking-tight">PEDIDOVALE • v3.6</div>
+      <div class="absolute top-[40vh] left-4 text-[10px] text-white/20 font-mono tracking-tight">PEDIDOVALE • SAAS 360</div>
     </div>
     <div class="absolute right-0 top-0 bottom-0 w-[1px] bg-white/[0.03]"></div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- NAVBAR (LUMIMOTION DESIGN) -->
+  <!-- NAVBAR -->
   <!-- ========================================================================= -->
   <nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-[#05080A]/85 backdrop-blur-md">
     <div class="max-w-[1360px] mx-auto w-full px-6 h-16 flex items-center justify-between relative">
       
-      <!-- Logo -->
+      <!-- Brand Logo -->
       <div class="flex items-center gap-3">
         <a class="flex items-center gap-2.5 group" href="/">
           <div class="w-8 h-8 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] shadow-[0_0_12px_rgba(198,249,31,0.25)] group-hover:scale-105 transition-transform">
             <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="text-xl"></iconify-icon>
           </div>
-          <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5">
+          <span class="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5 font-geist">
             Pedido<span class="text-[#c6f91f]">Vale</span>
-            <span class="px-1.5 py-0.5 text-[9px] font-mono font-medium tracking-wide bg-[#c6f91f]/10 text-[#c6f91f] border border-[#c6f91f]/20 rounded">HUB 360</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-mono font-medium bg-[#c6f91f]/10 text-[#c6f91f] border border-[#c6f91f]/20 rounded">HUB 360</span>
           </span>
         </a>
       </div>
 
       <!-- Links Centrais -->
-      <div class="hidden md:flex items-center gap-6 text-xs font-medium tracking-tight text-white/60">
+      <div class="hidden md:flex items-center gap-6 text-xs font-medium tracking-tight text-white/60 font-geist">
         <a href="#solucao" class="hover:text-white transition-colors">Cardápio Digital</a>
         <a href="#como-funciona" class="hover:text-white transition-colors">Como Funciona</a>
         <a href="#modulos" class="hover:text-white transition-colors">PDV & Cozinha KDS</a>
@@ -168,7 +181,7 @@
       </div>
 
       <!-- Ações Direita -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 font-geist">
         <a href="login.html" class="text-xs text-white/70 hover:text-white transition-colors font-medium px-3 py-1.5">
           Entrar
         </a>
@@ -178,7 +191,7 @@
         </a>
       </div>
 
-      <!-- Corner Accent Dots -->
+      <!-- Corner Micro Dots -->
       <div class="absolute -bottom-[2px] -left-[2px] w-[3px] h-[3px] bg-white/30 rounded-full"></div>
       <div class="absolute -bottom-[2px] -right-[2px] w-[3px] h-[3px] bg-white/30 rounded-full"></div>
     </div>
@@ -190,49 +203,49 @@
   <main class="flex-1 max-w-[1360px] mx-auto w-full relative z-10">
     <section id="hero" class="w-full border-b border-white/10 pt-20 md:pt-28 pb-16 px-6 relative overflow-hidden">
       
-      <!-- Top Radial Ambient Glow -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#c6f91f]/[0.04] blur-[150px] pointer-events-none z-0"></div>
+      <!-- Top Glow Radial -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#c6f91f]/[0.05] blur-[150px] pointer-events-none z-0"></div>
 
       <div class="flex flex-col z-10 relative items-center">
         
-        <!-- Header Texto -->
+        <!-- Header Text Block -->
         <div class="flex flex-col md:flex-row w-full justify-between max-w-6xl mx-auto gap-10 items-end mb-16">
           <div class="flex flex-col items-start w-full md:w-3/5 text-left">
-            <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 backdrop-blur-md text-xs text-[#c6f91f] mb-6 rounded-full font-mono tracking-tight shadow-[0_0_12px_rgba(198,249,31,0.1)]">
+            <div class="hero-anim-item inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 backdrop-blur-md text-xs text-[#c6f91f] mb-6 rounded-full font-mono tracking-tight shadow-[0_0_12px_rgba(198,249,31,0.1)]">
               <span class="w-1.5 h-1.5 rounded-full bg-[#c6f91f] shadow-[0_0_8px_#c6f91f]"></span>
               Chega de pagar 27% de comissão em marketplaces
             </div>
 
-            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-light tracking-tighter leading-[1.08] text-balance">
+            <h1 class="hero-anim-item text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-light tracking-tighter leading-[1.08] text-balance font-geist">
               Seu restaurante vendendo no <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-[#c6f91f] font-normal">piloto automático.</span>
             </h1>
           </div>
 
           <div class="flex flex-col items-start md:items-end w-full md:w-2/5 text-left md:text-right">
-            <p class="text-white/60 text-base md:text-lg max-w-md mb-8 text-pretty tracking-tight leading-relaxed">
-              Cardápio digital interativo com pedidos organizados no WhatsApp, PDV balcão em 2 toques e monitor de cozinha KDS sem comandas de papel.
+            <p class="hero-anim-item text-white/60 text-base md:text-lg max-w-md mb-8 text-pretty tracking-tight leading-relaxed font-geist">
+              Cardápio digital interativo com pedidos automáticos no WhatsApp, PDV balcão em 2 toques e monitor de cozinha KDS sem comandas de papel.
             </p>
 
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="hero-anim-item flex flex-wrap items-center gap-3 font-geist">
               <a href="cadastro.html" class="bg-[#c6f91f] text-black px-6 py-3 text-sm hover:bg-[#aade17] transition-all flex items-center gap-2 shadow-[0_0_25px_rgba(198,249,31,0.25)] font-semibold rounded-md">
                 <span>Criar Cardápio Grátis</span>
                 <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
               </a>
               <a href="#como-funciona" class="border border-white/10 bg-white/5 backdrop-blur-md text-white px-5 py-3 text-sm hover:bg-white/10 hover:border-white/20 transition-all font-medium rounded-md flex items-center gap-2">
                 <iconify-icon icon="solar:play-circle-linear" width="16"></iconify-icon>
-                <span>Como Funciona</span>
+                <span>Ver Como Funciona</span>
               </a>
             </div>
           </div>
         </div>
 
         <!-- ========================================================================= -->
-        <!-- INTERACTIVE DUAL SHOWCASE: PC (ADMIN PAINEL) + CELULAR (CARDÁPIO CLIENTE) -->
+        <!-- DUAL DEVICE SHOWCASE: PC (ADMIN PAINEL) + CELULAR (CARDÁPIO CLIENTE) -->
         <!-- ========================================================================= -->
-        <div class="w-full max-w-[1280px] mx-auto z-10 relative mt-4">
+        <div class="hero-anim-item w-full max-w-[1280px] mx-auto z-10 relative mt-4">
           
-          <!-- Outer Window Shell -->
-          <div class="group/window bg-[#0B0F12] w-full border border-white/10 p-2 sm:p-3 relative rounded-2xl desktop-mockup-shadow">
+          <!-- Outer Window Frame -->
+          <div class="group/window bg-[#0B0F12] w-full border border-white/10 p-2 sm:p-3 relative rounded-2xl desktop-window-shadow">
             
             <!-- Top Light Edge Line -->
             <div class="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-70 z-50 pointer-events-none"></div>
@@ -241,8 +254,8 @@
             <div class="overflow-hidden flex flex-col lg:flex-row text-[12px] antialiased text-white/60 bg-[#05080A] w-full min-h-[640px] lg:h-[720px] border border-white/10 relative rounded-xl shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
               
               <!-- Subtle Background Grid -->
-              <div class="absolute inset-0 grid-bg-pattern opacity-45 pointer-events-none z-0"></div>
-              <div class="absolute -top-24 left-1/3 w-2/3 h-72 bg-[#c6f91f]/[0.04] blur-[120px] pointer-events-none z-0"></div>
+              <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:36px_36px] opacity-45 pointer-events-none z-0"></div>
+              <div class="absolute -top-24 left-1/3 w-2/3 h-72 bg-[#c6f91f]/[0.05] blur-[120px] pointer-events-none z-0"></div>
 
               <!-- ======================================== -->
               <!-- PC DESKTOP: ADMIN SIDEBAR -->
@@ -262,7 +275,7 @@
 
                 <!-- Admin Navigation Modules -->
                 <nav class="px-3 pt-4 space-y-1.5">
-                  <div class="text-[10px] font-mono uppercase tracking-widest text-white/30 px-3 mb-2">Painel de Controle</div>
+                  <div class="text-[10px] font-mono uppercase tracking-widest text-white/30 px-3 mb-2">Painel do Lojista</div>
                   
                   <div class="flex items-center gap-2.5 px-3 py-2.5 bg-gradient-to-r from-[#c6f91f]/15 to-[#c6f91f]/5 border border-[#c6f91f]/25 text-[#c6f91f] rounded-md shadow-[inset_0_0_20px_rgba(198,249,31,0.06)] font-semibold">
                     <iconify-icon icon="solar:widget-5-linear" width="16"></iconify-icon>
@@ -297,7 +310,7 @@
 
                   <div class="flex items-center gap-2.5 px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-md cursor-pointer">
                     <iconify-icon icon="solar:ticket-sale-linear" width="16" class="text-purple-400"></iconify-icon>
-                    <span>Cupons de Desconto</span>
+                    <span>Cupons & Promoções</span>
                   </div>
                 </nav>
 
@@ -336,61 +349,61 @@
                       <iconify-icon icon="solar:copy-linear" class="text-[#c6f91f]"></iconify-icon>
                       <span class="hidden sm:inline">Copiar Link do Cardápio</span>
                     </div>
-                    <button class="bg-[#c6f91f] text-black px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-[#aade17] transition-colors flex items-center gap-1.5 shadow-[0_0_15px_rgba(198,249,31,0.3)]">
+                    <a href="cadastro.html" class="bg-[#c6f91f] text-black px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-[#aade17] transition-colors flex items-center gap-1.5 shadow-[0_0_15px_rgba(198,249,31,0.3)]">
                       <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon>
                       <span>Novo Produto</span>
-                    </button>
+                    </a>
                   </div>
                 </header>
 
-                <!-- Admin Main Content Grid -->
+                <!-- Admin Content Body -->
                 <div class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4">
                   
                   <!-- Top Metrics Bar -->
                   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
-                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between font-mono">
                         <span>Faturamento Hoje</span>
                         <iconify-icon icon="solar:wallet-money-linear" class="text-[#c6f91f]"></iconify-icon>
                       </div>
                       <div class="text-base sm:text-lg font-bold text-white">R$ 1.840,50</div>
-                      <div class="text-[10px] text-[#55e154] flex items-center gap-1 mt-0.5">
+                      <div class="text-[10px] text-[#55e154] flex items-center gap-1 mt-0.5 font-mono">
                         <span>↑ 24%</span> vs. ontem
                       </div>
                     </div>
 
                     <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
-                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between font-mono">
                         <span>Pedidos Entregues</span>
                         <iconify-icon icon="solar:box-minimalistic-linear" class="text-blue-400"></iconify-icon>
                       </div>
                       <div class="text-base sm:text-lg font-bold text-white">38 pedidos</div>
-                      <div class="text-[10px] text-blue-400 mt-0.5">100% no prazo</div>
+                      <div class="text-[10px] text-blue-400 mt-0.5 font-mono">100% no prazo</div>
                     </div>
 
                     <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
-                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between font-mono">
                         <span>Tempo Médio Cozinha</span>
                         <iconify-icon icon="solar:clock-circle-linear" class="text-amber-400"></iconify-icon>
                       </div>
                       <div class="text-base sm:text-lg font-bold text-white">14 min</div>
-                      <div class="text-[10px] text-amber-400 mt-0.5">Monitor KDS ativo</div>
+                      <div class="text-[10px] text-amber-400 mt-0.5 font-mono">Monitor KDS ativo</div>
                     </div>
 
                     <div class="border border-white/10 bg-[#0B0F12]/90 rounded-xl p-3 shadow-sm">
-                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between">
+                      <div class="text-[10px] text-white/40 mb-1 flex items-center justify-between font-mono">
                         <span>Economia em Taxas</span>
                         <iconify-icon icon="solar:shield-check-bold" class="text-emerald-400"></iconify-icon>
                       </div>
                       <div class="text-base sm:text-lg font-bold text-emerald-400">R$ 496,90</div>
-                      <div class="text-[10px] text-white/40 mt-0.5">Lucro 100% seu</div>
+                      <div class="text-[10px] text-white/40 mt-0.5 font-mono">Lucro 100% seu</div>
                     </div>
                   </div>
 
                   <!-- Live Orders & Categories Split -->
                   <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
                     
-                    <!-- Coluna Esquerda: Pedidos ao Vivo no KDS -->
+                    <!-- Coluna Esquerda: Pedidos ao Vivo na Cozinha -->
                     <div class="xl:col-span-7 border border-white/10 bg-[#0B0F12]/80 rounded-xl p-4 space-y-3">
                       <div class="flex items-center justify-between pb-2 border-b border-white/10">
                         <div class="flex items-center gap-2">
@@ -407,9 +420,9 @@
                           <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 text-[10px] font-mono font-semibold">PREPARANDO (8 min)</span>
                         </div>
                         <p class="text-xs text-white/70">1x Combo Smash Bacon Duplo + Batata Rústica + Coca Zero</p>
-                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/40">
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/40 font-mono">
                           <span>PIX Pago • R$ 44,90</span>
-                          <span class="text-[#c6f91f] font-mono font-semibold">Despachar p/ Entregador →</span>
+                          <span class="text-[#c6f91f] font-semibold cursor-pointer">Despachar p/ Entregador →</span>
                         </div>
                       </div>
 
@@ -420,14 +433,14 @@
                           <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px] font-mono font-semibold">SAIU PARA ENTREGA</span>
                         </div>
                         <p class="text-xs text-white/70">2x Burger Cheddar Especial + 1x Porção de Onion Rings</p>
-                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/40">
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/40 font-mono">
                           <span>Cartão no Balcão • R$ 68,00</span>
                           <span>Entregador: Carlos (Moto 02)</span>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Coluna Direita: Gestão Rápida de Cardápio -->
+                    <!-- Coluna Direita: Categorias do Cardápio -->
                     <div class="xl:col-span-5 border border-white/10 bg-[#0B0F12]/80 rounded-xl p-4 space-y-3">
                       <div class="flex items-center justify-between pb-2 border-b border-white/10">
                         <h3 class="font-semibold text-xs text-white">Categorias & Destaques</h3>
@@ -454,7 +467,7 @@
                         <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
                           <div class="flex items-center gap-2">
                             <span>🍟</span>
-                            <span class="font-medium text-white">Porções & Acompanhamentos</span>
+                            <span class="font-medium text-white">Porções & Batatas</span>
                           </div>
                           <span class="text-[10px] text-white/40 font-mono">5 produtos</span>
                         </div>
@@ -462,7 +475,7 @@
                         <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
                           <div class="flex items-center gap-2">
                             <span>🥤</span>
-                            <span class="font-medium text-white">Bebidas & Sobremesas</span>
+                            <span class="font-medium text-white">Bebidas & Refrigerantes</span>
                           </div>
                           <span class="text-[10px] text-white/40 font-mono">5 produtos</span>
                         </div>
@@ -486,7 +499,7 @@
                 </div>
 
                 <!-- iPhone Realistic Shell Frame -->
-                <div class="w-[275px] h-[540px] bg-black rounded-[36px] p-2.5 border-[3px] border-stone-800 phone-mockup-shadow relative overflow-hidden flex flex-col">
+                <div class="w-[275px] h-[540px] bg-black rounded-[36px] p-2.5 border-[3px] border-stone-800 phone-device-shadow relative overflow-hidden flex flex-col">
                   
                   <!-- Dynamic Island Notch -->
                   <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-50 flex items-center justify-end px-2">
@@ -507,7 +520,7 @@
                     </div>
 
                     <!-- Category Pills -->
-                    <div class="flex gap-1.5 px-2.5 py-2 overflow-x-auto no-scrollbar border-b border-white/5 text-[9px] shrink-0">
+                    <div class="flex gap-1.5 px-2.5 py-2 overflow-x-auto no-scrollbar border-b border-white/5 text-[9px] shrink-0 font-mono">
                       <span class="px-2 py-1 rounded-full bg-[#c6f91f] text-black font-bold shrink-0">Combos</span>
                       <span class="px-2 py-1 rounded-full bg-white/5 text-white/60 shrink-0">Burgers</span>
                       <span class="px-2 py-1 rounded-full bg-white/5 text-white/60 shrink-0">Porções</span>
@@ -525,7 +538,7 @@
                         <div class="min-w-0 flex-1">
                           <div class="text-[10px] font-bold text-white truncate">Smash Bacon Duplo</div>
                           <div class="text-[8px] text-white/40 line-clamp-1">2x carnes 90g, queijo cheddar...</div>
-                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5">R$ 32,90</div>
+                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5 font-mono">R$ 32,90</div>
                         </div>
                         <button class="w-6 h-6 rounded-md bg-[#c6f91f] text-black font-bold flex items-center justify-center text-xs shadow-sm">+</button>
                       </div>
@@ -538,7 +551,7 @@
                         <div class="min-w-0 flex-1">
                           <div class="text-[10px] font-bold text-white truncate">Batata Rústica Especial</div>
                           <div class="text-[8px] text-white/40 line-clamp-1">Crocante com alecrim e páprica</div>
-                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5">R$ 18,00</div>
+                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5 font-mono">R$ 18,00</div>
                         </div>
                         <button class="w-6 h-6 rounded-md bg-[#c6f91f] text-black font-bold flex items-center justify-center text-xs shadow-sm">+</button>
                       </div>
@@ -551,7 +564,7 @@
                         <div class="min-w-0 flex-1">
                           <div class="text-[10px] font-bold text-white truncate">Refrigerante Lata 350ml</div>
                           <div class="text-[8px] text-white/40 line-clamp-1">Coca-Cola, Guaraná, Fanta...</div>
-                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5">R$ 6,00</div>
+                          <div class="text-[10px] font-bold text-[#c6f91f] mt-0.5 font-mono">R$ 6,00</div>
                         </div>
                         <button class="w-6 h-6 rounded-md bg-[#c6f91f] text-black font-bold flex items-center justify-center text-xs shadow-sm">+</button>
                       </div>
@@ -590,88 +603,103 @@
         
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div class="flex flex-col items-start w-full md:w-1/2">
-            <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-6 uppercase tracking-widest font-mono font-semibold rounded-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-6 uppercase tracking-widest font-mono font-semibold overflow-hidden scroll-fade-in rounded-full">
               <span>Como o PedidoVale Funciona</span>
             </div>
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-light tracking-tighter text-white text-balance">
-              Do cadastro ao primeiro pedido <br>
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#c6f91f]">em 4 passos rápidos.</span>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-light tracking-tighter text-white text-balance reveal-section font-geist">
+              <span class="inline-block reveal-section">
+                <span class="gsap-reveal-wrapper inline-block mr-[0.25em]"><span class="gsap-word-reveal">Do cadastro</span></span>
+                <span class="gsap-reveal-wrapper inline-block mr-[0.25em]"><span class="gsap-word-reveal">ao primeiro</span></span>
+              </span><br>
+              <span class="inline-block reveal-section">
+                <span class="gsap-reveal-wrapper inline-block mr-[0.25em]"><span class="gsap-word-reveal text-transparent bg-clip-text bg-gradient-to-r from-white to-[#c6f91f]">pedido em 4 passos.</span></span>
+              </span>
             </h2>
           </div>
 
-          <div class="flex flex-col items-start md:items-end w-full md:w-1/2 text-left md:text-right">
-            <p class="text-base md:text-lg text-white/50 text-pretty tracking-tight mb-8 max-w-md">
+          <div class="flex flex-col items-start md:items-end w-full md:w-1/2 text-left md:text-right font-geist">
+            <p class="text-base md:text-lg text-white/50 text-pretty scroll-fade-in tracking-tight mb-8 max-w-md">
               Sem precisar de técnico, sem taxa de instalação e sem complicações. Você mesmo cria sua loja em 30 segundos.
             </p>
-            <a href="cadastro.html" class="bg-[#c6f91f] text-black px-6 py-3 text-sm hover:bg-[#aade17] transition-all inline-flex items-center gap-2 font-semibold shadow-[0_0_20px_rgba(198,249,31,0.2)] rounded-md">
-              <span>Criar Minha Conta Grátis</span>
-              <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
-            </a>
+            <div class="scroll-fade-in">
+              <a href="cadastro.html" class="bg-[#c6f91f] text-black px-6 py-3 text-sm hover:bg-[#aade17] transition-all inline-flex items-center gap-2 font-semibold shadow-[0_0_20px_rgba(198,249,31,0.2)] rounded-md">
+                <span>Criar Minha Conta Grátis</span>
+                <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+              </a>
+            </div>
           </div>
         </div>
 
         <!-- 4-Step Modular Grid with Flashlight Effect -->
-        <div class="overflow-hidden bg-[#070A0D]/90 border border-white/10 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+        <div class="overflow-hidden bg-[#070A0D]/90 border border-white/10 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] scroll-fade-in">
           <div class="grid grid-cols-1 md:grid-cols-2">
             
             <!-- Etapa 1 -->
-            <div class="flashlight-target min-h-[380px] p-8 border-b md:border-r border-white/10 transition-colors hover:bg-white/[0.02]">
-              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
-                Etapa 01
-              </div>
-              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Crie seu Link Exclusivo</h3>
-              <p class="text-sm text-white/50 leading-relaxed mb-6">
-                Defina o nome do seu restaurante e gere seu link personalizado no formato <strong class="text-white">pedidovale.com.br/sualoja</strong>.
-              </p>
-              <div class="p-4 rounded-xl bg-[#05080A] border border-white/10 font-mono text-xs text-white/80 flex items-center justify-between">
-                <span class="text-[#c6f91f]">pedidovale.com.br/meurestaurante</span>
-                <span class="text-emerald-400">✓ Ativo</span>
+            <div class="flashlight-target min-h-[360px] p-8 border-b md:border-r border-white/10 transition-colors hover:bg-white/[0.02]">
+              <div class="flashlight-content">
+                <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                  Etapa 01
+                </div>
+                <h3 class="text-2xl font-light tracking-tight text-white mb-2 font-geist">Crie seu Link Exclusivo</h3>
+                <p class="text-sm text-white/50 leading-relaxed mb-6 font-geist">
+                  Defina o nome do seu restaurante e gere seu link personalizado no formato <strong class="text-white">pedidovale.com.br/sualoja</strong>.
+                </p>
+                <div class="p-4 rounded-xl bg-[#05080A] border border-white/10 font-mono text-xs text-white/80 flex items-center justify-between">
+                  <span class="text-[#c6f91f]">pedidovale.com.br/meurestaurante</span>
+                  <span class="text-emerald-400">✓ Ativo</span>
+                </div>
               </div>
             </div>
 
             <!-- Etapa 2 -->
-            <div class="flashlight-target min-h-[380px] p-8 border-b border-white/10 transition-colors hover:bg-white/[0.02]">
-              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
-                Etapa 02
-              </div>
-              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Monte seu Cardápio Digital</h3>
-              <p class="text-sm text-white/50 leading-relaxed mb-6">
-                Cadastre categorias, produtos com fotos em alta definição, preços e opcionais (ex: ponto da carne, molhos, adicionais).
-              </p>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-                <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Categorias</div>
-                <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Produtos + Fotos</div>
-                <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Opcionais</div>
+            <div class="flashlight-target min-h-[360px] p-8 border-b border-white/10 transition-colors hover:bg-white/[0.02]">
+              <div class="flashlight-content">
+                <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                  Etapa 02
+                </div>
+                <h3 class="text-2xl font-light tracking-tight text-white mb-2 font-geist">Monte seu Cardápio Digital</h3>
+                <p class="text-sm text-white/50 leading-relaxed mb-6 font-geist">
+                  Cadastre categorias, produtos com fotos em alta definição, preços e opcionais (ex: ponto da carne, molhos, adicionais).
+                </p>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                  <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Categorias</div>
+                  <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Produtos + Fotos</div>
+                  <div class="p-3 bg-[#05080A] border border-white/10 rounded-lg text-white">Opcionais</div>
+                </div>
               </div>
             </div>
 
             <!-- Etapa 3 -->
-            <div class="flashlight-target min-h-[380px] p-8 md:border-r border-b md:border-b-0 border-white/10 transition-colors hover:bg-white/[0.02]">
-              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
-                Etapa 03
-              </div>
-              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Divulgue no Instagram & WhatsApp</h3>
-              <p class="text-sm text-white/50 leading-relaxed mb-6">
-                Cole seu link na bio do Instagram e no WhatsApp. O cliente clica, monta o pedido e tudo chega formatado no seu WhatsApp.
-              </p>
-              <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center gap-2">
-                <iconify-icon icon="solar:whatsapp-linear" class="text-lg"></iconify-icon>
-                <span>Pedidos 100% integrados sem taxa</span>
+            <div class="flashlight-target min-h-[360px] p-8 md:border-r border-b md:border-b-0 border-white/10 transition-colors hover:bg-white/[0.02]">
+              <div class="flashlight-content">
+                <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                  Etapa 03
+                </div>
+                <h3 class="text-2xl font-light tracking-tight text-white mb-2 font-geist">Divulgue no Instagram & WhatsApp</h3>
+                <p class="text-sm text-white/50 leading-relaxed mb-6 font-geist">
+                  Cole seu link na bio do Instagram e no WhatsApp. O cliente clica, monta o pedido e tudo chega formatado no seu WhatsApp.
+                </p>
+                <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center gap-2">
+                  <iconify-icon icon="solar:whatsapp-linear" class="text-lg"></iconify-icon>
+                  <span>Pedidos 100% integrados sem comissão</span>
+                </div>
               </div>
             </div>
 
             <!-- Etapa 4 -->
-            <div class="flashlight-target min-h-[380px] p-8 transition-colors hover:bg-white/[0.02]">
-              <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
-                Etapa 04
-              </div>
-              <h3 class="text-2xl font-light tracking-tight text-white mb-2">Gerencie no PDV & Cozinha KDS</h3>
-              <p class="text-sm text-white/50 leading-relaxed mb-6">
-                Acompanhe o tempo de preparo na tela da cozinha, despache com entregadores e receba o valor direto na sua chave PIX.
-              </p>
-              <div class="p-3 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 text-[#c6f91f] text-xs font-mono flex items-center justify-between">
-                <span>PIX Direto na sua conta</span>
-                <span class="font-bold">R$ 0 de comissão</span>
+            <div class="flashlight-target min-h-[360px] p-8 transition-colors hover:bg-white/[0.02]">
+              <div class="flashlight-content">
+                <div class="inline-flex rounded-md border border-[#c6f91f]/35 bg-[#c6f91f]/5 px-3 py-1.5 text-xs font-mono font-medium uppercase tracking-widest text-[#c6f91f] mb-5">
+                  Etapa 04
+                </div>
+                <h3 class="text-2xl font-light tracking-tight text-white mb-2 font-geist">Gerencie no PDV & Cozinha KDS</h3>
+                <p class="text-sm text-white/50 leading-relaxed mb-6 font-geist">
+                  Acompanhe o tempo de preparo na tela da cozinha, despache com entregadores e receba o valor direto na sua chave PIX.
+                </p>
+                <div class="p-3 rounded-lg bg-[#c6f91f]/10 border border-[#c6f91f]/30 text-[#c6f91f] text-xs font-mono flex items-center justify-between">
+                  <span>PIX Direto na sua conta</span>
+                  <span class="font-bold">R$ 0 de comissão</span>
+                </div>
               </div>
             </div>
 
@@ -691,59 +719,59 @@
           <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-4 uppercase tracking-widest font-mono font-semibold rounded-full">
             <span>Módulos do Sistema</span>
           </div>
-          <h2 class="text-4xl md:text-6xl font-light tracking-tighter text-white">
+          <h2 class="text-4xl md:text-6xl font-light tracking-tighter text-white font-geist">
             Tudo que sua operação precisa em um só lugar.
           </h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           
-          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300 scroll-fade-in">
             <div class="w-10 h-10 rounded-xl bg-[#c6f91f]/10 border border-[#c6f91f]/30 flex items-center justify-center text-[#c6f91f] text-xl mb-4">
               <iconify-icon icon="solar:smartphone-linear"></iconify-icon>
             </div>
-            <h3 class="text-lg font-medium text-white mb-2">Cardápio Digital com Fotos</h3>
-            <p class="text-xs text-white/50 leading-relaxed">Menu responsivo, rápido e bonito. Suporte a opcionais, combos, badges de destaque e cálculo automático de entrega.</p>
+            <h3 class="text-lg font-medium text-white mb-2 font-geist">Cardápio Digital com Fotos</h3>
+            <p class="text-xs text-white/50 leading-relaxed font-geist">Menu responsivo, rápido e bonito. Suporte a opcionais, combos, badges de destaque e cálculo automático de entrega.</p>
           </div>
 
-          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300 scroll-fade-in">
             <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xl mb-4">
               <iconify-icon icon="solar:laptop-minimalistic-linear"></iconify-icon>
             </div>
-            <h3 class="text-lg font-medium text-white mb-2">PDV Balcão Express</h3>
-            <p class="text-xs text-white/50 leading-relaxed">Lance pedidos presenciais, de mesa ou de telefone com apenas 2 toques. Envio imediato para a tela da cozinha.</p>
+            <h3 class="text-lg font-medium text-white mb-2 font-geist">PDV Balcão Express</h3>
+            <p class="text-xs text-white/50 leading-relaxed font-geist">Lance pedidos presenciais, de mesa ou de telefone com apenas 2 toques. Envio imediato para a tela da cozinha.</p>
           </div>
 
-          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300 scroll-fade-in">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl mb-4">
               <iconify-icon icon="solar:chef-hat-minimalistic-linear"></iconify-icon>
             </div>
-            <h3 class="text-lg font-medium text-white mb-2">Monitor de Cozinha (KDS)</h3>
-            <p class="text-xs text-white/50 leading-relaxed">Cronômetro de preparo por pedido, alertas sonoros e status (Novo → Em Preparo → Pronto p/ Entrega).</p>
+            <h3 class="text-lg font-medium text-white mb-2 font-geist">Monitor de Cozinha (KDS)</h3>
+            <p class="text-xs text-white/50 leading-relaxed font-geist">Cronômetro de preparo por pedido, alertas sonoros e status (Novo → Em Preparo → Pronto p/ Entrega).</p>
           </div>
 
-          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300 scroll-fade-in">
             <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl mb-4">
               <iconify-icon icon="solar:ticket-sale-linear"></iconify-icon>
             </div>
-            <h3 class="text-lg font-medium text-white mb-2">Cupons & Promoções</h3>
-            <p class="text-xs text-white/50 leading-relaxed">Crie cupons em % de desconto, valor fixo em R$ ou Frete Grátis com limite de uso para alavancar vendas.</p>
+            <h3 class="text-lg font-medium text-white mb-2 font-geist">Cupons & Promoções</h3>
+            <p class="text-xs text-white/50 leading-relaxed font-geist">Crie cupons em % de desconto, valor fixo em R$ ou Frete Grátis com limite de uso para alavancar vendas.</p>
           </div>
 
-          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300 scroll-fade-in">
             <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl mb-4">
               <iconify-icon icon="solar:scooter-linear"></iconify-icon>
             </div>
-            <h3 class="text-lg font-medium text-white mb-2">Taxas & Entregas por Bairro</h3>
-            <p class="text-xs text-white/50 leading-relaxed">Configure taxas de frete personalizadas por região e botão com rota direta no Google Maps para o motoboy.</p>
+            <h3 class="text-lg font-medium text-white mb-2 font-geist">Taxas & Entregas por Bairro</h3>
+            <p class="text-xs text-white/50 leading-relaxed font-geist">Configure taxas de frete personalizadas por região e botão com rota direta no Google Maps para o motoboy.</p>
           </div>
 
-          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300">
+          <div class="border border-white/10 bg-[#0B0F12]/90 rounded-2xl p-6 hover:border-[#c6f91f]/40 transition-all duration-300 scroll-fade-in">
             <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 text-xl mb-4">
               <iconify-icon icon="solar:qr-code-linear"></iconify-icon>
             </div>
-            <h3 class="text-lg font-medium text-white mb-2">PIX Direto na Sua Conta</h3>
-            <p class="text-xs text-white/50 leading-relaxed">Cadastre sua chave PIX e o cliente paga na hora, com confirmação e sem taxa de intermediação bancária.</p>
+            <h3 class="text-lg font-medium text-white mb-2 font-geist">PIX Direto na Sua Conta</h3>
+            <p class="text-xs text-white/50 leading-relaxed font-geist">Cadastre sua chave PIX e o cliente paga na hora, com confirmação e sem taxa de intermediação bancária.</p>
           </div>
 
         </div>
@@ -761,7 +789,7 @@
           <div class="inline-flex items-center gap-2 px-3 py-1 border border-[#c6f91f]/30 bg-[#c6f91f]/5 text-xs text-[#c6f91f] mb-4 uppercase tracking-widest font-mono font-semibold rounded-full">
             <span>Preço Fixo e Transparente</span>
           </div>
-          <h2 class="text-4xl md:text-5xl font-light tracking-tighter text-white">
+          <h2 class="text-4xl md:text-5xl font-light tracking-tighter text-white font-geist">
             Planos sem taxas sobre seus pedidos.
           </h2>
         </div>
@@ -769,7 +797,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           
           <!-- Teste Grátis -->
-          <div class="border border-white/10 bg-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between">
+          <div class="border border-white/10 bg-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between scroll-fade-in font-geist">
             <div>
               <div class="text-xs font-mono uppercase text-white/50 mb-2">Avaliação</div>
               <div class="text-4xl font-light text-white my-3">R$ 0 <span class="text-xs text-white/40 font-normal">/ 7 dias</span></div>
@@ -788,7 +816,7 @@
           </div>
 
           <!-- Plano Pro (Destaque Lumimotion) -->
-          <div class="border-2 border-[#c6f91f] bg-gradient-to-b from-[#c6f91f]/[0.08] to-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between relative shadow-[0_0_35px_rgba(198,249,31,0.15)]">
+          <div class="border-2 border-[#c6f91f] bg-gradient-to-b from-[#c6f91f]/[0.08] to-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between relative shadow-[0_0_35px_rgba(198,249,31,0.15)] scroll-fade-in font-geist">
             <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#c6f91f] text-black text-[10px] font-bold rounded-full uppercase tracking-wider">
               MAIS ESCOLHIDO
             </div>
@@ -811,7 +839,7 @@
           </div>
 
           <!-- Multi-Lojas -->
-          <div class="border border-white/10 bg-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between">
+          <div class="border border-white/10 bg-[#0B0F12] rounded-2xl p-8 flex flex-col justify-between scroll-fade-in font-geist">
             <div>
               <div class="text-xs font-mono uppercase text-white/50 mb-2">Franquias & Redes</div>
               <div class="text-3xl font-light text-white my-3">Sob Consulta</div>
@@ -837,7 +865,7 @@
     <!-- ========================================================================= -->
     <!-- FAQ ACCORDION -->
     <!-- ========================================================================= -->
-    <section id="faq" class="w-full border-b border-white/10 py-24 px-6 bg-transparent relative z-10">
+    <section id="faq" class="w-full border-b border-white/10 py-24 px-6 bg-transparent relative z-10 font-geist">
       <div class="max-w-4xl mx-auto">
         
         <div class="text-center mb-16">
@@ -846,7 +874,7 @@
 
         <div class="space-y-3">
           
-          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer">
+          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer scroll-fade-in">
             <summary class="font-medium text-sm text-white flex items-center justify-between list-none">
               <span>Preciso baixar algum aplicativo para usar o sistema?</span>
               <iconify-icon icon="solar:alt-arrow-down-linear" class="group-open:rotate-180 transition-transform text-[#c6f91f]"></iconify-icon>
@@ -856,7 +884,7 @@
             </p>
           </details>
 
-          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer">
+          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer scroll-fade-in">
             <summary class="font-medium text-sm text-white flex items-center justify-between list-none">
               <span>Existe cobrança de comissão sobre meus pedidos?</span>
               <iconify-icon icon="solar:alt-arrow-down-linear" class="group-open:rotate-180 transition-transform text-[#c6f91f]"></iconify-icon>
@@ -866,7 +894,7 @@
             </p>
           </details>
 
-          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer">
+          <details class="border border-white/10 bg-[#0B0F12] rounded-xl p-5 group cursor-pointer scroll-fade-in">
             <summary class="font-medium text-sm text-white flex items-center justify-between list-none">
               <span>Como recebo o dinheiro das vendas por PIX?</span>
               <iconify-icon icon="solar:alt-arrow-down-linear" class="group-open:rotate-180 transition-transform text-[#c6f91f]"></iconify-icon>
@@ -884,7 +912,7 @@
     <!-- ========================================================================= -->
     <!-- CTA FINAL (LUMIMOTION STYLE) -->
     <!-- ========================================================================= -->
-    <section class="py-24 px-6 text-center relative overflow-hidden">
+    <section class="py-24 px-6 text-center relative overflow-hidden font-geist">
       <div class="max-w-4xl mx-auto relative z-10">
         <h2 class="text-4xl sm:text-6xl font-light tracking-tighter text-white leading-tight mb-6">
           Pronto para transformar a gestão <br>do seu restaurante?
@@ -910,7 +938,7 @@
   <!-- ========================================================================= -->
   <!-- FOOTER -->
   <!-- ========================================================================= -->
-  <footer class="border-t border-white/10 py-12 px-6 bg-[#05080A] text-white/40 text-xs">
+  <footer class="border-t border-white/10 py-12 px-6 bg-[#05080A] text-white/40 text-xs font-geist">
     <div class="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
       
       <div class="flex items-center gap-2.5 text-white">
@@ -929,8 +957,15 @@
     </div>
   </footer>
 
-  <!-- Flashlight Mouse Follow Script -->
+  <!-- ========================================================================= -->
+  <!-- SCRIPTS DE ANIMAÇÃO (GSAP + SCROLLTRIGGER + FLASHLIGHT) -->
+  <!-- ========================================================================= -->
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js"></script>
+
   <script>
+    // 1. Flashlight Cursor Tracker
     document.querySelectorAll('.flashlight-target').forEach(card => {
       card.addEventListener('mousemove', e => {
         const rect = card.getBoundingClientRect();
@@ -940,6 +975,77 @@
         card.style.setProperty('--mouse-y', `${y}px`);
       });
     });
+
+    // 2. GSAP Scroll Animations
+    (function () {
+      if (!window.gsap) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Estado inicial dos itens
+      gsap.set('.hero-anim-item', { opacity: 0, y: 30, filter: 'blur(10px)' });
+      gsap.set('.scroll-fade-in', { opacity: 0, y: 30, filter: 'blur(10px)' });
+
+      // Entrada suave do Hero
+      gsap.to('.hero-anim-item', {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        duration: 1.0,
+        stagger: 0.12,
+        ease: 'power3.out',
+        delay: 0.1
+      });
+
+      // Revelação de palavras por seção
+      document.querySelectorAll('.reveal-section').forEach(function (section) {
+        var words = section.querySelectorAll('.gsap-word-reveal');
+        if (words.length) {
+          gsap.fromTo(
+            words,
+            { y: '100%', opacity: 0, filter: 'blur(6px)' },
+            {
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 85%',
+                toggleActions: 'play none none reverse'
+              },
+              y: '0%',
+              opacity: 1,
+              filter: 'blur(0px)',
+              duration: 0.8,
+              stagger: 0.04,
+              ease: 'power3.out'
+            }
+          );
+        }
+      });
+
+      // Fade-in em lote conforme o usuário rola a página
+      ScrollTrigger.batch('.scroll-fade-in', {
+        start: 'top 88%',
+        onEnter: function (batch) {
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 0.7,
+            stagger: 0.08,
+            ease: 'power3.out',
+            overwrite: true
+          });
+        },
+        onLeaveBack: function (batch) {
+          gsap.to(batch, {
+            opacity: 0,
+            y: 30,
+            filter: 'blur(10px)',
+            duration: 0.4,
+            ease: 'power2.in',
+            overwrite: true
+          });
+        }
+      });
+    })();
   </script>
 
 </body>
