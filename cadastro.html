@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#080504">
-  <title>Cadastre seu Restaurante • 7 Dias Grátis | PedidoVale</title>
-  <meta name="description" content="Crie seu cardápio digital e sistema de pedidos online em menos de 2 minutos. Teste grátis por 7 dias!">
+  <title>PedidoVale • Gestão Completa para seu Restaurante Vender Mais</title>
+  <meta name="description" content="Controle vendas, pedidos, cardápio digital, PDV, cozinha KDS e entregas em tempo real. Crie sua loja grátis em menos de 1 minuto!">
 
   <!-- Google Fonts: Anton & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +30,7 @@
               darkSurface: '#120D0A',
               darkCard: '#18120E',
               darkBorder: '#29211C',
-              textMuted: '#8C827A',
+              textMuted: '#9E938A',
             }
           },
           fontFamily: {
@@ -74,164 +74,330 @@
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden stars py-10">
+<body class="min-h-screen flex flex-col items-center justify-start relative overflow-x-hidden stars">
 
   <!-- AURA BACKGROUND GLOW -->
   <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
     <div class="grid-bg-dark absolute inset-0"></div>
-    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/15 blur-[150px] rounded-full"></div>
-    <div class="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-amber-600/15 blur-[140px] rounded-full"></div>
+    <div class="absolute -top-32 right-1/4 w-[600px] h-[600px] bg-orange-600/15 blur-[160px] rounded-full"></div>
+    <div class="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-amber-600/15 blur-[150px] rounded-full"></div>
   </div>
 
-  <div class="w-full max-w-xl relative z-10 space-y-6">
-
-    <!-- HEADER BRAND -->
-    <div class="text-center space-y-3">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
-        <span>⏳</span>
-        <span>TESTE GRÁTIS POR 7 DIAS • SEM CARTÃO</span>
+  <!-- TOPBAR HEADER -->
+  <header class="w-full sticky top-0 z-50 bg-[#080504]/90 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-brand-orange text-white flex items-center justify-center font-bold text-lg shadow-orange-glow">
+        ⚡
       </div>
-      <h1 class="text-3xl sm:text-4xl font-anton text-white tracking-wider">
-        CRIE SEU CARDÁPIO DIGITAL EM 2 MINUTOS
-      </h1>
-      <p class="text-xs sm:text-sm text-brand-textMuted max-w-md mx-auto">
-        Comece a receber pedidos organizados diretamente no WhatsApp do seu restaurante com taxa zero por pedido!
-      </p>
+      <div>
+        <span class="font-anton text-lg sm:text-xl text-white tracking-wider leading-none block">PEDIDO<span class="text-brand-orange">VALE</span></span>
+        <span class="text-[10px] text-brand-textMuted uppercase tracking-widest font-semibold block">Ecosystem 360</span>
+      </div>
     </div>
 
-    <!-- CARD FORMULÁRIO -->
-    <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-8 shadow-card-dark backdrop-blur-2xl space-y-6">
+    <div class="flex items-center gap-2.5">
+      <a href="login.html" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-300 hover:text-white text-xs font-semibold transition-all">
+        Fazer Login
+      </a>
+      <a href="#cadastro-section" class="px-4 py-2 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold shadow-orange-glow active:scale-95 transition-all">
+        Criar Loja Grátis
+      </a>
+    </div>
+  </header>
+
+  <!-- CONTAINER CENTRAL -->
+  <main class="w-full max-w-5xl relative z-10 px-4 py-8 sm:py-12 space-y-12">
+
+    <!-- HERO SECTION (ESTILO BEEFOOD) -->
+    <section class="text-center space-y-4 max-w-2xl mx-auto pt-2">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold shadow-sm">
+        <span>👑</span>
+        <span>GESTÃO COMPLETA PARA RESTAURANTES</span>
+      </div>
       
-      <form onsubmit="handleRestaurantRegister(event)" class="space-y-4 text-xs font-poppins">
+      <h1 class="text-3xl sm:text-5xl font-anton text-white tracking-wider leading-tight">
+        CONTROLE TUDO EM TEMPO REAL E VENDA MUITO MAIS
+      </h1>
+      
+      <p class="text-xs sm:text-sm text-brand-textMuted max-w-xl mx-auto leading-relaxed">
+        Cardápio digital com fotos, PDV balcão rápido, monitor de cozinha KDS, entregas pelo WhatsApp e recebimento no PIX sem taxas abusivas por pedido.
+      </p>
+
+      <div class="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="#cadastro-section" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-anton text-sm tracking-wider shadow-orange-glow hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+          <span>CADASTRE-SE GRÁTIS 👆</span>
+        </a>
+        <a href="https://www.pedidovale.com.br/rei-comboteste" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-200 font-semibold text-xs transition-all flex items-center justify-center gap-2">
+          <span>👀 Ver Demonstração ao Vivo</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- GRADE MODULAR DE RECURSOS (12 CARDS VISUAIS ESTILO BEEFOOD) -->
+    <section class="space-y-6">
+      <div class="text-center space-y-1.5">
+        <h2 class="text-xl sm:text-2xl font-anton text-white tracking-wider">
+          Módulos Integrados em um Único Sistema
+        </h2>
+        <p class="text-xs text-brand-textMuted">Tudo o que seu estabelecimento precisa para operar de forma profissional</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
         
-        <!-- NOME DO RESTAURANTE -->
-        <div>
-          <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
-          <input 
-            type="text" 
-            id="reg-store-name" 
-            placeholder="Ex: São José Burguer" 
-            oninput="autoGenerateSlug(this.value)"
-            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors" 
-            required 
-          />
+        <!-- 1. WhatsApp com IA -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            💬
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">WhatsApp & Notificador</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Automatize pedidos e envie notificações instantâneas de status direto para o WhatsApp do cliente.</p>
+          </div>
         </div>
 
-        <!-- LINK PERSONALIZADO (SLUG) & SEGMENTO -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- 2. Cardápio Digital Interativo -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 text-brand-orange flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            📱
+          </div>
           <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Seu Link no PedidoVale *</label>
-            <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus-within:border-brand-orange transition-colors">
-              <span class="text-stone-500 text-xs font-mono mr-1">/</span>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cardápio Digital Autoatendimento</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Seu cardápio moderno com fotos em alta definição, cálculo de entrega e opcionais completos.</p>
+          </div>
+        </div>
+
+        <!-- 3. PDV / Caixa Balcão -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            💻
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">PDV & Caixa Balcão</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Lance pedidos de balcão, telefone e mesas com 2 toques, agilizando o fechamento de conta.</p>
+          </div>
+        </div>
+
+        <!-- 4. Monitor KDS de Cozinha -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            🍳
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Monitor KDS (Cozinha)</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Organize a linha de produção em tempo real com cronômetro, alertas sonoros e zero erro de comandas.</p>
+          </div>
+        </div>
+
+        <!-- 5. Gestor de Entregas & Motoboy -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            🛵
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">App Entregador & Rotas</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Despache pedidos para o motoboy com taxa automática por bairro e link de rota no Google Maps.</p>
+          </div>
+        </div>
+
+        <!-- 6. PIX & Pagamentos Diretos -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            🔑
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">PIX Instantâneo Direto</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Receba pagamentos com confirmação rápida e direto na sua conta bancária. Sem comissões.</p>
+          </div>
+        </div>
+
+        <!-- 7. Cupons & Fidelidade -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            🎁
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cupons & Fidelidade</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Crie cupons promocionais (ex: FRETEGRATIS, 10% OFF) e estimule compras recorrentes.</p>
+          </div>
+        </div>
+
+        <!-- 8. Link Oficial Personalizado -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            🔗
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Link Curto & Árvore de Links</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Seu link exclusivo e limpo: <span class="text-amber-400 font-mono">pedidovale.com.br/sualoja</span> para colocar na bio do Instagram.</p>
+          </div>
+        </div>
+
+        <!-- 9. Relatórios & Lucro -->
+        <div class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4.5 flex items-start gap-3.5 transition-all group hover:scale-[1.01] shadow-card-dark">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+            📊
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Relatórios de Vendas</h3>
+            <p class="text-xs text-stone-400 mt-1 leading-snug">Acompanhe faturamento, produtos mais vendidos, horários de pico e ticket médio com clareza.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FORMULÁRIO DE CADASTRO INSTANTÂNEO (30 SEGUNDOS) -->
+    <section id="cadastro-section" class="scroll-mt-24">
+      <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 sm:p-10 shadow-card-dark backdrop-blur-2xl space-y-6 max-w-2xl mx-auto">
+        
+        <div class="text-center space-y-2 pb-2 border-b border-brand-darkBorder">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+            <span>✨</span>
+            <span>CRIE SEU CARDÁPIO EM 30 SEGUNDOS</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-anton text-white tracking-wider">
+            COMECE SEU TESTE GRÁTIS DE 7 DIAS
+          </h2>
+          <p class="text-xs text-brand-textMuted">Sem burocracia, sem cartão de crédito. Liberação imediata!</p>
+        </div>
+
+        <form onsubmit="handleRestaurantRegister(event)" class="space-y-4 text-xs font-poppins">
+          
+          <!-- NOME DO RESTAURANTE -->
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Nome do Restaurante / Lanchonete *</label>
+            <input 
+              type="text" 
+              id="reg-store-name" 
+              placeholder="Ex: São José Burguer" 
+              oninput="autoGenerateSlug(this.value)"
+              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange transition-colors font-semibold" 
+              required 
+            />
+          </div>
+
+          <!-- LINK PERSONALIZADO (SLUG) & SEGMENTO -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Seu Link no PedidoVale *</label>
+              <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl px-3 py-3 text-white focus-within:border-brand-orange transition-colors">
+                <span class="text-stone-500 text-xs font-mono mr-1">/</span>
+                <input 
+                  type="text" 
+                  id="reg-store-slug" 
+                  placeholder="sao-jose" 
+                  class="w-full bg-transparent text-sm text-amber-400 font-bold font-mono focus:outline-none" 
+                  required 
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Segmento Principal *</label>
+              <select id="reg-store-segment" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3.5 text-sm text-white focus:outline-none focus:border-brand-orange">
+                <option value="Hamburgueria">Hamburgueria 🍔</option>
+                <option value="Pizzaria">Pizzaria 🍕</option>
+                <option value="Açaí">Açaí & Sorvetes 🍧</option>
+                <option value="Sushi">Sushi & Japonês 🍣</option>
+                <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
+                <option value="Doceria">Doceria & Bolos 🍰</option>
+                <option value="Petiscaria">Petiscaria & Bar 🍺</option>
+                <option value="Outro">Outro Delivery 🍽️</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- RESPONSÁVEL & WHATSAPP -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Seu Nome Completo *</label>
               <input 
                 type="text" 
-                id="reg-store-slug" 
-                placeholder="sao-jose" 
-                class="w-full bg-transparent text-sm text-amber-400 font-bold font-mono focus:outline-none" 
+                id="reg-owner-name" 
+                placeholder="Ex: Thiago Siqueira" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+                required 
+              />
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD (para receber pedidos) *</label>
+              <input 
+                type="text" 
+                id="reg-owner-phone" 
+                placeholder="Ex: 5599991040222" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white font-mono placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
                 required 
               />
             </div>
           </div>
 
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Segmento Principal *</label>
-            <select id="reg-store-segment" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3.5 py-3.5 text-sm text-white focus:outline-none focus:border-brand-orange">
-              <option value="Hamburgueria">Hamburgueria 🍔</option>
-              <option value="Pizzaria">Pizzaria 🍕</option>
-              <option value="Açaí">Açaí & Sorvetes 🍧</option>
-              <option value="Sushi">Sushi & Japonês 🍣</option>
-              <option value="Marmitaria">Marmitaria & Almoço 🍛</option>
-              <option value="Doceria">Doceria & Bolos 🍰</option>
-              <option value="Petiscaria">Petiscaria & Bar 🍺</option>
-              <option value="Outro">Outro Delivery 🍽️</option>
-            </select>
+          <!-- CIDADE & SENHA -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Cidade / Estado *</label>
+              <input 
+                type="text" 
+                id="reg-city" 
+                placeholder="Ex: Pedreiras - MA" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+                required 
+              />
+            </div>
+
+            <div>
+              <label class="block text-stone-300 font-semibold mb-1.5">Crie uma Senha de Acesso *</label>
+              <input 
+                type="password" 
+                id="reg-password" 
+                placeholder="Mínimo 6 dígitos" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
+                required 
+              />
+            </div>
           </div>
+
+          <!-- BENEFÍCIOS -->
+          <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-1.5 text-[11px] text-stone-300">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>7 Dias de Acesso Completo e Ilimitado</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Cadastro ilimitado de produtos com fotos</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Pedidos direto no WhatsApp com taxa 0%</span>
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4"
+          >
+            <span>CRIAR MEU CARDÁPIO & SISTEMA GRÁTIS</span>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </button>
+
+        </form>
+
+        <div class="text-center pt-2 border-t border-brand-darkBorder/60 text-xs text-brand-textMuted">
+          Já tem uma conta cadastrada? 
+          <a href="login.html" class="text-brand-orange font-bold hover:underline ml-1">Fazer Login ➔</a>
         </div>
 
-        <!-- RESPONSÁVEL & WHATSAPP -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Seu Nome Completo *</label>
-            <input 
-              type="text" 
-              id="reg-owner-name" 
-              placeholder="Ex: Thiago Siqueira" 
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-              required 
-            />
-          </div>
-
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">WhatsApp com DDD (para receber pedidos) *</label>
-            <input 
-              type="text" 
-              id="reg-owner-phone" 
-              placeholder="Ex: 5599991040222" 
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white font-mono placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-              required 
-            />
-          </div>
-        </div>
-
-        <!-- CIDADE & SENHA -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Cidade / Estado *</label>
-            <input 
-              type="text" 
-              id="reg-city" 
-              placeholder="Ex: Pedreiras - MA" 
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-              required 
-            />
-          </div>
-
-          <div>
-            <label class="block text-stone-300 font-semibold mb-1.5">Crie uma Senha de Acesso *</label>
-            <input 
-              type="password" 
-              id="reg-password" 
-              placeholder="Mínimo 6 dígitos" 
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-brand-orange" 
-              required 
-            />
-          </div>
-        </div>
-
-        <!-- BENEFÍCIOS -->
-        <div class="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-1.5 text-[11px] text-stone-300">
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold">✓</span>
-            <span>7 Dias de Acesso Completo e Ilimitado</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold">✓</span>
-            <span>Cadastro ilimitado de produtos com fotos</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold">✓</span>
-            <span>Pedidos direto no WhatsApp com taxa 0%</span>
-          </div>
-        </div>
-
-        <button 
-          type="submit" 
-          class="w-full bg-gradient-to-r from-brand-orange to-brand-orangeHover hover:brightness-110 text-white font-anton tracking-wider py-4 rounded-2xl shadow-orange-glow active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4"
-        >
-          <span>CRIAR MEU CARDÁPIO GRÁTIS</span>
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-        </button>
-
-      </form>
-
-      <div class="text-center pt-2 border-t border-brand-darkBorder/60 text-xs text-brand-textMuted">
-        Já tem uma conta cadastrada? 
-        <a href="login.html" class="text-brand-orange font-bold hover:underline ml-1">Fazer Login ➔</a>
       </div>
+    </section>
 
-    </div>
+    <!-- FOOTER DA LANDING PAGE -->
+    <footer class="pt-8 border-t border-white/10 text-center text-xs text-stone-500 space-y-2">
+      <p>© 2026 PedidoVale Ecosystem 360 • A Plataforma Completa para Restaurantes e Deliveries.</p>
+      <p>Desenvolvido para máxima performance, agilidade e lucratividade.</p>
+    </footer>
 
-  </div>
+  </main>
 
   <script>
     function autoGenerateSlug(name) {
@@ -322,7 +488,15 @@
       };
       localStorage.setItem(`STORE_${slug}_CONFIG`, JSON.stringify(storeConfig));
 
-      // 3. Salvar sessão do lojista
+      // 3. Inicializar categorias padrão
+      const defaultCategories = [
+        { id: "cat-combos", name: "COMBO", icon: "🔥", desc: "Combos especiais com hambúrguer, batata e refrigerante", visible: true },
+        { id: "cat-burgers", name: "HAMBÚRGUERES ARTESANAIS", icon: "🍔", desc: "Smash burgers e artesanais preparados na hora", visible: true },
+        { id: "cat-bebidas", name: "BEBIDAS & REFRIGERANTES", icon: "🥤", desc: "Sucos, refrigerantes em lata e águas", visible: true }
+      ];
+      localStorage.setItem(`STORE_${slug}_CATEGORIES`, JSON.stringify(defaultCategories));
+
+      // 4. Salvar sessão do lojista
       sessionStorage.setItem('CURRENT_LOGGED_STORE', slug);
 
       // Redirecionar direto para o Dashboard de gestão do restaurante

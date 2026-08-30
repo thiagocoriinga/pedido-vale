@@ -125,18 +125,30 @@
   <!-- NAVEGAÇÃO DE ABAS DO RESTAURANTE -->
   <div class="bg-[#120D0A]/90 border-b border-brand-darkBorder px-4 sm:px-8 py-2 sticky top-[57px] z-30 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-semibold">
-      <button onclick="switchStoreTab('menu-editor')" id="tab-btn-menu-editor" class="store-nav-btn px-4 py-2 rounded-xl bg-brand-orange text-white shadow-orange-glow transition-all shrink-0 flex items-center gap-2">
-        <span>🍔</span>
-        <span>Gerenciador de Cardápio</span>
-      </button>
       <button onclick="switchStoreTab('dashboard')" id="tab-btn-dashboard" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>📊</span>
-        <span>Visão Geral & Links</span>
+        <span>Hub 360</span>
+      </button>
+      <button onclick="switchStoreTab('menu-editor')" id="tab-btn-menu-editor" class="store-nav-btn px-4 py-2 rounded-xl bg-brand-orange text-white shadow-orange-glow transition-all shrink-0 flex items-center gap-2">
+        <span>🍔</span>
+        <span>Cardápio Digital</span>
+      </button>
+      <button onclick="switchStoreTab('pdv')" id="tab-btn-pdv" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>💻</span>
+        <span>PDV Balcão</span>
+      </button>
+      <button onclick="switchStoreTab('kds')" id="tab-btn-kds" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>🍳</span>
+        <span>Cozinha (KDS)</span>
       </button>
       <button onclick="switchStoreTab('orders')" id="tab-btn-orders" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>🔔</span>
         <span>Pedidos ao Vivo</span>
         <span id="badge-orders-count" class="w-4 h-4 rounded-full bg-brand-orange text-white text-[10px] font-bold flex items-center justify-center">0</span>
+      </button>
+      <button onclick="switchStoreTab('coupons')" id="tab-btn-coupons" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
+        <span>🎁</span>
+        <span>Cupons</span>
       </button>
       <button onclick="switchStoreTab('delivery')" id="tab-btn-delivery" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>🛵</span>
@@ -144,11 +156,11 @@
       </button>
       <button onclick="switchStoreTab('payments')" id="tab-btn-payments" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>🔑</span>
-        <span>Chave PIX & Pagamento</span>
+        <span>Chave PIX</span>
       </button>
       <button onclick="switchStoreTab('settings')" id="tab-btn-settings" class="store-nav-btn px-4 py-2 rounded-xl text-brand-textMuted hover:text-white hover:bg-white/5 transition-all shrink-0 flex items-center gap-2">
         <span>👤</span>
-        <span>Dados da Conta</span>
+        <span>Ajustes & Logo</span>
       </button>
     </div>
   </div>
@@ -209,7 +221,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- ABA 0: PAINEL PRINCIPAL & VISÃO GERAL (DASHBOARD) -->
+    <!-- ABA 0: PAINEL PRINCIPAL & HUB 360 (DASHBOARD) -->
     <!-- ========================================================================= -->
     <div id="store-view-dashboard" class="store-tab-pane hidden space-y-6">
       
@@ -232,6 +244,114 @@
         <button onclick="openSubscriptionModal()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-orangeHover text-white font-bold text-xs tracking-wide shadow-orange-glow active:scale-95 transition-all shrink-0">
           ASSINAR PLANO
         </button>
+      </div>
+
+      <!-- HUB DE MÓDULOS 360 (ESTILO BEEFOOD APP HUB) -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold text-stone-400 uppercase tracking-wider">ECOSYSTEM HUB 360 • APLICATIVOS INTEGRADOS</h3>
+          <span class="text-[11px] text-brand-orange font-semibold">Tudo Ativo ✓</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+          
+          <!-- 1. PDV Balcão -->
+          <div onclick="switchStoreTab('pdv')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              💻
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">PDV Balcão</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Lance pedidos presenciais rápidos.</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-bold flex items-center gap-1">Abrir Caixa ➔</span>
+          </div>
+
+          <!-- 2. KDS Cozinha -->
+          <div onclick="switchStoreTab('kds')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🍳
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cozinha KDS</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Produção em tempo real com cronômetro.</p>
+            </div>
+            <span class="text-[10px] text-red-400 font-bold flex items-center gap-1">Ver Produção ➔</span>
+          </div>
+
+          <!-- 3. Cardápio Digital -->
+          <div onclick="switchStoreTab('menu-editor')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 text-brand-orange flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🍔
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cardápio</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Gerenciar produtos, fotos e preços.</p>
+            </div>
+            <span class="text-[10px] text-brand-orange font-bold flex items-center gap-1">Editar Produtos ➔</span>
+          </div>
+
+          <!-- 4. Pedidos ao Vivo -->
+          <div onclick="switchStoreTab('orders')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🔔
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Pedidos ao Vivo</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Kanban de despacho e entregas.</p>
+            </div>
+            <span class="text-[10px] text-blue-400 font-bold flex items-center gap-1">Ver Kanban ➔</span>
+          </div>
+
+          <!-- 5. Cupons de Desconto -->
+          <div onclick="switchStoreTab('coupons')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🎁
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Cupons & Promo</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Crie descontos para fidelizar clientes.</p>
+            </div>
+            <span class="text-[10px] text-purple-400 font-bold flex items-center gap-1">Criar Cupom ➔</span>
+          </div>
+
+          <!-- 6. Taxas & Entrega -->
+          <div onclick="switchStoreTab('delivery')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🛵
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Entregas & Bairros</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Tempo estimado e taxa de entrega.</p>
+            </div>
+            <span class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">Configurar Taxas ➔</span>
+          </div>
+
+          <!-- 7. Chave PIX -->
+          <div onclick="switchStoreTab('payments')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🔑
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Chave PIX</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Conta bancária para receber online.</p>
+            </div>
+            <span class="text-[10px] text-teal-400 font-bold flex items-center gap-1">Ajustar PIX ➔</span>
+          </div>
+
+          <!-- 8. Dados da Loja -->
+          <div onclick="switchStoreTab('settings')" class="bg-[#120D0A]/95 border border-brand-darkBorder hover:border-brand-orange/40 rounded-3xl p-4 cursor-pointer group transition-all hover:scale-[1.02] shadow-card-dark flex flex-col justify-between space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              ⚙️
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-white group-hover:text-brand-orange transition-colors">Ajustes & Logo</h4>
+              <p class="text-[11px] text-stone-400 mt-0.5">Nome, logo, horários e WhatsApp.</p>
+            </div>
+            <span class="text-[10px] text-amber-400 font-bold flex items-center gap-1">Editar Dados ➔</span>
+          </div>
+
+        </div>
       </div>
 
       <!-- CARD DO ESTABELECIMENTO -->
@@ -261,18 +381,6 @@
               0 Produtos cadastrados
             </span>
           </div>
-        </div>
-
-        <!-- BOTÕES DE AÇÃO OPERACIONAIS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button onclick="switchStoreTab('menu-editor')" class="py-3.5 rounded-2xl bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-sm shadow-orange-glow active:scale-95 transition-all flex items-center justify-center gap-2">
-            <span>🍔</span>
-            <span>Editar Cardápio (Produtos & Categorias)</span>
-          </button>
-          <button onclick="switchStoreTab('orders')" class="py-3.5 rounded-2xl bg-[#1E1713] hover:bg-[#29211C] border border-white/10 text-white font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2">
-            <span>📋</span>
-            <span>Listar Pedidos em Tempo Real</span>
-          </button>
         </div>
 
         <!-- LINKS RÁPIDOS (REFERÊNCIA KICARDÁPIO) -->
@@ -348,6 +456,154 @@
 
       </div>
 
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA: PDV BALCÃO EXPRESS (LANÇAR PEDIDOS RÁPIDOS) -->
+    <!-- ========================================================================= -->
+    <div id="store-view-pdv" class="store-tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-6 bg-amber-500 rounded-full"></span>
+            PDV Balcão Express (Ponto de Venda)
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Lance pedidos rápidos de balcão, mesa ou WhatsApp com 2 toques</p>
+        </div>
+        <button onclick="clearPdvCart()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold border border-white/10 transition-colors">
+          Limpar Comanda
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Esquerda: Catálogo Rápido de Produtos -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Campo de busca PDV -->
+          <div class="relative">
+            <span class="absolute left-4 top-3.5 text-stone-500 text-xs">🔍</span>
+            <input 
+              type="text" 
+              id="pdv-search-input"
+              oninput="renderPdvProducts()"
+              placeholder="Buscar item no PDV pelo nome..." 
+              class="w-full bg-[#120D0A] border border-brand-darkBorder rounded-2xl pl-10 pr-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-500 transition-colors"
+            />
+          </div>
+
+          <!-- Pílulas de Categoria PDV -->
+          <div id="pdv-categories-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+            <!-- Injetado via JS -->
+          </div>
+
+          <!-- Grid de Produtos para Clicar -->
+          <div id="pdv-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <!-- Injetado via JS -->
+          </div>
+        </div>
+
+        <!-- Direita: Comanda / Carrinho do Caixa -->
+        <div class="lg:col-span-5 bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark space-y-4 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-brand-darkBorder">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                <span>🧾</span>
+                <span>Comanda do Pedido</span>
+              </h3>
+              <span id="pdv-items-count" class="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-bold">0 itens</span>
+            </div>
+
+            <!-- Dados do Cliente / Tipo -->
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <input type="text" id="pdv-customer-name" placeholder="Nome do Cliente / Mesa" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-amber-500" />
+              <select id="pdv-order-type" class="w-full bg-[#18120E] border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-amber-500">
+                <option value="Balcão">🏪 Balcão / Retirada</option>
+                <option value="Mesa">🍽️ Mesa / Salão</option>
+                <option value="Entrega">🛵 Delivery</option>
+              </select>
+            </div>
+
+            <!-- Lista de Itens na Comanda -->
+            <div id="pdv-cart-items" class="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+              <div class="text-xs text-stone-500 py-8 text-center">Nenhum item selecionado. Clique nos produtos ao lado para lançar.</div>
+            </div>
+          </div>
+
+          <!-- Total e Finalização -->
+          <div class="space-y-3 pt-4 border-t border-brand-darkBorder">
+            <div class="flex items-center justify-between text-xs text-stone-400">
+              <span>Forma de Pagamento:</span>
+              <select id="pdv-payment-method" class="bg-[#18120E] border border-white/10 rounded-lg px-2.5 py-1 text-white font-semibold">
+                <option value="PIX">💠 PIX Instantâneo</option>
+                <option value="Cartão Débito">💳 Cartão Débito</option>
+                <option value="Cartão Crédito">💳 Cartão Crédito</option>
+                <option value="Dinheiro">💵 Dinheiro</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between text-base font-anton text-white pt-1">
+              <span>TOTAL DO PEDIDO:</span>
+              <span id="pdv-total-price" class="text-xl text-amber-400 font-anton">R$ 0,00</span>
+            </div>
+
+            <button onclick="submitPdvOrder()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-black font-anton tracking-wider text-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
+              <span>💾 LANÇAR PEDIDO & ENVIAR P/ COZINHA</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA: MONITOR KDS DE COZINHA (PRODUÇÃO EM TEMPO REAL) -->
+    <!-- ========================================================================= -->
+    <div id="store-view-kds" class="store-tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-6 bg-red-500 rounded-full"></span>
+            Monitor KDS de Cozinha (Tela de Produção)
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Visão limpa e grande para a equipe da cozinha preparar os pedidos sem papel</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="kds-pending-count" class="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-400 font-bold text-xs">0 na fila</span>
+          <button onclick="toggleKdsSound()" id="kds-sound-btn" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold border border-white/10 flex items-center gap-1.5">
+            <span>🔊</span>
+            <span>Som: Ativo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Grade de Comandas da Cozinha -->
+      <div id="kds-orders-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- Injetado dinamicamente via JS -->
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ABA: CUPONS DE DESCONTO & PROMOÇÕES -->
+    <!-- ========================================================================= -->
+    <div id="store-view-coupons" class="store-tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-5 shadow-card-dark">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-6 bg-purple-500 rounded-full"></span>
+            Cupons de Desconto & Fidelização
+          </h2>
+          <p class="text-xs text-brand-textMuted mt-0.5">Crie códigos promocionais para seus clientes aplicarem na sacola de compras</p>
+        </div>
+        <button onclick="openCreateCouponModal()" class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-lg active:scale-95 transition-all flex items-center gap-1.5">
+          <span>+</span>
+          <span>Novo Cupom</span>
+        </button>
+      </div>
+
+      <!-- Lista de Cupons Ativos -->
+      <div class="bg-[#120D0A]/95 border border-brand-darkBorder rounded-3xl p-6 shadow-card-dark">
+        <div id="coupons-list-container" class="space-y-3">
+          <!-- Injetado dinamicamente via JS -->
+        </div>
+      </div>
     </div>
 
     <!-- ========================================================================= -->
@@ -785,6 +1041,57 @@
           </button>
         </div>
 
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE CRIAR CUPOM DE DESCONTO -->
+  <!-- ========================================================================= -->
+  <div id="coupon-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[#120D0A] border border-brand-darkBorder rounded-3xl max-w-md w-full overflow-hidden shadow-2xl">
+      <div class="p-5 border-b border-brand-darkBorder flex items-center justify-between bg-black/40">
+        <div>
+          <h3 class="font-bold text-lg text-white">Criar Cupom de Desconto</h3>
+          <p class="text-xs text-brand-textMuted">Estimule novos pedidos com descontos atrativos</p>
+        </div>
+        <button onclick="closeCouponModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-orange text-stone-300 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+
+      <form onsubmit="saveCouponForm(event)" class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Código do Cupom (em maiúsculas) *</label>
+          <input type="text" id="coupon-code" placeholder="Ex: BEMVINDO10, FRETEGRATIS" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-mono uppercase font-bold focus:outline-none focus:border-purple-500" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Tipo de Desconto *</label>
+            <select id="coupon-type" class="w-full bg-[#18120E] border border-white/10 rounded-2xl px-3 py-3 text-white focus:outline-none focus:border-purple-500">
+              <option value="percent">Porcentagem (%)</option>
+              <option value="fixed">Valor Fixo (R$)</option>
+              <option value="free_delivery">Frete Grátis 🛵</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-stone-300 font-semibold mb-1.5">Valor do Desconto *</label>
+            <input type="number" step="0.5" id="coupon-value" placeholder="Ex: 10" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white font-bold text-amber-400 focus:outline-none focus:border-purple-500" required />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-stone-300 font-semibold mb-1.5">Valor Mínimo do Pedido (R$)</label>
+          <input type="number" step="1" id="coupon-min-order" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-purple-500" />
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="button" onclick="closeCouponModal()" class="flex-1 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-xs">
+            Salvar Cupom
+          </button>
+        </div>
       </form>
     </div>
   </div>

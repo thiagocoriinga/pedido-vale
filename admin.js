@@ -1050,6 +1050,377 @@ function logoutStoreAdmin() {
 }
 
 // -------------------------------------------------------------------------
+// MÓDULO 1: PDV BALCÃO EXPRESS (PONTO DE VENDA)
+// -------------------------------------------------------------------------
+let PDV_CART = [];
+let PDV_ACTIVE_CAT = "all";
+
+function renderPdvCategories() {
+  const bar = document.getElementById('pdv-categories-bar');
+  if (!bar) return;
+
+  let html = `
+    <button onclick="filterPdvCategory('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${PDV_ACTIVE_CAT === 'all' ? 'bg-amber-500 text-black shadow-md' : 'bg-white/5 text-stone-300 hover:bg-white/10'}">
+      Todos
+    </button>
+  `;
+
+  CATEGORIES.forEach(c => {
+    const isAct = PDV_ACTIVE_CAT === c.id;
+    html += `
+      <button onclick="filterPdvCategory('${c.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${isAct ? 'bg-amber-500 text-black shadow-md' : 'bg-white/5 text-stone-300 hover:bg-white/10'}">
+        ${c.icon || '📁'} ${c.name}
+      </button>
+    `;
+  });
+
+  bar.innerHTML = html;
+}
+
+function filterPdvCategory(catId) {
+  PDV_ACTIVE_CAT = catId;
+  renderPdvCategories();
+  renderPdvProducts();
+}
+
+function renderPdvProducts() {
+  const grid = document.getElementById('pdv-products-grid');
+  const searchInput = document.getElementById('pdv-search-input');
+  if (!grid) return;
+
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+  let prods = PRODUCTS.filter(p => p.status !== 'paused');
+  if (PDV_ACTIVE_CAT !== 'all') {
+    prods = prods.filter(p => p.category_id === PDV_ACTIVE_CAT);
+  }
+  if (query) {
+    prods = prods.filter(p => (p.name || '').toLowerCase().includes(query) || (p.description || '').toLowerCase().includes(query));
+  }
+
+  if (prods.length === 0) {
+    grid.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-stone-500">Nenhum produto encontrado.</div>`;
+    return;
+  }
+
+  grid.innerHTML = prods.map(p => {
+    const price = parseFloat(p.promo_price || p.price) || 0;
+    return `
+      <div onclick="addPdvItem('${p.id}')" class="bg-[#18120E] border border-white/10 hover:border-amber-500/50 rounded-2xl p-3 cursor-pointer group active:scale-95 transition-all shadow-md flex flex-col justify-between space-y-2">
+        <div class="flex items-center gap-2.5">
+          ${p.image ? `<img src="${p.image}" class="w-10 h-10 rounded-xl object-cover shrink-0" />` : `<div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg shrink-0">🍔</div>`}
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-xs text-white truncate group-hover:text-amber-400 transition-colors">${p.name}</h4>
+            <span class="text-xs font-bold text-amber-400 block">${formatCurrency(price)}</span>
+          </div>
+        </div>
+        <button class="w-full py-1 rounded-xl bg-white/5 group-hover:bg-amber-500 group-hover:text-black text-[10px] font-bold text-stone-300 transition-all flex items-center justify-center gap-1">
+          <span>+ Adicionar</span>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function addPdvItem(prodId) {
+  const prod = PRODUCTS.find(p => p.id === prodId);
+  if (!prod) return;
+
+  const existing = PDV_CART.find(item => item.id === prodId);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    PDV_CART.push({
+      id: prod.id,
+      name: prod.name,
+      price: parseFloat(prod.promo_price || prod.price) || 0,
+      qty: 1
+    });
+  }
+
+  renderPdvCart();
+  showToast(`+1 ${prod.name} adicionado ao caixa`);
+}
+
+function updatePdvQty(prodId, delta) {
+  const item = PDV_CART.find(i => i.id === prodId);
+  if (!item) return;
+
+  item.qty += delta;
+  if (item.qty <= 0) {
+    PDV_CART = PDV_CART.filter(i => i.id !== prodId);
+  }
+
+  renderPdvCart();
+}
+
+function renderPdvCart() {
+  const container = document.getElementById('pdv-cart-items');
+  const countEl = document.getElementById('pdv-items-count');
+  const totalEl = document.getElementById('pdv-total-price');
+
+  if (!container) return;
+
+  const totalItems = PDV_CART.reduce((sum, i) => sum + i.qty, 0);
+  const totalPrice = PDV_CART.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+  if (countEl) countEl.innerText = `${totalItems} ${totalItems === 1 ? 'item' : 'itens'}`;
+  if (totalEl) totalEl.innerText = formatCurrency(totalPrice);
+
+  if (PDV_CART.length === 0) {
+    container.innerHTML = `<div class="text-xs text-stone-500 py-8 text-center">Nenhum item selecionado. Clique nos produtos ao lado para lançar.</div>`;
+    return;
+  }
+
+  container.innerHTML = PDV_CART.map(item => `
+    <div class="bg-black/50 border border-white/5 rounded-xl p-2.5 flex items-center justify-between gap-2 text-xs">
+      <div class="flex-1 min-w-0">
+        <h5 class="font-bold text-white truncate">${item.name}</h5>
+        <span class="text-[11px] text-amber-400 font-semibold">${formatCurrency(item.price * item.qty)}</span>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button onclick="updatePdvQty('${item.id}', -1)" class="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold flex items-center justify-center">-</button>
+        <span class="font-bold text-white px-1.5">${item.qty}</span>
+        <button onclick="updatePdvQty('${item.id}', 1)" class="w-6 h-6 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold flex items-center justify-center">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function clearPdvCart() {
+  PDV_CART = [];
+  renderPdvCart();
+  showToast("Comanda do caixa limpa.");
+}
+
+function submitPdvOrder() {
+  if (PDV_CART.length === 0) {
+    alert("Adicione pelo menos 1 item na comanda do caixa.");
+    return;
+  }
+
+  const custName = (document.getElementById('pdv-customer-name').value || 'Cliente Balcão').trim();
+  const orderType = document.getElementById('pdv-order-type').value;
+  const payMethod = document.getElementById('pdv-payment-method').value;
+  const totalPrice = PDV_CART.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+  const itemsDesc = PDV_CART.map(i => `${i.qty}x ${i.name}`).join(', ');
+  const orderId = `#B${Math.floor(1000 + Math.random() * 9000)}`;
+
+  const newOrder = {
+    id: orderId,
+    customer_name: `${custName} (${orderType})`,
+    customer_phone: STORE_DATA.whatsapp || '5599991040222',
+    address: orderType === 'Entrega' ? 'A entregar' : 'Consumo / Retirada no Local',
+    items: itemsDesc,
+    total: totalPrice,
+    payment_method: payMethod,
+    status: 'prep',
+    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    created_at: Date.now()
+  };
+
+  ORDERS.unshift(newOrder);
+  saveOrders();
+  renderOrdersKanban();
+  renderKdsOrders();
+  clearPdvCart();
+  document.getElementById('pdv-customer-name').value = '';
+
+  showToast(`✅ Pedido ${orderId} lançado e enviado para a Cozinha KDS!`);
+}
+
+// -------------------------------------------------------------------------
+// MÓDULO 2: MONITOR KDS DE COZINHA (TELA DE PRODUÇÃO)
+// -------------------------------------------------------------------------
+let KDS_SOUND_ACTIVE = true;
+
+function toggleKdsSound() {
+  KDS_SOUND_ACTIVE = !KDS_SOUND_ACTIVE;
+  const btn = document.getElementById('kds-sound-btn');
+  if (btn) {
+    btn.innerHTML = `<span>${KDS_SOUND_ACTIVE ? '🔊' : '🔇'}</span><span>Som: ${KDS_SOUND_ACTIVE ? 'Ativo' : 'Mudo'}</span>`;
+  }
+  showToast(KDS_SOUND_ACTIVE ? "🔊 Alertas sonoros da cozinha ativados!" : "🔇 Alertas sonoros silenciados.");
+}
+
+function renderKdsOrders() {
+  const grid = document.getElementById('kds-orders-grid');
+  const countEl = document.getElementById('kds-pending-count');
+  if (!grid) return;
+
+  const kitchenOrders = ORDERS.filter(o => o.status === 'new' || o.status === 'prep');
+  if (countEl) countEl.innerText = `${kitchenOrders.length} na fila`;
+
+  if (kitchenOrders.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full py-16 text-center space-y-2">
+        <span class="text-4xl block">👨‍🍳</span>
+        <h4 class="font-bold text-base text-white">Cozinha 100% em dia!</h4>
+        <p class="text-xs text-stone-500">Nenhum pedido aguardando preparo no momento.</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = kitchenOrders.map(o => {
+    const isNew = o.status === 'new';
+    const elapsedMinutes = Math.floor((Date.now() - (o.created_at || Date.now())) / 60000);
+    const borderColor = isNew ? 'border-brand-orange/60' : 'border-amber-500/60';
+    const badgeColor = isNew ? 'bg-brand-orange text-white' : 'bg-amber-500 text-black';
+
+    return `
+      <div class="bg-[#120D0A] border ${borderColor} rounded-3xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="font-anton text-lg text-white">${o.id}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeColor}">
+                ${isNew ? 'NOVO' : 'EM PREPARO'}
+              </span>
+            </div>
+            <span class="text-xs text-amber-400 font-mono font-bold">⏱️ ${elapsedMinutes} min</span>
+          </div>
+
+          <div>
+            <span class="text-xs text-stone-400 block font-medium">Cliente:</span>
+            <h4 class="font-bold text-white text-sm leading-tight">${o.customer_name}</h4>
+          </div>
+
+          <div class="p-3 bg-black/60 border border-white/5 rounded-2xl space-y-1.5">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">ITENS DO PEDIDO:</span>
+            <p class="font-bold text-xs text-amber-200 leading-relaxed">${o.items}</p>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button onclick="advanceOrderStatus('${o.id}', '${isNew ? 'prep' : 'delivery'}')" class="w-full py-3 rounded-2xl ${isNew ? 'bg-amber-500 hover:bg-amber-600 text-black' : 'bg-emerald-500 hover:bg-emerald-600 text-white'} font-anton tracking-wider text-xs shadow-lg active:scale-95 transition-all">
+            ${isNew ? '👨‍🍳 INICIAR PREPARO' : '✅ PRONTO P/ DESPACHO 🛵'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// -------------------------------------------------------------------------
+// MÓDULO 3: CENTRAL DE CUPONS DE DESCONTO
+// -------------------------------------------------------------------------
+let COUPONS = [];
+
+function loadCoupons() {
+  try {
+    const saved = localStorage.getItem(getStoreKey('COUPONS'));
+    if (saved) {
+      COUPONS = JSON.parse(saved);
+    } else {
+      COUPONS = [
+        { code: "BEMVINDO10", type: "percent", value: 10, min_order: 20, active: true },
+        { code: "FRETEGRATIS", type: "free_delivery", value: 0, min_order: 30, active: true }
+      ];
+      saveCoupons();
+    }
+  } catch (e) {}
+}
+
+function saveCoupons() {
+  try {
+    localStorage.setItem(getStoreKey('COUPONS'), JSON.stringify(COUPONS));
+  } catch (e) {}
+}
+
+function renderCouponsList() {
+  const container = document.getElementById('coupons-list-container');
+  if (!container) return;
+
+  if (COUPONS.length === 0) {
+    container.innerHTML = `<div class="py-8 text-center text-xs text-stone-500">Nenhum cupom cadastrado. Clique em "+ Novo Cupom" para criar o primeiro.</div>`;
+    return;
+  }
+
+  container.innerHTML = COUPONS.map(c => `
+    <div class="bg-black/50 border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-lg font-bold">
+          🎁
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-mono font-bold text-sm text-amber-400 uppercase">${c.code}</span>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${c.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-stone-500/20 text-stone-400'}">
+              ${c.active ? 'ATIVO' : 'PAUSADO'}
+            </span>
+          </div>
+          <p class="text-xs text-stone-300 mt-0.5">
+            ${c.type === 'percent' ? `${c.value}% de desconto` : c.type === 'free_delivery' ? 'Frete Grátis na entrega' : `R$ ${c.value.toFixed(2)} de desconto`} • Pedido mínimo: R$ ${(c.min_order || 0).toFixed(2)}
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 self-end sm:self-center">
+        <button onclick="toggleCouponStatus('${c.code}')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-semibold border border-white/10 transition-colors">
+          ${c.active ? 'Pausar' : 'Ativar'}
+        </button>
+        <button onclick="deleteCoupon('${c.code}')" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition-colors">
+          🗑️
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openCreateCouponModal() {
+  document.getElementById('coupon-modal').classList.remove('hidden');
+}
+
+function closeCouponModal() {
+  document.getElementById('coupon-modal').classList.add('hidden');
+}
+
+function saveCouponForm(e) {
+  e.preventDefault();
+  const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+  const type = document.getElementById('coupon-type').value;
+  const value = parseFloat(document.getElementById('coupon-value').value) || 0;
+  const minOrder = parseFloat(document.getElementById('coupon-min-order').value) || 0;
+
+  if (!code) return;
+
+  COUPONS = COUPONS.filter(c => c.code !== code);
+  COUPONS.push({
+    code: code,
+    type: type,
+    value: value,
+    min_order: minOrder,
+    active: true
+  });
+
+  saveCoupons();
+  renderCouponsList();
+  closeCouponModal();
+  showToast(`🎁 Cupom ${code} criado com sucesso!`);
+}
+
+function toggleCouponStatus(code) {
+  const cup = COUPONS.find(c => c.code === code);
+  if (cup) {
+    cup.active = !cup.active;
+    saveCoupons();
+    renderCouponsList();
+    showToast(cup.active ? `🟢 Cupom ${code} ativado!` : `🔴 Cupom ${code} pausado.`);
+  }
+}
+
+function deleteCoupon(code) {
+  if (confirm(`Deseja excluir o cupom ${code}?`)) {
+    COUPONS = COUPONS.filter(c => c.code !== code);
+    saveCoupons();
+    renderCouponsList();
+    showToast(`🗑️ Cupom ${code} excluído.`);
+  }
+}
+
+// -------------------------------------------------------------------------
 // NAVEGAÇÃO DE ABAS
 // -------------------------------------------------------------------------
 function switchStoreTab(tabName) {
@@ -1066,6 +1437,17 @@ function switchStoreTab(tabName) {
   if (targetBtn) {
     targetBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-orange-glow');
     targetBtn.classList.remove('text-brand-textMuted');
+  }
+
+  // Ações específicas de renderização por aba
+  if (tabName === 'pdv') {
+    renderPdvCategories();
+    renderPdvProducts();
+    renderPdvCart();
+  } else if (tabName === 'kds') {
+    renderKdsOrders();
+  } else if (tabName === 'coupons') {
+    renderCouponsList();
   }
 }
 
@@ -1099,5 +1481,35 @@ function showToast(msg) {
   }
 }
 
-// Inicializar na carga da página
+// -------------------------------------------------------------------------
+// INICIALIZAÇÃO DO PAINEL
+// -------------------------------------------------------------------------
+function initStoreAdmin() {
+  loadStoreData();
+  loadCoupons();
+
+  if (!localStorage.getItem(getStoreKey('CATEGORIES'))) {
+    saveCategories();
+  }
+  if (!localStorage.getItem(getStoreKey('CONFIG'))) {
+    saveStoreConfig();
+  }
+
+  renderStoreTopbar();
+  renderTrialInfo();
+  renderCategorySelects();
+  renderCategoryAccordionList();
+  renderOrdersKanban();
+  renderPdvCategories();
+  renderPdvProducts();
+  renderKdsOrders();
+  renderCouponsList();
+  populateSettingsInputs();
+
+  // Atualização periódica do KDS a cada 10 segundos
+  setInterval(() => {
+    renderKdsOrders();
+  }, 10000);
+}
+
 document.addEventListener('DOMContentLoaded', initStoreAdmin);
